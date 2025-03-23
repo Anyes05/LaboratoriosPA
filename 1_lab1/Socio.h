@@ -18,6 +18,7 @@ class Socio{
         void setCi(string);
         
         void mostrarSocio();
+        ~Socio();
 };
 
 #endif

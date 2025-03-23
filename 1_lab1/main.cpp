@@ -53,7 +53,7 @@ cuando el socio y la clase existan, de lo contrario se levanta una excepción
 std::invalid_argument. Si ya existe una inscripción de ese usuario para esa clase, o si
 el cupo de esa clase ya fue alcanzado, también se levanta una excepción
 std::invalid_argument. */
-void agregarInscripcion(String ciSocio, int idClase, Fecha fecha)
+void agregarInscripcion(string ciSocio, int idClase, Fecha fecha)
 {
 }
 
@@ -65,7 +65,7 @@ void borrarInscripcion(string ciSocio, int idClase)
 
 /*E) Retorna un arreglo con los socios que están inscriptos a determinada clase. El largo
 del arreglo de socios deberá ser cargado en el parámetro cantSocios.*/
-DtSocio **obtenerInfoSociosPorClase(id idClase, int &cantSocios) {}
+DtSocio **obtenerInfoSociosPorClase(id idClase, int &cantSocios){}
 
 /*F) Retorna la información de la clase identificada por idClase. */
 DtClase obtenerClase(int idClase) {}

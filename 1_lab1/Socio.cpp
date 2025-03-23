@@ -26,3 +26,5 @@ void Socio::mostrarSocio(){
     cout<<"Nombre: "<<nombre<<endl;
     cout<<"CI: "<<ci<<endl;
 }
+
+Socio::~Socio(){}

@@ -2,7 +2,7 @@ all: Turno.o DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o 
 	g++ Turno.o DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o -o programa
 
 Turno.o:
-	g++ -c "./DataTypes/Turno.cpp"
+	g++ -c "./DataTypes/Turno.h"
 
 DtSocio.o: 
 	g++ -c "./DataTypes/DtSocio.cpp"
