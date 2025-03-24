@@ -27,6 +27,6 @@ class Inscripcion {
         void mostrarInscripcion();
         ~Inscripcion();
 
-}
+};
 
 #endif

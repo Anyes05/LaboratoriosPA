@@ -39,7 +39,7 @@ void Inscripcion::mostrarInscripcion() {
     cout << "Fecha de inscripción: " << fecha->getDia() << "/" 
          << fecha->getMes() << "/" << fecha->getAnio() << endl;
     cout << "Socio: " << socio->getNombre() << " (CI: " << socio->getCi() << ")" << endl;
-    cout << "Clase: " << clase->getNombre() << " (ID: " << clase->getId() << ")" << endl;
+    cout << "Clase: " << clase->getNombre() << " (ID: " << clase->getId() << ")" << endl;  //getNombre no funciona con clase, ya que clase usa DtClase.h, en "Inscripcion.h" hay que agregar "DtClase.h" y reajustar los errores que te aparezcan, es solo sustituir.
 }
 
 // Destructor

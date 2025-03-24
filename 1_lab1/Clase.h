@@ -1,33 +1,24 @@
 #ifndef CLASE_H
 #define CLASE_H
-
+#include "Socio.h"
+#include "DataTypes/DtClase.h"
 #include <iostream>
+#define MAX_SOCIOS 50
 using namespace std;
 
-// Estructura para manejar los turnos
-enum _retorno
-{
-    Manana,
-    Tarde,
-    Noche
-};
-typedef enum _retorno Turno;
+
 
 class Clase
 {
 private:
-    int id;
-    string nombre;
-    Turno turno;
+    DtClase * clase;
 public:
-    Clase(int, string, Turno);
-    int getId();
-    void setId(int);
+    Clase(DtClase*);
+    Clase getClase();
+    void setClase(DtClase*);
     string getNombre();
-    void setNombre(string);
-    Turno getTurno ();
-    void setTurno(Turno);
-    virtual int cupo() const = 0;
+    Socio* cantCupos;
+    virtual int cupo();
     ~Clase();
 };
 

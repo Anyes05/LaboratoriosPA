@@ -3,33 +3,21 @@ using namespace std;
 
 Clase::~Clase(){};
 
-Clase::Clase (int ident, string nom, Turno turno) {
-    this->id = ident;
-    this->nombre = nom;
-    this->turno = turno;
+Clase::Clase (DtClase* c) {
+    this->clase = c;
+    cantCupos[MAX_SOCIOS];
 }
 
-int Clase::getId () {
-    return this->id;
+Clase Clase::getClase () {
+    return this->clase;
 }
 
-string Clase::getNombre() {
-    return this->nombre;
+Clase Clase
+
+void Clase::setClase(DtClase *c) {
+    this->clase = c;
 }
 
-Turno Clase::getTurno () {
-    return this->turno;
-}
 
-void Clase::setId (int ident) {
-    this->id = ident;
-}
 
-void Clase::setNombre (string nom) {
-    this->nombre = nom;
-}
-
-void Clase::setTurno (Turno turno) {
-    this->turno = turno;
-}
 
