@@ -1,9 +1,10 @@
 #include "Socio.h"
 #include <iostream>
 
-Socio::Socio(string n, string c){
-    this->nombre = n;
+Socio::Socio( string c, string n){
     this->ci = c;
+    this->nombre = n;
+    
 }
 
 string Socio::getNombre(){
@@ -23,6 +24,7 @@ void Socio::setCi(string c){
 }
 
 void Socio::mostrarSocio(){
+    cout<< "El Socio Agregado es: " << endl;
     cout<<"Nombre: "<<nombre<<endl;
     cout<<"CI: "<<ci<<endl;
 }

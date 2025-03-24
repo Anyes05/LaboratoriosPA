@@ -1,8 +1,5 @@
-all: Turno.o DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o 
-	g++ Turno.o DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o -o programa
-
-Turno.o:
-	g++ -c "./DataTypes/Turno.h"
+all:  DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o 
+	g++  DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o -o programa
 
 DtSocio.o: 
 	g++ -c "./DataTypes/DtSocio.cpp"
@@ -38,7 +35,7 @@ main.o:
 	g++ -c main.cpp
 
 clean:
-	rm -f Turno.o DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o programa
+	rm -f  DtSocio.o Fecha.o DtClase.o DtSpinning.o DtEntrenamiento.o Socio.o Inscripcion.o Clase.o Spinning.o Entrenamiento.o main.o programa
 run:
 	make clean
 	make
