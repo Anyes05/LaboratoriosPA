@@ -1,17 +1,16 @@
-#ifndef ENTRENAMIENTO_H
-#define ENTRENAMIENTO_H
+#ifndef SPINNING_H
+#define SPINNING_H
 
+#include "DataTypes/DtSpinning.h"
 #include "Clase.h"
 
 class Spinning : public Clase {
-    private:
-        int cantBicicletas();
     public:
-        int cupo();
-        Spinning (int, string, Turno, int);
-            
+        Spinning (DtSpinning*);
+        int getCantidadBicicletas();
+        int getMaxInscriptos();
+    private:
+        DtSpinning* dtSpinning;
 };
-
-
 
 #endif

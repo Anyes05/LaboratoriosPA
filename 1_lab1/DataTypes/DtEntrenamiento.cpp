@@ -6,3 +6,7 @@ DtEntrenamiento::DtEntrenamiento(int id, string nom, Turno trno, bool rambla):Dt
 }
 
 DtEntrenamiento::~DtEntrenamiento(){}
+
+bool DtEntrenamiento::getEnRambla() {
+    return this->enRambla;
+}

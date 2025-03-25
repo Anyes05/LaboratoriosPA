@@ -12,6 +12,8 @@ private:
 public:
     DtSpinning(int, string, Turno, int);
     ~DtSpinning();
+    
+    int getCantBicicleta();
 };
 
 #endif

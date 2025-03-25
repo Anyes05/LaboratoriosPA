@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Inscripcion::Inscripcion(Fecha *f, Socio *s, Clase *c)
+Inscripcion::Inscripcion(Fecha *f, Socio *s, DtClase *c)
 {
     this->fecha = f;
     this->socio = s;
@@ -15,7 +15,7 @@ Socio *Inscripcion::getSocio()
     return this->socio;
 }
 
-Clase *Inscripcion::getClase()
+DtClase *Inscripcion::getClase()
 {
     return this->clase;
 }
@@ -35,17 +35,12 @@ void Inscripcion::setSocio(Socio *s)
     this->socio = s;
 }
 
-void Inscripcion::setClase(Clase *c)
-{
-    this->clase = c;
-}
-
 void Inscripcion::mostrarInscripcion()
 {
     cout << "Fecha de inscripción: " << fecha->getDia() << "/"
          << fecha->getMes() << "/" << fecha->getAnio() << endl;
     cout << "Socio: " << socio->getNombre() << " (CI: " << socio->getCi() << ")" << endl;
-    // cout << "Clase: " << clase->getNombre() << " (ID: " << clase->getId() << ")" << endl;  //getNombre no funciona con clase, ya que clase usa DtClase.h, en "Inscripcion.h" hay que agregar "DtClase.h" y reajustar los errores que te aparezcan, es solo sustituir.
+    cout << "Clase: " << clase->getNombre() << " (ID: " << clase->getId() << ")" << endl; 
 }
 
 // Destructor

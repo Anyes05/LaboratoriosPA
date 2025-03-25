@@ -8,3 +8,15 @@ DtClase::DtClase(int id, string nom, Turno trno){
 }
 
 DtClase::~DtClase(){}
+
+int DtClase::getId() {
+    return this->ID;
+}
+
+string DtClase::getNombre() {
+    return this->nombre;
+}
+
+Turno DtClase::getTurno() {
+    return this->turno;
+}

@@ -6,3 +6,7 @@ DtSpinning::DtSpinning(int id, string nom, Turno trno, int cantBici):DtClase (id
 }
 
 DtSpinning::~DtSpinning(){}
+
+int DtSpinning::getCantBicicleta() {
+    return this->cantBicicleta;
+}

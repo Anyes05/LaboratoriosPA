@@ -19,6 +19,7 @@ using namespace std;
 
 int sociosActuales = 0;
 Socio *arrSocios[MAX_SOCIOS];
+Clase *arrClases[MAX_CLASES];
 
 /*----- FUNCIONES PRINCIPALES -----*/
 

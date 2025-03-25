@@ -12,6 +12,7 @@ private:
 public:
     DtEntrenamiento(int, string, Turno, bool);
     ~DtEntrenamiento();
+    bool getEnRambla();
 };
 
 #endif
