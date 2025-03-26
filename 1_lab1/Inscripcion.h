@@ -8,6 +8,7 @@ using namespace std;
 #include "DataTypes/Fecha.h"
 #include "Socio.h"
 
+class DtClase;
 
 class Inscripcion {
 
