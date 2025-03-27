@@ -9,7 +9,9 @@ class DtSocio
         string nombre;
     public:
         DtSocio(int, string);
-        ~DtSocio();        
+        string getCi();
+        string getNombre();
+        virtual ~DtSocio();        
 
 };
 

@@ -52,35 +52,35 @@ void agregarClase(DtClase clase) {
   }
 
   //Preguntamos que tipo de clase desea crear
-  cout << "Ingrese el tipo de clase que desea crear: " << endl;
-  cout << "1. Spinning" << endl;
-  cout << "2. Entrenamiento" << endl;
+  std::cout << "Ingrese el tipo de clase que desea crear: " << endl;
+  std::cout << "1. Spinning" << endl;
+  std::cout << "2. Entrenamiento" << endl;
   int tipoClase;
-  cin >> tipoClase;
+  std::cin >> tipoClase;
 
   if (tipoClase == 1) { 
-    cout << "Ingrese la cantidad de bicicletas: ";
+    std::cout << "Ingrese la cantidad de bicicletas: ";
     int cantBicicletas;
-    cin >> cantBicicletas;
+    std::cin >> cantBicicletas;
     DtSpinning dtSpinning(clase.getId(), clase.getNombre(), clase.getTurno(), cantBicicletas);
     DtSpinning *dtSpinning = dynamic_cast<DtSpinning*>(&clase);
     Spinning *claseSpinning = new Spinning(&dtSpinning);
     arrClases[clasesActuales] = claseSpinning;
     clasesActuales++;
   } else if (tipoClase == 2) {
-    cout << "La clase se realiza en la rambla? (1: Si, 0: No): ";
+    std::cout << "La clase se realiza en la rambla? (1: Si, 0: No): ";
     bool enRambla;
-    cin >> enRambla;
+    std::cin >> enRambla;
     DtEntrenamiento dtEntrenamiento(clase.getId(), clase.getNombre(), clase.getTurno(), enRambla);
     DtEntrenamiento *dtEntrenamiento = dynamic_cast<DtEntrenamiento*>(&clase);
     Entrenamiento *claseEntrenamiento = new Entrenamiento(&dtEntrenamiento);
     arrClases[clasesActuales] = claseEntrenamiento;
     clasesActuales++;
   } else {
-    cout << "Opcion no valida. Intente de nuevo." << endl;
+    std::cout << "Opcion no valida. Intente de nuevo." << endl;
   }
   
-  cout << "Clase creada con exito" << endl;
+  std::cout << "Clase creada con exito" << endl;
 }
 
 /*C) Crea una inscripción de un socio a una clase. La inscripción tiene lugar siempre y
@@ -107,7 +107,7 @@ void agregarInscripcion(string ciSocio, int idClase, Fecha fecha){
           Clase * clase = arrClases[j];
           Inscripcion *inscripcion = new Inscripcion(&fecha, socio, clase->getClase());
           arrClases[j]->agregarInscripto(inscripcion);
-          cout << "Inscripcion realizada con exito" << endl;
+          std::cout << "Inscripcion realizada con exito" << endl;
           return;
         }
       }
@@ -123,7 +123,43 @@ usuario para esa clase, se levanta una excepción std::invalid_argument.*/
 
 /*E) Retorna un arreglo con los socios que están inscriptos a determinada clase. El largo
 del arreglo de socios deberá ser cargado en el parámetro cantSocios.*/
-// DtSocio **obtenerInfoSociosPorClase(id idClase, int &cantSocios){}
+DtSocio **obtenerInfoSociosPorClase (int idClase, int &cantSocios) {
+  // int &cantSocios es un parametro de salida, se pasa por referencia para que la funcion pueda modificarlo
+  cantSocios = 0;
+  
+  // Se busca la clase que coincide con idClase
+  Clase* claseEncontrada = nullptr;
+  for (int i = 0; i < clasesActuales; i++) {
+    if (arrClases[i]->getClase()->getId() == idClase) {
+      claseEncontrada = arrClases[i];
+      break;
+    }
+  }
+
+  // Si no se encuentra la clase: 
+  if (claseEncontrada == nullptr) {
+    throw invalid_argument("No se encontro una clase con el ID proporcionado");
+  }
+
+  // Se obtiene la lista de inscriptos de la clase
+  Inscripcion** inscripciones = claseEncontrada->getInscriptos();
+  int maxInscriptos = claseEncontrada->getMaxInscriptos();
+
+  // Creamos un arreglo dinamico para almacenar los data types de los socios
+  DtSocio** dtSocios = new DtSocio*[maxInscriptos];
+
+  // Se recorren las inscripciones y se crean los DtSocio correspondientes
+  for (int i = 0; i < maxInscriptos; i++) {
+    if (inscripciones[i] != nullptr) {
+      Socio* socio = inscripciones[i]->getSocio();
+      dtSocios[cantSocios]= new DtSocio(socio->getCi(), socio->getNombre());
+      cantSocios++;
+    }
+  }
+
+  return dtSocios;
+
+}
 
 /*F) Retorna la información de la clase identificada por idClase. */
 // DtClase obtenerClase(int idClase) {}
@@ -181,6 +217,31 @@ void menu()
       }
 
       break;
+    
+      
+    case 5: {
+      system("clear");
+      cout << "----- LISTAR INFO DE SOCIOS POR CLASE -----" << endl;
+      cout << "Ingrese el ID de la clase: ";
+      int idClase;
+      std::cin >> idClase;
+  
+      try {
+          int cantSocios;
+          DtSocio **socios = obtenerInfoSociosPorClase(idClase, cantSocios);
+  
+          cout << "Socios inscritos en la clase " << idClase << ":" << endl;
+          for (int i = 0; i < cantSocios; i++) {
+              cout << "- CI: " << socios[i]->getCi() << ", Nombre: " << socios[i]->getNombre() << endl;
+              delete socios[i]; // Liberar memoria de cada DtSocio
+          }
+          delete[] socios; // Liberar memoria del arreglo
+      } catch (invalid_argument &ex) {
+          cout << "Error: " << ex.what() << endl;
+      }
+  
+      break;
+  } 
 
     case 7:
       salir = true;
