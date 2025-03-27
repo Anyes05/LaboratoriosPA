@@ -31,3 +31,7 @@ int Clase::cupo() {
     }
     return cuposLibres;
 }
+
+Inscripcion** Clase::getInscriptos() {
+    return this->inscriptos;
+}

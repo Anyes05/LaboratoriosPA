@@ -15,7 +15,7 @@ private:
     Turno turno;
 public:
     DtClase(int, string, Turno);
-    ~DtClase();
+    virtual ~DtClase();
     int getId();
     string getNombre();
     Turno getTurno();
