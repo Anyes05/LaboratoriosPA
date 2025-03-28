@@ -11,8 +11,10 @@ class Entrenamiento : public Clase {
         Entrenamiento(DtEntrenamiento*);
         bool getEnRambla();
         int getMaxInscriptos();
+        int cupo();
     private:
         DtEntrenamiento* dtEntrenamiento;
+        bool enRambla;
 };
 
 

@@ -20,12 +20,13 @@ public:
     DtClase *getClase();
     string getNombre();
     void agregarInscripto(Inscripcion *inscripcion);
-    int cupo();
+    virtual int cupo() = 0;
     Inscripcion** getInscriptos();
     virtual int getMaxInscriptos() = 0;
 protected:
     // Arreglo que contiene punteros a las posibles incripciones a esta clase
     Inscripcion **inscriptos;
+    int cantInscriptos;
 private:
     DtClase *clase;
 };
