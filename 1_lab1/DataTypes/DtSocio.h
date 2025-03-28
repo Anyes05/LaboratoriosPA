@@ -5,10 +5,10 @@ using namespace std;
 class DtSocio
 {
     private:
-        int CI;
+        string CI;
         string nombre;
     public:
-        DtSocio(int, string);
+        DtSocio(string, string);
         string getCi();
         string getNombre();
         virtual ~DtSocio();        

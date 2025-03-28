@@ -67,7 +67,8 @@ void agregarClase(DtClase clase) {
     Spinning *claseSpinning = new Spinning(&dtSpinning);
     arrClases[clasesActuales] = claseSpinning;
     clasesActuales++;
-  } else if (tipoClase == 2) {
+  } 
+  else if (tipoClase == 2) {
     std::cout << "La clase se realiza en la rambla? (1: Si, 0: No): ";
     bool enRambla;
     std::cin >> enRambla;
@@ -76,7 +77,8 @@ void agregarClase(DtClase clase) {
     Entrenamiento *claseEntrenamiento = new Entrenamiento(&dtEntrenamiento);
     arrClases[clasesActuales] = claseEntrenamiento;
     clasesActuales++;
-  } else {
+  } 
+  else {
     std::cout << "Opcion no valida. Intente de nuevo." << endl;
   }
   
@@ -152,7 +154,7 @@ DtSocio **obtenerInfoSociosPorClase (int idClase, int &cantSocios) {
   for (int i = 0; i < maxInscriptos; i++) {
     if (inscripciones[i] != nullptr) {
       Socio* socio = inscripciones[i]->getSocio();
-      dtSocios[cantSocios]= new DtSocio(socio->getCi(), socio->getNombre());
+      dtSocios[cantSocios] = new DtSocio(socio->getCi(), socio->getNombre());
       cantSocios++;
     }
   }

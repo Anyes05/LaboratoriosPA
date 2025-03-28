@@ -1,7 +1,7 @@
 #include "Socio.h"
 #include <iostream>
 
-Socio::Socio( string c, string n){
+Socio::Socio(string c, string n){
     this->ci = c;
     this->nombre = n;
     
