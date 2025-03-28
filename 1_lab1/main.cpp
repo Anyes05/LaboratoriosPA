@@ -62,6 +62,9 @@ void agregarClase(DtClase clase) {
     std::cout << "Ingrese la cantidad de bicicletas: ";
     int cantBicicletas;
     std::cin >> cantBicicletas;
+    if (cantBicicletas <= 0 || cantBicicletas > 50) {
+      throw invalid_argument("La cantidad de bicicletas debe ser mayor a 0");
+    }	
     DtSpinning dtSpinning(clase.getId(), clase.getNombre(), clase.getTurno(), cantBicicletas);
     DtSpinning *dtSpinning = dynamic_cast<DtSpinning*>(&clase);
     Spinning *claseSpinning = new Spinning(&dtSpinning);
