@@ -13,6 +13,11 @@ public:
     DtEntrenamiento(int, string, Turno, bool);
     ~DtEntrenamiento();
     bool getEnRambla();
+    void print(ostream &out) const override
+    {
+        DtClase::print(out);
+        out << "\nEn Rambla: " << (enRambla ? "Sí" : "No") << endl;
+    }
 };
 
 #endif

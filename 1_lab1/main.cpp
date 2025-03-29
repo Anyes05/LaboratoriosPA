@@ -266,5 +266,12 @@ int main()
 {
   menu();
 
+  //datos para probar la sobrecragra dek operador
+  DtSpinning spinning(1, "Spinning Avanzado", Turno::Manana, 30);
+  DtEntrenamiento entrenamiento(2, "Entrenamiento Funcional", Turno::Tarde, true);
+
+  cout << spinning << endl;
+  cout << entrenamiento << endl;
+
   return 0;
 }

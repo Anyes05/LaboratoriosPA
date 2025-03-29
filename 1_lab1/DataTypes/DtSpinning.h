@@ -12,8 +12,15 @@ private:
 public:
     DtSpinning(int, string, Turno, int);
     ~DtSpinning();
-    
+
     int getCantBicicleta();
+
+    void print(ostream &out) const override 
+    {
+        DtClase::print(out);
+        out << "\nCantidad de bicicletas: " << cantBicicleta << endl;
+
+    }
 };
 
 #endif
