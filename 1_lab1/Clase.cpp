@@ -3,33 +3,45 @@ using namespace std;
 
 Clase::~Clase(){}
 
-Clase::Clase (DtClase* c) {
-    this->clase = c;
-}
-
-DtClase * Clase::getClase () {
-    return this->clase;
+Clase::Clase (int id, string nombre, Turno t) {
+    this->ID = id;
+    this->nombre = nombre;
+    this->turno = t;
+    this->cantInscriptos = 0;
+    this->inscriptos = new Inscripcion*[MAX_SOCIOS] { NULL };
 }
 
 std::string Clase::getNombre() {
-    return this->clase->getNombre();
+    return this->nombre;
+}
+
+int Clase::getID() {
+    return this->ID;
+}
+
+Turno Clase::getTurno() {
+    return this->turno;
+}
+
+void Clase::setID(int id) {
+    this->ID = id;
+}
+
+void Clase::setNombre(string nombre) {
+    this->nombre = nombre;
+}
+
+void Clase::setTurno(Turno t) {
+    this->turno = t;
 }
 
 void Clase::agregarInscripto(Inscripcion* inscripcion) {
-    for (int i = 0; i < getMaxInscriptos(); i++) { 
+    for (int i = 0; i < cantInscriptos; i++) { 
         if (this->inscriptos[i] == NULL){
             this->inscriptos[i] = inscripcion;
             return;
         }
     }
-}
-
-int Clase::cupo() {
-    int cuposLibres = 0;
-    for (int i = 0; i < getMaxInscriptos(); i++) { 
-        cuposLibres += this->inscriptos[i] == NULL ? 1 : 0;
-    }
-    return cuposLibres;
 }
 
 Inscripcion** Clase::getInscriptos() {

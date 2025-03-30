@@ -1,12 +1,17 @@
 #include "Entrenamiento.h"
 
-Entrenamiento::Entrenamiento(DtEntrenamiento*dt) : Clase(dt){
-    this->dtEntrenamiento = dt;
-    this->inscriptos = new Inscripcion*[getMaxInscriptos()] { NULL };
+Entrenamiento::Entrenamiento(int ID, string nombre, Turno turno, bool enRambla) : Clase(ID, nombre, turno) {
+    this->enRambla = enRambla;
+    this->cantInscriptos = 0;
+    this->inscriptos = new Inscripcion*[cupo()] { NULL };
 }
 
-int Entrenamiento::getMaxInscriptos(){
-    return this->dtEntrenamiento->getEnRambla() ? 20 : 10;
+bool Entrenamiento::getEnRambla(){
+    return this->enRambla;
+}
+
+void Entrenamiento::setEnRambla(bool enRambla){
+    this->enRambla = enRambla;
 }
 
 int Entrenamiento::cupo(){

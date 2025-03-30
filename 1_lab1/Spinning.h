@@ -6,11 +6,12 @@
 
 class Spinning : public Clase {
     public:
-        Spinning (DtSpinning*);
+        Spinning (int, string, Turno, int);
         int getCantidadBicicletas();
-        int getMaxInscriptos();
+        void setCantidadBicicletas(int);
+        int cupo();
     private:
-        DtSpinning* dtSpinning;
+        int cantBicicletas;
 };
 
 #endif

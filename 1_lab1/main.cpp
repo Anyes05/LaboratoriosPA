@@ -45,64 +45,50 @@ void agregarSocio(string ci, string nombre)
 /*B) Crea una nueva clase en el sistema. En caso de ya existir, levanta una excepción
 std::invalid_argument.*/
 void agregarClase(DtClase clase) { 
-  
-  for (int i = 0; i < MAX_CLASES; i++) {
-    if (arrClases[i]->getClase()->getId() == clase.getId() ) // comparar ID de clase para ver si ya existe
-      throw invalid_argument("Ya existe una clase con este ID");
-  }
-
-  //Preguntamos que tipo de clase desea crear
-  std::cout << "Ingrese el tipo de clase que desea crear: " << endl;
-  std::cout << "1. Spinning" << endl;
-  std::cout << "2. Entrenamiento" << endl;
+  cout << "Que tipo de clase desea agregar?" << endl;
+  cout << "1. Spinning" << endl;
+  cout << "2. Entrenamiento" << endl;
   int tipoClase;
-  std::cin >> tipoClase;
-
-  if (tipoClase == 1) { 
-    std::cout << "Ingrese la cantidad de bicicletas: ";
-    int cantBicicletas;
-    std::cin >> cantBicicletas;
-    if (cantBicicletas <= 0 || cantBicicletas > 50) {
-      throw invalid_argument("La cantidad de bicicletas debe ser mayor a 0");
-    }	
-    DtSpinning dtSpinning(clase.getId(), clase.getNombre(), clase.getTurno(), cantBicicletas);
-    DtSpinning *dtSpinning = dynamic_cast<DtSpinning*>(&clase);
-    Spinning *claseSpinning = new Spinning(&dtSpinning);
-    arrClases[clasesActuales] = claseSpinning;
-    clasesActuales++;
-  } 
-  else if (tipoClase == 2) {
-    std::cout << "La clase se realiza en la rambla? (1: Si, 0: No): ";
-    bool enRambla;
-    std::cin >> enRambla;
-    DtEntrenamiento dtEntrenamiento(clase.getId(), clase.getNombre(), clase.getTurno(), enRambla);
-    DtEntrenamiento *dtEntrenamiento = dynamic_cast<DtEntrenamiento*>(&clase);
-    Entrenamiento *claseEntrenamiento = new Entrenamiento(&dtEntrenamiento);
-    arrClases[clasesActuales] = claseEntrenamiento;
-    clasesActuales++;
-  } 
-  else {
-    std::cout << "Opcion no valida. Intente de nuevo." << endl;
+  cin >> tipoClase;
+  cin.ignore(); // Limpiar el buffer de entrada
+  if (tipoClase < 1 || tipoClase > 2) {
+    cout << "Opcion no valida" << endl;
+    return;
   }
-  
-  std::cout << "Clase creada con exito" << endl;
-}
+  if (tipoClase == 1) {
+    int cantBicicletas;
+    cout << "Ingrese la cantidad de bicicletas: ";
+    cin >> cantBicicletas;
+    if (cantBicicletas <= 1 || cantBicicletas > 50) {
+      cout << "La cantidad de bicicletas debe ser entre 1 y 50" << endl;
+      return;
+    }
+    arrClases[clasesActuales] = new Spinning(clase.getId(), clase.getNombre(), clase.getTurno(), cantBicicletas);
+  } else {
+    bool enRambla;
+    cout << "La clase es en rambla? (1: Si, 0: No): ";
+    cin >> enRambla;
+    arrClases[clasesActuales] = new Entrenamiento(clase.getId(), clase.getNombre(), clase.getTurno(), enRambla);
+  }
+  clasesActuales++;
+  cout << "Clase agregada con exito!" << endl;
 
+}
 /*C) Crea una inscripción de un socio a una clase. La inscripción tiene lugar siempre y
 cuando el socio y la clase existan, de lo contrario se levanta una excepción
 std::invalid_argument. Si ya existe una inscripción de ese usuario para esa clase, o si
 el cupo de esa clase ya fue alcanzado, también se levanta una excepción
 std::invalid_argument. */
 void agregarInscripcion(string ciSocio, int idClase, Fecha fecha){
-  for (int i = 0; i < sociosActuales; i++) {
+  for (int i = 0; i < sociosActuales; i++) {    // Chequeo si existe el socio
     if (arrSocios[i]->getCi() == ciSocio) {
-      for (int j = 0; j < clasesActuales; j++) {
-        if (arrClases[j]->getClase()->getId() == idClase) {
+      for (int j = 0; j < clasesActuales; j++) {  // Si el socio existe, chequeo si existe la clase y si tiene cupos libres.
+        if (arrClases[j]->getID() == idClase) {
           if (arrClases[j]->cupo() <= 0) {
             throw invalid_argument("No hay cupos libres");
           }
-          if (arrClases[j]->getClase()->getId() == idClase) {
-            for (int k = 0; k < arrClases[j]->getMaxInscriptos(); k++) {
+          if (arrClases[j]->getID() == idClase) {   // Si tiene cupo, chequeo si ya existe una inscripcion para ese socio.
+            for (int k = 0; k < arrClases[j]->cantInscriptos; k++) {
               if (arrClases[j]->getInscriptos()[k]->getSocio()->getCi() == ciSocio) {
                 throw invalid_argument("Ya existe una inscripcion de este usuario para esta clase");
               }
@@ -110,8 +96,9 @@ void agregarInscripcion(string ciSocio, int idClase, Fecha fecha){
           }
           Socio * socio = arrSocios[i];
           Clase * clase = arrClases[j];
-          Inscripcion *inscripcion = new Inscripcion(&fecha, socio, clase->getClase());
+          Inscripcion *inscripcion = new Inscripcion(&fecha, socio, clase);
           arrClases[j]->agregarInscripto(inscripcion);
+          arrClases[j]->cantInscriptos++;
           std::cout << "Inscripcion realizada con exito" << endl;
           return;
         }
@@ -135,7 +122,7 @@ DtSocio **obtenerInfoSociosPorClase (int idClase, int &cantSocios) {
   // Se busca la clase que coincide con idClase
   Clase* claseEncontrada = nullptr;
   for (int i = 0; i < clasesActuales; i++) {
-    if (arrClases[i]->getClase()->getId() == idClase) {
+    if (arrClases[i]->getID() == idClase) {
       claseEncontrada = arrClases[i];
       break;
     }
@@ -148,7 +135,7 @@ DtSocio **obtenerInfoSociosPorClase (int idClase, int &cantSocios) {
 
   // Se obtiene la lista de inscriptos de la clase
   Inscripcion** inscripciones = claseEncontrada->getInscriptos();
-  int maxInscriptos = claseEncontrada->getMaxInscriptos();
+  int maxInscriptos = claseEncontrada->cantInscriptos;
 
   // Creamos un arreglo dinamico para almacenar los data types de los socios
   DtSocio** dtSocios = new DtSocio*[maxInscriptos];
@@ -222,8 +209,64 @@ void menu()
       }
 
       break;
-    
-      
+    case 2:
+      system("clear");
+      cout << "----- AGREGAR CLASE -----" << endl;
+      cout << "ID: ";
+      int idClase;
+      cin >> idClase;
+      cin.ignore(); 
+
+      cout << "NOMBRE: ";
+      getline(cin, nombre);
+
+      cout << "TURNO (1: Manana, 2: Tarde, 3: Noche): ";
+      int turnoInt;
+      cin >> turnoInt;
+      Turno turno = static_cast<Turno>(turnoInt - 1); // Convertir a enum
+
+      for (int i = 0; i < clasesActuales; i++) {
+        if(arrClases[i]->getID() == idClase) {
+          throw invalid_argument("Ya existe una clase con este ID");
+      }
+
+      try
+      {
+        DtClase dtClase(idClase, nombre, turno);
+        agregarClase(dtClase);
+      }
+      catch (invalid_argument &ex)
+      {
+        cout << "Error: " << ex.what() << endl; // devuelve un mensaje explicativo de la excepción (dentro de la funcion agregarClase)
+      }
+    }
+      break;
+    case 3:
+      system("clear");
+      cout << "----- AGREGAR INSCRIPCION -----" << endl;
+      cout << "CI del socio: ";
+      cin >> ci;
+      cin.ignore(); 
+
+      cout << "ID de la clase: ";
+      cin >> idClase;
+      cin.ignore(); 
+
+      cout << "Fecha (DD/MM/AAAA): ";
+      int dia, mes, anio;
+      char separador;
+      cin >> dia >> separador >> mes >> separador >> anio;
+      Fecha fecha(dia, mes, anio); 
+
+      try
+      {
+        agregarInscripcion(ci, idClase, fecha);
+      }
+      catch (invalid_argument &ex)
+      {
+        cout << "Error: " << ex.what() << endl; // devuelve un mensaje explicativo de la excepción (dentro de la funcion agregarInscripcion)
+      }
+      break;
     case 5: {
       system("clear");
       cout << "----- LISTAR INFO DE SOCIOS POR CLASE -----" << endl;
@@ -261,6 +304,7 @@ void menu()
     cin.ignore(); // Esperar a que el usuario presione ENTER
   } while (!salir);
 }
+
 
 int main()
 {

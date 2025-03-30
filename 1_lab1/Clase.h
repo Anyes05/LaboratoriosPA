@@ -15,20 +15,25 @@ class Inscripcion;
 class Clase
 {
 public:
-    Clase(DtClase *);
+    Clase(int, string, Turno);
     ~Clase();
-    DtClase *getClase();
+    int getID();
+    Turno getTurno();
     string getNombre();
+    void setID(int id);
+    void setNombre(string nombre);
+    void setTurno(Turno turno);
     void agregarInscripto(Inscripcion *inscripcion);
     virtual int cupo() = 0;
     Inscripcion** getInscriptos();
-    virtual int getMaxInscriptos() = 0;
+    int cantInscriptos;
 protected:
     // Arreglo que contiene punteros a las posibles incripciones a esta clase
     Inscripcion **inscriptos;
-    int cantInscriptos;
 private:
-    DtClase *clase;
+    int ID;
+    string nombre;
+    Turno turno;
 };
 
 #endif

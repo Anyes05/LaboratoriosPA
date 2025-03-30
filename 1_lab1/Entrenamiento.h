@@ -8,12 +8,11 @@
 
 class Entrenamiento : public Clase {
     public:
-        Entrenamiento(DtEntrenamiento*);
+        Entrenamiento(int, string, Turno, bool);
         bool getEnRambla();
-        int getMaxInscriptos();
+        void setEnRambla(bool);
         int cupo();
     private:
-        DtEntrenamiento* dtEntrenamiento;
         bool enRambla;
 };
 

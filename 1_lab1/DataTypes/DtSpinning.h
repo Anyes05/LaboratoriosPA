@@ -7,18 +7,17 @@ using namespace std;
 class DtSpinning : public DtClase
 {
 private:
-    int cantBicicleta;
-
+    int cantBicicletas;
 public:
     DtSpinning(int, string, Turno, int);
     ~DtSpinning();
-
     int getCantBicicleta();
+    void setCantBicicleta(int cantBicicletas);
 
     void print(ostream &out) const override 
     {
         DtClase::print(out);
-        out << "\nCantidad de bicicletas: " << cantBicicleta << endl;
+        out << "\nCantidad de bicicletas: " << cantBicicletas << endl;
 
     }
 };

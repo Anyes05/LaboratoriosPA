@@ -1,14 +1,19 @@
 #include "Spinning.h"
 
-Spinning::Spinning(DtSpinning*dt) : Clase(dt){
-    this->dtSpinning = dt;
-    this->inscriptos = new Inscripcion*[getMaxInscriptos()] { NULL };
-}
-
-int Spinning::getMaxInscriptos() {
-    return this->dtSpinning->getCantBicicleta();
+Spinning::Spinning(int ID, string nombre, Turno turno, int cantBicicletas) : Clase(ID, nombre, turno) {
+    this->cantBicicletas = cantBicicletas;
+    this->cantInscriptos = 0;
+    this->inscriptos = new Inscripcion*[cantBicicletas] { NULL };
 }
 
 int Spinning::getCantidadBicicletas(){
-    return this->dtSpinning->getCantBicicleta();
+    return this->cantBicicletas;
+}
+
+void Spinning::setCantidadBicicletas(int cantBicicletas){
+    this->cantBicicletas = cantBicicletas;
+}
+
+int Spinning::cupo(){
+    return this->cantBicicletas - this->cantInscriptos;
 }

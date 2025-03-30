@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Inscripcion::Inscripcion(Fecha *f, Socio *s, DtClase *c)
+Inscripcion::Inscripcion(Fecha *f, Socio *s, Clase *c)
 {
     this->fecha = f;
     this->socio = s;
@@ -15,7 +15,7 @@ Socio *Inscripcion::getSocio()
     return this->socio;
 }
 
-DtClase *Inscripcion::getClase()
+Clase *Inscripcion::getClase()
 {
     return this->clase;
 }
@@ -25,6 +25,10 @@ Fecha *Inscripcion::getFecha()
     return this->fecha;
 }
 
+void Inscripcion::setClase(Clase *c)
+{
+    this->clase = c;
+}
 void Inscripcion::setFecha(Fecha *f)
 {
     this->fecha = f;
@@ -40,7 +44,7 @@ void Inscripcion::mostrarInscripcion()
     cout << "Fecha de inscripción: " << fecha->getDia() << "/"
          << fecha->getMes() << "/" << fecha->getAnio() << endl;
     cout << "Socio: " << socio->getNombre() << " (CI: " << socio->getCi() << ")" << endl;
-    cout << "Clase: " << clase->getNombre() << " (ID: " << clase->getId() << ")" << endl; 
+    cout << "Clase: " << clase->getNombre() << " (ID: " << clase->getID() << ")" << endl; 
 }
 
 // Destructor
