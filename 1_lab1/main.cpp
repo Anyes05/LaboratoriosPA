@@ -111,7 +111,46 @@ void agregarInscripcion(string ciSocio, int idClase, Fecha fecha){
 
 /* D) Borra la inscripción de un socio a una clase. Si no existe una inscripción de ese
 usuario para esa clase, se levanta una excepción std::invalid_argument.*/
-// void borrarInscripcion(string ciSocio, int idClase){}
+void borrarInscripcion(string ciSocio, int idClase){
+
+  //Buacar la clase:
+    Clase* clase = nullptr;
+    for (int i = 0; i < clasesActuales; i++) {
+        if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase) {
+            clase = arrClases[i];
+            break;
+        }
+    }
+    //Si no se encontró:
+    if (clase == nullptr) {
+        throw invalid_argument("No existe una clase con ese ID ");
+    }
+
+    //Buscar al socio y si se encuentra, eliminar la inscripción:
+    bool encontrado = false;
+    for (int i = 0; i < clase->cantInscriptos; i++) {
+        if (clase->getInscriptos()[i] != nullptr && clase->getInscriptos()[i]->getSocio()->getCi() == ciSocio) {
+            delete clase->getInscriptos()[i]; // Liberar memoria
+            clase->getInscriptos()[i] = nullptr; // Eliminar la inscripción
+            
+            // Reorganizar las inscripciones desplazando los elementos
+            for (int aux = i; aux < clase->cantInscriptos - 1; aux++) {
+              clase->getInscriptos()[aux] = clase->getInscriptos()[aux + 1]; // Mover al anterior
+          }
+
+          // Reducir la cantidad de inscriptos y limpiar la última posición
+          clase->cantInscriptos--;
+          clase->getInscriptos()[clase->cantInscriptos] = nullptr;
+            encontrado = true;
+            cout << "Inscripción eliminada con éxito." << endl;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        throw invalid_argument("No existe una inscripción del socio en la clase");
+    }
+}
 
 /*E) Retorna un arreglo con los socios que están inscriptos a determinada clase. El largo
 del arreglo de socios deberá ser cargado en el parámetro cantSocios.*/
@@ -267,6 +306,29 @@ void menu()
         cout << "Error: " << ex.what() << endl; // devuelve un mensaje explicativo de la excepción (dentro de la funcion agregarInscripcion)
       }
       break;
+
+      case 4: {
+
+        system("clear");
+        cout << "----- BORRAR INSCRIPCIÓN -----" << endl;
+        string ciSocio;
+        int idClase;
+  
+        cout << "Ingrese CI del socio: ";
+        getline(cin, ciSocio);
+        cout << "Ingrese ID de la clase: ";
+        cin >> idClase;
+        cin.ignore(); 
+  
+        try {
+          borrarInscripcion(ciSocio, idClase);
+          cout << "La inscripción fue eliminada correctamente." << endl;
+        } catch (invalid_argument &ex) {
+          cout << "Error: " << ex.what() << endl;
+        }
+  
+        break;
+      }
     case 5: {
       system("clear");
       cout << "----- LISTAR INFO DE SOCIOS POR CLASE -----" << endl;
