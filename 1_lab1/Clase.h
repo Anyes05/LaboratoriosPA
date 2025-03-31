@@ -27,6 +27,9 @@ public:
     virtual int cupo() = 0;
     Inscripcion** getInscriptos();
     int cantInscriptos;
+
+    virtual DtClase getInfo() const = 0;
+
 protected:
     // Arreglo que contiene punteros a las posibles incripciones a esta clase
     Inscripcion **inscriptos;

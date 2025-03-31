@@ -10,6 +10,11 @@ class Spinning : public Clase {
         int getCantidadBicicletas();
         void setCantidadBicicletas(int);
         int cupo();
+
+        DtClase getInfo(){
+            return DtSpinning(getID(), getNombre(), getTurno(), cantBicicletas);
+        }
+
     private:
         int cantBicicletas;
 };

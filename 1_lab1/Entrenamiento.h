@@ -12,6 +12,11 @@ class Entrenamiento : public Clase {
         bool getEnRambla();
         void setEnRambla(bool);
         int cupo();
+
+        DtClase getInfo(){
+            return DtEntrenamiento(getID(), getNombre(), getTurno(), enRambla);
+        }
+
     private:
         bool enRambla;
 };

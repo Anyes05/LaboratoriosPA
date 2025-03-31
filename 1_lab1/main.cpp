@@ -193,7 +193,15 @@ DtSocio **obtenerInfoSociosPorClase (int idClase, int &cantSocios) {
 }
 
 /*F) Retorna la información de la clase identificada por idClase. */
-// DtClase obtenerClase(int idClase) {}
+DtClase obtenerClase(int idClase) {
+  for (int i = 0; i < MAX_CLASES; i++) {
+      if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase) {
+        return arrClases[i]->getInfo();
+      }
+  }
+  throw invalid_argument("No se encontró una clase con ese id");
+}
+
 
 /*------MENU-----*/
 
@@ -352,6 +360,22 @@ void menu()
   
       break;
   } 
+
+    case 6:
+      int idClase;
+      cout<<"----- LISTAR INFO CLASE -----"<<endl;
+      cout<<"Ingrese id de la clase: ";
+      cin>>idClase;
+
+      try{
+        
+        DtClase clase = obtenerClase(idClase);
+        cout << clase;
+
+      }catch(invalid_argument &ex){
+        cout<<"Error: "<<ex.what()<<endl;
+      }
+      break;
 
     case 7:
       salir = true;
