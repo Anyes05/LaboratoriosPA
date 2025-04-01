@@ -20,3 +20,8 @@ int Entrenamiento::cupo(){
     else
         return 10 - this->cantInscriptos;
 }
+
+
+DtClase Entrenamiento::getInfo(){
+    return DtEntrenamiento(getID(), getNombre(), getTurno(), enRambla);
+}

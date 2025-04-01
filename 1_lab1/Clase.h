@@ -24,12 +24,10 @@ public:
     void setNombre(string nombre);
     void setTurno(Turno turno);
     void agregarInscripto(Inscripcion *inscripcion);
-    virtual int cupo() = 0;
     Inscripcion** getInscriptos();
     int cantInscriptos;
-
-    virtual DtClase getInfo() const = 0;
-
+    virtual int cupo() = 0;
+    virtual DtClase getInfo() = 0;
 protected:
     // Arreglo que contiene punteros a las posibles incripciones a esta clase
     Inscripcion **inscriptos;

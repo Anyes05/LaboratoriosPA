@@ -8,7 +8,9 @@ using namespace std;
 #include "DataTypes/Fecha.h"
 #include "Socio.h"
 
-class DtClase;
+class Clase;
+class Socio;
+class Fecha;
 
 class Inscripcion {
 

@@ -22,6 +22,20 @@ int clasesActuales = 0;
 Socio *arrSocios[MAX_SOCIOS];
 Clase *arrClases[MAX_CLASES];
 
+/*----- FUNCIONES AUXILIARES -----*/
+
+bool existeClaseConID(int idClase)
+{
+  for (int i = 0; i < clasesActuales; i++)
+  {
+    if (arrClases[i]->getID() == idClase)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 /*----- FUNCIONES PRINCIPALES -----*/
 
 /* A) Crea un nuevo socio en el sistema. En caso de ya existir, levanta la excepción
@@ -44,27 +58,41 @@ void agregarSocio(string ci, string nombre)
 
 /*B) Crea una nueva clase en el sistema. En caso de ya existir, levanta una excepción
 std::invalid_argument.*/
-void agregarClase(DtClase clase) { 
+void agregarClase(DtClase clase)
+{
   cout << "Que tipo de clase desea agregar?" << endl;
   cout << "1. Spinning" << endl;
   cout << "2. Entrenamiento" << endl;
   int tipoClase;
   cin >> tipoClase;
   cin.ignore(); // Limpiar el buffer de entrada
-  if (tipoClase < 1 || tipoClase > 2) {
+
+  if (tipoClase < 1 || tipoClase > 2)
+  {
     cout << "Opcion no valida" << endl;
     return;
   }
-  if (tipoClase == 1) {
+
+  // Verificar si ya existe una clase con el mismo ID
+  if (existeClaseConID(clase.getId()))
+  {
+    throw invalid_argument("Ya existe una clase con este ID");
+  }
+
+  if (tipoClase == 1)
+  {
     int cantBicicletas;
     cout << "Ingrese la cantidad de bicicletas: ";
     cin >> cantBicicletas;
-    if (cantBicicletas <= 1 || cantBicicletas > 50) {
+    if (cantBicicletas <= 1 || cantBicicletas > 50)
+    {
       cout << "La cantidad de bicicletas debe ser entre 1 y 50" << endl;
       return;
     }
     arrClases[clasesActuales] = new Spinning(clase.getId(), clase.getNombre(), clase.getTurno(), cantBicicletas);
-  } else {
+  }
+  else
+  {
     bool enRambla;
     cout << "La clase es en rambla? (1: Si, 0: No): ";
     cin >> enRambla;
@@ -73,29 +101,39 @@ void agregarClase(DtClase clase) {
   clasesActuales++;
   cout << "Clase agregada con exito!" << endl;
 
+  
 }
 /*C) Crea una inscripción de un socio a una clase. La inscripción tiene lugar siempre y
 cuando el socio y la clase existan, de lo contrario se levanta una excepción
 std::invalid_argument. Si ya existe una inscripción de ese usuario para esa clase, o si
 el cupo de esa clase ya fue alcanzado, también se levanta una excepción
 std::invalid_argument. */
-void agregarInscripcion(string ciSocio, int idClase, Fecha fecha){
-  for (int i = 0; i < sociosActuales; i++) {    // Chequeo si existe el socio
-    if (arrSocios[i]->getCi() == ciSocio) {
-      for (int j = 0; j < clasesActuales; j++) {  // Si el socio existe, chequeo si existe la clase y si tiene cupos libres.
-        if (arrClases[j]->getID() == idClase) {
-          if (arrClases[j]->cupo() <= 0) {
+void agregarInscripcion(string ciSocio, int idClase, Fecha fecha)
+{
+  for (int i = 0; i < sociosActuales; i++)
+  { // Chequeo si existe el socio
+    if (arrSocios[i]->getCi() == ciSocio)
+    {
+      for (int j = 0; j < clasesActuales; j++)
+      { // Si el socio existe, chequeo si existe la clase y si tiene cupos libres.
+        if (arrClases[j]->getID() == idClase)
+        {
+          if (arrClases[j]->cupo() <= 0)
+          {
             throw invalid_argument("No hay cupos libres");
           }
-          if (arrClases[j]->getID() == idClase) {   // Si tiene cupo, chequeo si ya existe una inscripcion para ese socio.
-            for (int k = 0; k < arrClases[j]->cantInscriptos; k++) {
-              if (arrClases[j]->getInscriptos()[k]->getSocio()->getCi() == ciSocio) {
+          if (arrClases[j]->getID() == idClase)
+          { // Si tiene cupo, chequeo si ya existe una inscripcion para ese socio.
+            for (int k = 0; k < arrClases[j]->cantInscriptos; k++)
+            {
+              if (arrClases[j]->getInscriptos()[k]->getSocio()->getCi() == ciSocio)
+              {
                 throw invalid_argument("Ya existe una inscripcion de este usuario para esta clase");
               }
             }
           }
-          Socio * socio = arrSocios[i];
-          Clase * clase = arrClases[j];
+          Socio *socio = arrSocios[i];
+          Clase *clase = arrClases[j];
           Inscripcion *inscripcion = new Inscripcion(&fecha, socio, clase);
           arrClases[j]->agregarInscripto(inscripcion);
           arrClases[j]->cantInscriptos++;
@@ -108,100 +146,114 @@ void agregarInscripcion(string ciSocio, int idClase, Fecha fecha){
   throw invalid_argument("No se encontro el socio o la clase");
 }
 
-
 /* D) Borra la inscripción de un socio a una clase. Si no existe una inscripción de ese
 usuario para esa clase, se levanta una excepción std::invalid_argument.*/
-void borrarInscripcion(string ciSocio, int idClase){
+void borrarInscripcion(string ciSocio, int idClase)
+{
 
-  //Buacar la clase:
-    Clase* clase = nullptr;
-    for (int i = 0; i < clasesActuales; i++) {
-        if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase) {
-            clase = arrClases[i];
-            break;
-        }
+  // Buacar la clase:
+  Clase *clase = nullptr;
+  for (int i = 0; i < clasesActuales; i++)
+  {
+    if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase)
+    {
+      clase = arrClases[i];
+      break;
     }
-    //Si no se encontró:
-    if (clase == nullptr) {
-        throw invalid_argument("No existe una clase con ese ID ");
-    }
+  }
+  // Si no se encontró:
+  if (clase == nullptr)
+  {
+    throw invalid_argument("No existe una clase con ese ID ");
+  }
 
-    //Buscar al socio y si se encuentra, eliminar la inscripción:
-    bool encontrado = false;
-    for (int i = 0; i < clase->cantInscriptos; i++) {
-        if (clase->getInscriptos()[i] != nullptr && clase->getInscriptos()[i]->getSocio()->getCi() == ciSocio) {
-            delete clase->getInscriptos()[i]; // Liberar memoria
-            clase->getInscriptos()[i] = nullptr; // Eliminar la inscripción
-            
-            // Reorganizar las inscripciones desplazando los elementos
-            for (int aux = i; aux < clase->cantInscriptos - 1; aux++) {
-              clase->getInscriptos()[aux] = clase->getInscriptos()[aux + 1]; // Mover al anterior
-          }
+  // Buscar al socio y si se encuentra, eliminar la inscripción:
+  bool encontrado = false;
+  for (int i = 0; i < clase->cantInscriptos; i++)
+  {
+    if (clase->getInscriptos()[i] != nullptr && clase->getInscriptos()[i]->getSocio()->getCi() == ciSocio)
+    {
+      delete clase->getInscriptos()[i];    // Liberar memoria
+      clase->getInscriptos()[i] = nullptr; // Eliminar la inscripción
 
-          // Reducir la cantidad de inscriptos y limpiar la última posición
-          clase->cantInscriptos--;
-          clase->getInscriptos()[clase->cantInscriptos] = nullptr;
-            encontrado = true;
-            cout << "Inscripción eliminada con éxito." << endl;
-            break;
-        }
-    }
+      // Reorganizar las inscripciones desplazando los elementos
+      for (int aux = i; aux < clase->cantInscriptos - 1; aux++)
+      {
+        clase->getInscriptos()[aux] = clase->getInscriptos()[aux + 1]; // Mover al anterior
+      }
 
-    if (!encontrado) {
-        throw invalid_argument("No existe una inscripción del socio en la clase");
+      // Reducir la cantidad de inscriptos y limpiar la última posición
+      clase->cantInscriptos--;
+      clase->getInscriptos()[clase->cantInscriptos] = nullptr;
+      encontrado = true;
+      cout << "Inscripción eliminada con éxito." << endl;
+      break;
     }
+  }
+
+  if (!encontrado)
+  {
+    throw invalid_argument("No existe una inscripción del socio en la clase");
+  }
 }
 
 /*E) Retorna un arreglo con los socios que están inscriptos a determinada clase. El largo
 del arreglo de socios deberá ser cargado en el parámetro cantSocios.*/
-DtSocio **obtenerInfoSociosPorClase (int idClase, int &cantSocios) {
+DtSocio **obtenerInfoSociosPorClase(int idClase, int &cantSocios)
+{
   // int &cantSocios es un parametro de salida, se pasa por referencia para que la funcion pueda modificarlo
   cantSocios = 0;
-  
+
   // Se busca la clase que coincide con idClase
-  Clase* claseEncontrada = nullptr;
-  for (int i = 0; i < clasesActuales; i++) {
-    if (arrClases[i]->getID() == idClase) {
+  Clase *claseEncontrada = nullptr;
+  for (int i = 0; i < clasesActuales; i++)
+  {
+    if (arrClases[i]->getID() == idClase)
+    {
       claseEncontrada = arrClases[i];
       break;
     }
   }
 
-  // Si no se encuentra la clase: 
-  if (claseEncontrada == nullptr) {
+  // Si no se encuentra la clase:
+  if (claseEncontrada == nullptr)
+  {
     throw invalid_argument("No se encontro una clase con el ID proporcionado");
   }
 
   // Se obtiene la lista de inscriptos de la clase
-  Inscripcion** inscripciones = claseEncontrada->getInscriptos();
+  Inscripcion **inscripciones = claseEncontrada->getInscriptos();
   int maxInscriptos = claseEncontrada->cantInscriptos;
 
   // Creamos un arreglo dinamico para almacenar los data types de los socios
-  DtSocio** dtSocios = new DtSocio*[maxInscriptos];
+  DtSocio **dtSocios = new DtSocio *[maxInscriptos];
 
   // Se recorren las inscripciones y se crean los DtSocio correspondientes
-  for (int i = 0; i < maxInscriptos; i++) {
-    if (inscripciones[i] != nullptr) {
-      Socio* socio = inscripciones[i]->getSocio();
+  for (int i = 0; i < maxInscriptos; i++)
+  {
+    if (inscripciones[i] != nullptr)
+    {
+      Socio *socio = inscripciones[i]->getSocio();
       dtSocios[cantSocios] = new DtSocio(socio->getCi(), socio->getNombre());
       cantSocios++;
     }
   }
 
   return dtSocios;
-
 }
 
 /*F) Retorna la información de la clase identificada por idClase. */
-DtClase obtenerClase(int idClase) {
-  for (int i = 0; i < MAX_CLASES; i++) {
-      if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase) {
-        return arrClases[i]->getInfo();
-      }
+DtClase obtenerClase(int idClase)
+{
+  for (int i = 0; i < MAX_CLASES; i++)
+  {
+    if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase)
+    {
+      return arrClases[i]->getInfo();
+    }
   }
   throw invalid_argument("No se encontró una clase con ese id");
 }
-
 
 /*------MENU-----*/
 
@@ -225,8 +277,16 @@ void menu()
     cin >> opcion;
     cin.ignore();
 
-    bool socio = false;
+    bool socio = false, clase = false;
     string ci, nombre;
+    Turno turno;
+    int turnoInt;
+    int idClase = NULL;
+    int dia, mes, anio;
+    char separador;
+    string ciSocio;
+    Fecha fecha;
+
     switch (opcion)
     {
     case 1:
@@ -257,24 +317,28 @@ void menu()
 
       break;
     case 2:
-      system("clear");
-      cout << "----- AGREGAR CLASE -----" << endl;
-      cout << "ID: ";
-      int idClase;
-      cin >> idClase;
-      cin.ignore(); 
+      while (!clase)
+      {
+        system("clear");
+        cout << "----- AGREGAR CLASE -----" << endl;
+        cout << "ID: ";
 
-      cout << "NOMBRE: ";
-      getline(cin, nombre);
+        cin >> idClase;
+        cin.ignore();
 
-      cout << "TURNO (1: Manana, 2: Tarde, 3: Noche): ";
-      int turnoInt;
-      cin >> turnoInt;
-      Turno turno = static_cast<Turno>(turnoInt - 1); // Convertir a enum
+        cout << "NOMBRE: ";
+        getline(cin, nombre);
 
-      for (int i = 0; i < clasesActuales; i++) {
-        if(arrClases[i]->getID() == idClase) {
-          throw invalid_argument("Ya existe una clase con este ID");
+        cout << "TURNO (1: Manana, 2: Tarde, 3: Noche): ";
+        cin >> turnoInt;
+        turno = static_cast<Turno>(turnoInt - 1); // Convertir a enum
+
+        if (nombre.empty() || idClase == NULL)
+          cout << "No pueden tener la ID o NOMBRE vacio" << endl;
+        else if (turnoInt < 1 || turnoInt > 3)
+          cout << "Opcion de TURNO no valida" << endl;
+        else
+          clase = true;
       }
 
       try
@@ -286,24 +350,23 @@ void menu()
       {
         cout << "Error: " << ex.what() << endl; // devuelve un mensaje explicativo de la excepción (dentro de la funcion agregarClase)
       }
-    }
+
       break;
     case 3:
       system("clear");
       cout << "----- AGREGAR INSCRIPCION -----" << endl;
       cout << "CI del socio: ";
       cin >> ci;
-      cin.ignore(); 
+      cin.ignore();
 
       cout << "ID de la clase: ";
       cin >> idClase;
-      cin.ignore(); 
+      cin.ignore();
 
       cout << "Fecha (DD/MM/AAAA): ";
-      int dia, mes, anio;
-      char separador;
+
       cin >> dia >> separador >> mes >> separador >> anio;
-      Fecha fecha(dia, mes, anio); 
+      fecha = Fecha(dia, mes, anio);
 
       try
       {
@@ -315,65 +378,73 @@ void menu()
       }
       break;
 
-      case 4: {
+    case 4:
+    {
 
-        system("clear");
-        cout << "----- BORRAR INSCRIPCIÓN -----" << endl;
-        string ciSocio;
-        int idClase;
-  
-        cout << "Ingrese CI del socio: ";
-        getline(cin, ciSocio);
-        cout << "Ingrese ID de la clase: ";
-        cin >> idClase;
-        cin.ignore(); 
-  
-        try {
-          borrarInscripcion(ciSocio, idClase);
-          cout << "La inscripción fue eliminada correctamente." << endl;
-        } catch (invalid_argument &ex) {
-          cout << "Error: " << ex.what() << endl;
-        }
-  
-        break;
+      system("clear");
+      cout << "----- BORRAR INSCRIPCIÓN -----" << endl;
+
+      cout << "Ingrese CI del socio: ";
+      getline(cin, ciSocio);
+      cout << "Ingrese ID de la clase: ";
+      cin >> idClase;
+      cin.ignore();
+
+      try
+      {
+        borrarInscripcion(ciSocio, idClase);
+        cout << "La inscripción fue eliminada correctamente." << endl;
       }
-    case 5: {
+      catch (invalid_argument &ex)
+      {
+        cout << "Error: " << ex.what() << endl;
+      }
+
+      break;
+    }
+    case 5:
+    {
       system("clear");
       cout << "----- LISTAR INFO DE SOCIOS POR CLASE -----" << endl;
       cout << "Ingrese el ID de la clase: ";
-      int idClase;
-      std::cin >> idClase;
-  
-      try {
-          int cantSocios;
-          DtSocio **socios = obtenerInfoSociosPorClase(idClase, cantSocios);
-  
-          cout << "Socios inscritos en la clase " << idClase << ":" << endl;
-          for (int i = 0; i < cantSocios; i++) {
-              cout << "- CI: " << socios[i]->getCi() << ", Nombre: " << socios[i]->getNombre() << endl;
-              delete socios[i]; // Liberar memoria de cada DtSocio
-          }
-          delete[] socios; // Liberar memoria del arreglo
-      } catch (invalid_argument &ex) {
-          cout << "Error: " << ex.what() << endl;
+
+      cin >> idClase;
+
+      try
+      {
+        int cantSocios;
+        DtSocio **socios = obtenerInfoSociosPorClase(idClase, cantSocios);
+
+        cout << "Socios inscritos en la clase " << idClase << ":" << endl;
+        for (int i = 0; i < cantSocios; i++)
+        {
+          cout << "- CI: " << socios[i]->getCi() << ", Nombre: " << socios[i]->getNombre() << endl;
+          delete socios[i]; // Liberar memoria de cada DtSocio
+        }
+        delete[] socios; // Liberar memoria del arreglo
       }
-  
+      catch (invalid_argument &ex)
+      {
+        cout << "Error: " << ex.what() << endl;
+      }
+
       break;
-  } 
+    }
 
     case 6:
-      int idClase;
-      cout<<"----- LISTAR INFO CLASE -----"<<endl;
-      cout<<"Ingrese id de la clase: ";
-      cin>>idClase;
+      cout << "----- LISTAR INFO CLASE -----" << endl;
+      cout << "Ingrese id de la clase: ";
+      cin >> idClase;
 
-      try{
-        
+      try
+      {
+
         DtClase clase = obtenerClase(idClase);
         cout << clase;
-
-      }catch(invalid_argument &ex){
-        cout<<"Error: "<<ex.what()<<endl;
+      }
+      catch (invalid_argument &ex)
+      {
+        cout << "Error: " << ex.what() << endl;
       }
       break;
 
@@ -391,12 +462,11 @@ void menu()
   } while (!salir);
 }
 
-
 int main()
 {
   menu();
 
-  //datos para probar la sobrecragra dek operador
+  // datos para probar la sobrecragra dek operador
   DtSpinning spinning(1, "Spinning Avanzado", Turno::Manana, 30);
   DtEntrenamiento entrenamiento(2, "Entrenamiento Funcional", Turno::Tarde, true);
 
