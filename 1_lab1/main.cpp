@@ -96,9 +96,16 @@ void agregarClase(DtClase clase)
   else
   {
     bool enRambla;
+    int opcionRambla;
     cout << "La clase es en rambla? (1: Si, 0: No): ";
-    cin >> enRambla;
+    cin >> opcionRambla;
     cin.ignore();
+    if (opcionRambla != 0 && opcionRambla != 1)
+    {
+      cout << "Las unicas opciones validas son 0 y 1. " << endl;
+      return;
+    }
+    enRambla = static_cast<bool>(opcionRambla); // Convertir la entrada a booleano
     arrClases[clasesActuales] = new Entrenamiento(clase.getId(), clase.getNombre(), clase.getTurno(), enRambla);
   }
   clasesActuales++;
@@ -226,10 +233,6 @@ usuario para esa clase, se levanta una excepción std::invalid_argument.*/
 del arreglo de socios deberá ser cargado en el parámetro cantSocios.*/
 DtSocio **obtenerInfoSociosPorClase(int idClase, int &cantSocios)
 {
-  // int &cantSocios es un parametro de salida, se pasa por referencia para que la funcion pueda modificarlo
-  cantSocios = 0;
-
-  // Se busca la clase que coincide con idClase
   Clase *claseEncontrada = nullptr;
   for (int i = 0; i < clasesActuales; i++)
   {
@@ -245,25 +248,28 @@ DtSocio **obtenerInfoSociosPorClase(int idClase, int &cantSocios)
   {
     throw invalid_argument("No se encontro una clase con el ID proporcionado");
   }
-
-  // Se obtiene la lista de inscriptos de la clase
-  Inscripcion **inscripciones = claseEncontrada->getInscriptos();
-  int maxInscriptos = claseEncontrada->getCantInscriptos();
+  
+  Inscripcion **inscripciones = claseEncontrada->getInscriptos(); // Se obtiene el arreglo de inscripciones
 
   // Creamos un arreglo dinamico para almacenar los data types de los socios
-  DtSocio **dtSocios = new DtSocio *[maxInscriptos];
+  DtSocio **dtSocios = new DtSocio *[cantSocios];
+  
+  if (inscripciones == nullptr || cantSocios == 0)
+        {
+          cout << "No hay socios inscriptos en esta clase." << endl;
+        }
 
   // Se recorren las inscripciones y se crean los DtSocio correspondientes
-  for (int i = 0; i < maxInscriptos; i++)
+  for (int i = 0; i < cantSocios; i++)
   {
     if (inscripciones[i] != nullptr)
     {
-      Socio *socio = inscripciones[i]->getSocio();
-      dtSocios[cantSocios] = new DtSocio(socio->getCi(), socio->getNombre());
-      cantSocios++;
+      cout << inscripciones[i]->getSocio()->getCi() << " | " << inscripciones[i]->getSocio()->getNombre() << endl; // irmprimior el arreglo antes de retornarlo.
+      
+      Socio *socio = inscripciones[i]->getSocio(); // copiar el arreglo de inscripciones para retornarlo.
+      dtSocios[i] = new DtSocio(socio->getCi(), socio->getNombre());
     }
   }
-
   return dtSocios;
 }
 
@@ -274,7 +280,7 @@ DtClase obtenerClase(int idClase)
   {
     if (arrClases[i]->getID() == idClase)
     {
-      DtClase dtClase = arrClases[i]->getInfo();
+      DtClase dtClase = arrClases[i]->getInfo(); // Obtener el objeto DtClase de la clase correspondiente
       return dtClase;
     }
   }
@@ -465,25 +471,34 @@ void menu()
 
       cin >> idClase;
       cin.ignore();
+      
+      int cantSocios = 0;
+      
+      for (int i = 0; i < clasesActuales; i++)
+      {
+        if (arrClases[i]->getID() == idClase)
+        {
+          if (dynamic_cast<Spinning *>(arrClases[i]) != nullptr)
+          {
+            Spinning *spinning = dynamic_cast<Spinning *>(arrClases[i]);
+            cantSocios = spinning->getCantInscriptos();
+          }
+          else if (dynamic_cast<Entrenamiento *>(arrClases[i]) != nullptr)
+          {
+            Entrenamiento *entrenamiento = dynamic_cast<Entrenamiento *>(arrClases[i]);
+            cantSocios = entrenamiento->getCantInscriptos();
+          }
+        }
+      }
 
       try
       {
-        int cantSocios;
         DtSocio **socios = obtenerInfoSociosPorClase(idClase, cantSocios);
-
-        cout << "Socios inscritos en la clase " << idClase << ":" << endl;
-        for (int i = 0; i < cantSocios; i++)
-        {
-          cout << "- CI: " << socios[i]->getCi() << ", Nombre: " << socios[i]->getNombre() << endl;
-          delete socios[i]; // Liberar memoria de cada DtSocio
-        }
-        delete[] socios; // Liberar memoria del arreglo
       }
       catch (invalid_argument &ex)
       {
         cout << "Error: " << ex.what() << endl;
       }
-
       break;
     }
 
@@ -497,21 +512,37 @@ void menu()
 
       try
       {
-        DtClase dtClase = obtenerClase(idClase);
-        DtClase *dtClasePtr = &dtClase; // Crear un puntero a la clase base
+        DtClase dtClase = obtenerClase(idClase); // Crear un puntero a la clase base
+        DtClase *dtClasePtr = new DtClase(dtClase); // Crear un puntero a la clase base
+        string tipo;
+        int bicis;
+        bool rambla;
+
+        for (int i = 0; i < clasesActuales; i++) {
+          if (dynamic_cast<Spinning *>(arrClases[i]) != nullptr) {
+            Spinning *spinning = dynamic_cast<Spinning *>(arrClases[i]);
+            dtClasePtr = new DtSpinning(spinning->getID(), spinning->getNombre(), spinning->getTurno(), spinning->getCantidadBicicletas());
+            tipo = "Spinning";
+            bicis = spinning->getCantidadBicicletas();
+          } else if (dynamic_cast<Entrenamiento *>(arrClases[i]) != nullptr) {
+            Entrenamiento *entrenamiento = dynamic_cast<Entrenamiento *>(arrClases[i]);
+            dtClasePtr = new DtEntrenamiento(entrenamiento->getID(), entrenamiento->getNombre(), entrenamiento->getTurno(), entrenamiento->getEnRambla());
+            tipo = "Entrenamiento";
+            rambla = entrenamiento->getEnRambla();
+          }
+        }
+         // Crear un puntero a la clase base
         cout << "Clase ID: " << dtClase.getId() << endl;
         cout << "Nombre: " << dtClase.getNombre() << endl;
         cout << "Turno: " << (dtClase.getTurno() == Turno::Manana ? "Mañana" : (dtClase.getTurno() == Turno::Tarde ? "Tarde" : "Noche")) << endl;
-
-        if (dynamic_cast<DtSpinning *>(dtClasePtr) != nullptr)
+        cout << "Tipo: " << tipo << endl;
+        if (tipo == "Spinning")
         {
-          DtSpinning *dtSpinning = dynamic_cast<DtSpinning *>(dtClasePtr);
-          cout << "Cantidad de bicicletas: " << dtSpinning->getCantBicicleta() << endl;
+          cout << "Cantidad de bicicletas: " << bicis << endl;
         }
-        else if (dynamic_cast<DtEntrenamiento *>(dtClasePtr) != nullptr)
+        else if (tipo == "Entrenamiento")
         {
-          DtEntrenamiento *dtEntrenamiento = dynamic_cast<DtEntrenamiento *>(dtClasePtr);
-          cout << "Es en rambla: " << (dtEntrenamiento->getEnRambla() ? "Si" : "No") << endl;
+          cout << "En Rambla: " << (rambla ? "Sí" : "No") << endl;
         }
       }
       catch (invalid_argument &ex)

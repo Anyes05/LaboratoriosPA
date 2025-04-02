@@ -23,5 +23,5 @@ int Entrenamiento::cupo(){
 
 
 DtClase Entrenamiento::getInfo(){
-    return DtEntrenamiento(getID(), getNombre(), getTurno(), enRambla);
+    return DtEntrenamiento(getID(), getNombre(), getTurno(), getEnRambla());
 }

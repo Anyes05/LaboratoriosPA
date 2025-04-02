@@ -25,5 +25,5 @@ int Spinning::cupo()
 
 DtClase Spinning::getInfo()
 {
-    return DtSpinning(getID(), getNombre(), getTurno(), cantBicicletas);
+    return DtSpinning(getID(), getNombre(), getTurno(), getCantidadBicicletas());
 }
