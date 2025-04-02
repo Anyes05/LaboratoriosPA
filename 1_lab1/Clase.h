@@ -20,17 +20,20 @@ public:
     int getID();
     Turno getTurno();
     string getNombre();
+    int getCantInscriptos();
+    void setCantInscriptos(int cantInscriptos);
     void setID(int id);
     void setNombre(string nombre);
     void setTurno(Turno turno);
     void agregarInscripto(Inscripcion *inscripcion);
     Inscripcion** getInscriptos();
-    int cantInscriptos;
     virtual int cupo() = 0;
     virtual DtClase getInfo() = 0;
+
 protected:
-    // Arreglo que contiene punteros a las posibles incripciones a esta clase
-    Inscripcion **inscriptos;
+    Inscripcion** inscriptos;  // Arreglo dinámico de punteros a Inscripcion
+    int cantInscriptos;  // Cantidad de inscriptos actuales
+    int capacidadInscriptos;  // Capacidad máxima del arreglo (por ejemplo, MAX_SOCIOS)
 private:
     int ID;
     string nombre;
