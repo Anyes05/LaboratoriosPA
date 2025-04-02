@@ -84,7 +84,7 @@ void agregarClase(DtClase clase)
     int cantBicicletas;
     cout << "Ingrese la cantidad de bicicletas: ";
     cin >> cantBicicletas;
-    if (cantBicicletas <= 1 || cantBicicletas > 50)
+    if (cantBicicletas < 1 || cantBicicletas > 50)
     {
       cout << "La cantidad de bicicletas debe ser entre 1 y 50" << endl;
       return;
@@ -143,6 +143,7 @@ void agregarInscripcion(string ciSocio, int idClase, Fecha fecha)
       }
     }
   }
+  cout << "No se encontro el socio o la clase" << endl;
   throw invalid_argument("No se encontro el socio o la clase");
 }
 
@@ -247,9 +248,10 @@ DtClase obtenerClase(int idClase)
 {
   for (int i = 0; i < MAX_CLASES; i++)
   {
-    if (arrClases[i] != nullptr && arrClases[i]->getID() == idClase)
+    if (arrClases[i]->getID() == idClase)
     {
-      return arrClases[i]->getInfo();
+      DtClase dtClase= arrClases[i]->getInfo();
+      return dtClase;
     }
   }
   throw invalid_argument("No se encontró una clase con ese id");
@@ -281,11 +283,13 @@ void menu()
     string ci, nombre;
     Turno turno;
     int turnoInt;
-    int idClase = NULL;
+    int idClase = 0;
     int dia, mes, anio;
     char separador;
     string ciSocio;
     Fecha fecha;
+    
+
 
     switch (opcion)
     {
@@ -333,7 +337,7 @@ void menu()
         cin >> turnoInt;
         turno = static_cast<Turno>(turnoInt - 1); // Convertir a enum
 
-        if (nombre.empty() || idClase == NULL)
+        if (nombre.empty() || idClase == 0)
           cout << "No pueden tener la ID o NOMBRE vacio" << endl;
         else if (turnoInt < 1 || turnoInt > 3)
           cout << "Opcion de TURNO no valida" << endl;
@@ -356,15 +360,24 @@ void menu()
       system("clear");
       cout << "----- AGREGAR INSCRIPCION -----" << endl;
       cout << "CI del socio: ";
-      cin >> ci;
       cin.ignore();
+      getline(cin, ci);
+      if(ci.empty())
+      {
+        cout << "No puede tener la CI vacia" << endl;
+        break;
+      }
 
       cout << "ID de la clase: ";
       cin >> idClase;
       cin.ignore();
+      if(idClase == 0)
+      {
+        cout << "No puede tener la ID vacia" << endl;
+        break;
+      }
 
       cout << "Fecha (DD/MM/AAAA): ";
-
       cin >> dia >> separador >> mes >> separador >> anio;
       fecha = Fecha(dia, mes, anio);
 
@@ -372,7 +385,7 @@ void menu()
       {
         agregarInscripcion(ci, idClase, fecha);
       }
-      catch (invalid_argument &ex)
+      catch (const invalid_argument &ex)
       {
         cout << "Error: " << ex.what() << endl; // devuelve un mensaje explicativo de la excepción (dentro de la funcion agregarInscripcion)
       }
@@ -409,6 +422,7 @@ void menu()
       cout << "Ingrese el ID de la clase: ";
 
       cin >> idClase;
+      cin.ignore();
 
       try
       {
@@ -432,15 +446,32 @@ void menu()
     }
 
     case 6:
+      system("clear");
       cout << "----- LISTAR INFO CLASE -----" << endl;
       cout << "Ingrese id de la clase: ";
       cin >> idClase;
+      cin.ignore();
+      system("clear");
 
       try
       {
-
-        DtClase clase = obtenerClase(idClase);
-        cout << clase;
+        DtClase dtClase = obtenerClase(idClase);
+        DtClase *dtClasePtr = &dtClase; // Crear un puntero a la clase base
+        cout << "Clase ID: " << dtClase.getId() << endl;
+        cout << "Nombre: " << dtClase.getNombre() << endl;
+        cout << "Turno: " << (dtClase.getTurno() == Turno::Manana ? "Mañana" : (dtClase.getTurno() == Turno::Tarde ? "Tarde" : "Noche")) << endl;
+        
+        if (dynamic_cast<DtSpinning *> (dtClasePtr) != nullptr)
+        {
+          DtSpinning *dtSpinning = dynamic_cast<DtSpinning *>(dtClasePtr);
+          cout << "Cantidad de bicicletas: " << dtSpinning->getCantBicicleta() << endl;
+        }
+        else if (dynamic_cast<DtEntrenamiento *>(dtClasePtr) != nullptr)
+        {
+          DtEntrenamiento *dtEntrenamiento = dynamic_cast<DtEntrenamiento *>(dtClasePtr);
+          cout << "Es en rambla: " << (dtEntrenamiento->getEnRambla() ? "Si" : "No") << endl;
+        }
+        
       }
       catch (invalid_argument &ex)
       {
@@ -466,12 +497,26 @@ int main()
 {
   menu();
 
-  // datos para probar la sobrecragra dek operador
+ 
+  /*
+   // datos para probar la sobrecragra dek operador
+  DtClase clase(1, "Clase de Prueba", Turno::Manana);
+  agregarClase(clase);
+  obtenerClase(1);
+
+  agregarSocio("12345678", "Juan Perez");
+  agregarSocio("87654321", "Maria Lopez");
+
+  agregarInscripcion("12345678", 1, Fecha(1, 1, 2023));
+  cout << "Inscripcion de Juan Perez a la clase 1" << endl;
+  agregarInscripcion("87654321", 1, Fecha(1, 1, 2023));
+  cout << "Inscripcion de Maria Lopez a la clase 1" << endl;
+
   DtSpinning spinning(1, "Spinning Avanzado", Turno::Manana, 30);
   DtEntrenamiento entrenamiento(2, "Entrenamiento Funcional", Turno::Tarde, true);
 
   cout << spinning << endl;
   cout << entrenamiento << endl;
-
+  */
   return 0;
 }
