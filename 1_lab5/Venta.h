@@ -12,6 +12,7 @@ private:
     float subTotal;
     float descuento;
     float total;
+    // coleccion pedido y coleccion producto
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor
