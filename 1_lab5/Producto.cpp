@@ -1,11 +1,13 @@
 #include "Producto.h"
 
+//constructor
 Producto::Producto(string cod, string desc, float pre){
     this->codigo= cod;
     this->descripcion=desc;
     this->precio=pre;
 }
 
+//destructor
 Producto::~Producto(){}
 
 string Producto::getCodigo(){
