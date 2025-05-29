@@ -12,6 +12,7 @@ public:
     virtual ~Domicilio(); // destructor
 private:
     //DtCliente cliente; // cliente al que se le hace la venta a domicilio
+    //Asumo que como local apunta a mozo, domicilio apunta a repartidor. Asi que referencia a repartidor
 };
 
 #endif 
