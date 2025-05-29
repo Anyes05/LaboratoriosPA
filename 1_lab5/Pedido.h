@@ -6,7 +6,7 @@
 #include "Producto.h"
 using namespace std;
 
-class Pedido : public ICollectible //una coleccion de productos
+class Pedido : public ICollectible //una coleccion de pedidos
 {
 private:
     int cantProductos;
