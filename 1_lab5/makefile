@@ -1,7 +1,7 @@
 INTERFACES = ICollection/interfaces/
 COLECCIONES = ICollection/collections/
 
-all: Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
+all: Venta.o Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
 	g++ Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
 
 ICollectible.o: $(INTERFACES)ICollectible.h
@@ -24,6 +24,12 @@ List.o: $(COLECCIONES)List.h ICollection.o ListIterator.o
 
 Producto.o: Producto.cpp ICollectible.o
 	g++ -c Producto.cpp
+
+Venta.o: Venta.cpp ICollectible.o
+	g++ -c Venta.cpp
+
+Factura.o: Factura.cpp ICollectible.o
+	g++ -c Factura.cpp
 
 main.o: main.cpp Producto.o
 	g++ -c main.cpp
