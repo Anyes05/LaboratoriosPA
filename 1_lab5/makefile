@@ -1,7 +1,7 @@
 INTERFACES = ICollection/interfaces/
 COLECCIONES = ICollection/collections/
 
-all: Domicilio.o Local.o Venta.o Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
+all: DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
 	g++ Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
 
 ICollectible.o: $(INTERFACES)ICollectible.h
@@ -36,6 +36,33 @@ Domicilio.o: Domicilio.cpp ICollectible.o
 
 Local.o: Local.cpp ICollectible.o
 	g++ -c Local.cpp
+
+DtDireccion.o:
+	g++ -c "./DataTypes/DtDireccion.cpp"
+
+DtAsignacion.o:
+	g++ -c "./DataTypes/DtAsignacion.cpp"
+
+DtProducto.o:
+	g++ -c "./DataTypes/DtProducto.cpp"
+
+DtComun.o:
+	g++ -c "./DataTypes/DtComun.cpp"
+
+DtMenu.o:
+	g++ -c "./DataTypes/DtMenu.cpp"
+
+DtMesa.o:
+	g++ -o "./DataTypes/DtMesa.cpp"
+
+DtFecha.o:
+	g++ -o "./DataTypes/DtFecha.cpp"
+
+DtVenta.o:
+	g++ -o "./DataTypes/DtVenta.cpp"
+
+DtHora.o:
+	g++ -o "./DataTypes/DtHora.cpp"
 
 main.o: main.cpp Producto.o
 	g++ -c main.cpp
