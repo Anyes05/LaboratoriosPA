@@ -3,7 +3,7 @@
 
 #include "Producto.h"
 
-class Comun : public Producto, public virtual ICollectible  //una coleccion de Comun
+class Comun : public Producto //una coleccion de Comun
 {
 private:
 
@@ -12,7 +12,7 @@ public:
     ~Comun();
 
     void eliminarProducto();
-    void agregarProdcutoComun(string codigoComun, string descripcion, float precio);
+    void agregarProductoComun(string codigoComun, string descripcion, float precio);
     void darBaja(); //funcion heredada y polimorfica
     void agregarCant();
     

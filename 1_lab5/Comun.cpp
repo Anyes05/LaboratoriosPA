@@ -9,3 +9,7 @@ Comun::Comun(string codigo, string descripcion, float precio) : Producto(codigo,
 Comun::~Comun()
 {
 }
+
+void Comun::darBaja() {
+    // lógica aquí
+}

@@ -25,4 +25,7 @@ bool Pedido::estaEnPedido(Producto* producto) {
     return this->producto->getCodigo() == producto->getCodigo();
 }
 
-int Pedido::restarProductos(){} // tengo dudas acerca de donde viene la cant a eliminar
+int Pedido::restarProductos(){
+    // lógica pendiente
+    return 0; // o el valor adecuado
+} // tengo dudas acerca de donde viene la cant a eliminar

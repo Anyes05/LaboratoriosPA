@@ -1,8 +1,9 @@
 INTERFACES = ICollection/interfaces/
 COLECCIONES = ICollection/collections/
 
-all: DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
-	g++ Producto.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
+all: DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
+	g++ Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
+
 
 ICollectible.o: $(INTERFACES)ICollectible.h
 	g++ -c $(INTERFACES)ICollectible.cpp
@@ -22,20 +23,30 @@ ListIterator.o: $(COLECCIONES)ListIterator.h ListNode.o
 List.o: $(COLECCIONES)List.h ICollection.o ListIterator.o
 	g++ -c $(COLECCIONES)List.cpp
 
+Factura.o: Factura.cpp ICollectible.o
+	g++ -c Factura.cpp
+
 Producto.o: Producto.cpp ICollectible.o
 	g++ -c Producto.cpp
+
+Comun.o: Producto.o
+	g++ -c Comun.cpp
+
+Menu.o:Producto.o
+	g++ -c Menu.cpp
+
+Comun-Menu.o: Comun-Menu.cpp
+	g++ -c Comun-Menu.cpp
 
 Venta.o: Venta.cpp ICollectible.o
 	g++ -c Venta.cpp
 
-Factura.o: Factura.cpp ICollectible.o
-	g++ -c Factura.cpp
-
-Domicilio.o: Domicilio.cpp ICollectible.o
+Domicilio.o: Venta.o
 	g++ -c Domicilio.cpp
 
-Local.o: Local.cpp ICollectible.o
+Local.o: Venta.o
 	g++ -c Local.cpp
+
 
 DtDireccion.o:
 	g++ -c "./DataTypes/DtDireccion.cpp"
@@ -53,18 +64,39 @@ DtMenu.o:
 	g++ -c "./DataTypes/DtMenu.cpp"
 
 DtMesa.o:
-	g++ -o "./DataTypes/DtMesa.cpp"
+	g++ -c "./DataTypes/DtMesa.cpp"
 
 DtFecha.o:
-	g++ -o "./DataTypes/DtFecha.cpp"
+	g++ -c "./DataTypes/DtFecha.cpp"
 
 DtVenta.o:
-	g++ -o "./DataTypes/DtVenta.cpp"
+	g++ -c "./DataTypes/DtVenta.cpp"
 
 DtHora.o:
-	g++ -o "./DataTypes/DtHora.cpp"
+	g++ -c "./DataTypes/DtHora.cpp"
 
 main.o: main.cpp Producto.o
+=======
+Empleado.o: Empleado.cpp ICollectible.o
+	g++ -c Empleado.cpp
+
+Mozo.o: Empleado.o
+	g++ -c Mozo.cpp
+
+Repartidor.o: Empleado.o
+	g++ -c Repartidor.cpp
+
+Cliente.o: Cliente.cpp
+	g++ -c Cliente.cpp
+
+Mesa.o: Mesa.cpp ICollectible.o
+	g++ -c Mesa.cpp
+
+Pedido.o: Pedido.cpp ICollectible.o
+	g++ -c Pedido.cpp
+
+
+main.o: main.cpp Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o
 	g++ -c main.cpp
 
 clean:

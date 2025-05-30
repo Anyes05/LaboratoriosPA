@@ -1,33 +1,20 @@
-#ifndef PRODUCTO_H
-#define PRODUCTO_H
+#ifndef COMUN_MENU_H
+#define COMUN_MENU_H
 
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
 using namespace std;
 
-class Producto : public ICollectible //una coleccion de productos
+class Comun_Menu : public ICollectible //una coleccion de productos
 {
 protected:
-    string codigo;
-    string descripcion;
-    float precio;
-
+    int cantProducto;
 public:
-    Producto(string, string, float); //constructor
-    virtual ~Producto(); //destructor
+    Comun_Menu(int); //constructor
+    virtual ~Comun_Menu(); //destructor
     //getterts y setters
-    string getCodigo();
-    string getDescripcion();
-    float getPrecio();
-    void setCodigo(string);
-    void setDescripcion(string);
-    void setPrecio(float);
-    //metodos
-    bool esProductoBaja();
-    bool esMenu(string codigo);
-    bool noExiste(string codigo);
-    void cancelarBaja();
-    virtual void darBaja()=0;
+    int getCantProducto();
+    void setCantProducto(int);
     
 };
 
