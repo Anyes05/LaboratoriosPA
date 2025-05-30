@@ -10,11 +10,12 @@ class DtVenta{
     public:
         DtVenta(int, float, bool, float);
         ~DtVenta();
+        DtVenta();
 
         int getidVenta();
         float getDescuento();
         bool getFacturada();
         float getTotal();
-}
+};
 
 #endif

@@ -12,9 +12,9 @@ class DtAsignacion{
         ~DtAsignacion();
 
         int getidMozo();
-        int* getidMEsas();
+        int* getidMesas();
         int getcantMesas();
         bool getventas();
-}
+};
 
 #endif

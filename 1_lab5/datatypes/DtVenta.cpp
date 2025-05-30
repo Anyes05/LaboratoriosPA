@@ -9,6 +9,15 @@ DtVenta::DtVenta(int id, float descuento, bool facturada, float total){
     this->total = total;
 }
 
+DtVenta::DtVenta() {
+    // Valores por defecto (ajustá según tu lógica)
+    this->idVenta = 0;
+    this->descuento = 0.0;
+    this->facturada = false;
+    this->total = 0.0;
+}
+
+
 DtVenta::~DtVenta(){}
 
 int DtVenta::getidVenta(){

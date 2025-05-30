@@ -1,5 +1,4 @@
 #include "DtProducto.h"
-#include <iostream>
 
 DtProducto::DtProducto(string codigo, string desc, float precio, int cant){
     this->codigo = codigo;
@@ -7,6 +6,13 @@ DtProducto::DtProducto(string codigo, string desc, float precio, int cant){
     this->precio = precio;
     this->cantVendido = cant;
 }
+DtProducto::DtProducto() {
+    this->codigo = "";
+    this->descripcion = "";
+    this->precio = 0.0;
+    this->cantVendido = 0;
+}
+
 
 DtProducto::~DtProducto(){}
 

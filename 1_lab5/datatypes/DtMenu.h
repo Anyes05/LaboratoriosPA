@@ -1,7 +1,7 @@
 #ifndef DTMENU_H
 #define DTMENU_H
 
-#include "DtProdcuto.h"
+#include "DtProducto.h"
 
 class DtMenu : public DtProducto, public virtual ICollectible{
     private:

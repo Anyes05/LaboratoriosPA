@@ -1,7 +1,7 @@
 #include "DtMesa.h"
 
 DtMesa::DtMesa(int id){
-    return this->idMesa = id;
+    this->idMesa = id;
 }
 
 DtMesa::~DtMesa(){}

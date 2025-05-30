@@ -9,6 +9,6 @@ class DtMesa{
         ~DtMesa();
 
         int getIdMesa();
-}
+};
 
 #endif

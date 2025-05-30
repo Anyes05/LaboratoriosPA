@@ -8,6 +8,15 @@ DtDireccion::DtDireccion(string calle, int num, bool apart, string esquina, int 
     this->calleEsquina = esquina;
     this->nombreEdificio = nomEdificio;
 }
+DtDireccion::DtDireccion() {
+    // podés dejar valores vacíos o de prueba
+    this->nombreCalle = "";
+    this->numero = 0;
+    this->apartamento = false;
+    this->calleEsquina = "";
+    this->nombreEdificio = "";
+}
+
 
 DtDireccion::DtDireccion(string calle, int num, string esquina){
     this->nombreCalle = calle;
