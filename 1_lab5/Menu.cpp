@@ -1,11 +1,12 @@
 #include "Menu.h"
 
 // Constructor
-Menu::Menu(string codigo, string descripcion, float precio, string nom, string descMenu) : Producto(codigo, descripcion, precio)
+Menu::Menu(string codigo, string desc, float precio, string nom, float descMenu) : Producto(codigo, descripcion, precio)
 {
     this->nombre=nom;
-    this->descripcionMenu = descMenu;
+    this->descuentoMenu = descMenu;
     this-> productosComunes= new List(); // Inicializar con una instancia de ICollection
+    this->comun_menu = new List(); 
 }
 
 // destrcutor
@@ -18,24 +19,32 @@ string Menu::getNombre(){
     return this->nombre;
 }
 
-string Menu::getDescripcionMenu(){
-    return this->descripcionMenu;
+float Menu::getDescuentoMenu(){
+    return this->descuentoMenu;
 }
 
 ICollection *Menu::getProductosComunes(){
     return this->productosComunes;
 }
 
+ICollection *Menu::getComun_Menu(){
+    return this->comun_menu;
+}
+
 void Menu::setNombre(string nom){
     this->nombre=nom;
 }
 
-void Menu::setDescrpcionMenu(string descMenu){
-    this->descripcionMenu=descMenu;
+void Menu::setDescuentoMenu(float descMenu){
+    this->descuentoMenu=descMenu;
 }
 
 void Menu::setProductosComunes(ICollection *productosComunes){
     if(this->productosComunes!= nullptr)
         delete this->productosComunes;
     this->productosComunes = productosComunes;
+}
+
+void Menu::darBaja() {
+    // lógica aquí
 }

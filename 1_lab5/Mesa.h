@@ -19,7 +19,7 @@ public:
     int getNumeroMesa();
     void setNumeroMesa(int); 
     Local* getLocal(); // devuelve la venta actual de la mesa
-    void setLocal(Local* local) { this->local = local; } // establece la venta actual de la mesa
+    void setLocal(Local* local); // establece la venta actual de la mesa
 };
 
 #endif
