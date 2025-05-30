@@ -1,9 +1,10 @@
 #include "Factura.h"
 #include <iostream>
+#include "ICollection/collections/ListIterator.h"
+#include "ICollection/interfaces/ICollectible.h"
 using namespace std;
 
-Factura::Factura(string codigo) { // agregar DtFecha, DtHora, DtVenta, DtProducto cuando se implementen
-    this->codigo = codigo;
+Factura::Factura(string codigo, const ListIterator& productos) : codigo(codigo), productos(productos) { // agregar DtFecha, DtHora, DtVenta, DtProducto cuando se implementen
 }
 
 Factura::~Factura() {}
@@ -24,9 +25,10 @@ string Factura::getCodigo() {
 //     return venta;
 // }
 
-// DtProducto Factura::getProducto() {
-//     return producto;
-// }
+
+ListIterator Factura::getProductos() {
+    return productos;
+}
 
 void Factura::setCodigo(string codigo) {
     this->codigo = codigo;
@@ -44,7 +46,7 @@ void Factura::setCodigo(string codigo) {
 //     this->venta = venta;
 // }
 
-// void Factura::setProducto(DtProducto producto) {
-//     this->producto = producto;
-// }
+void Factura::setProductos(ListIterator productos) {
+    this->productos = productos;
+}
 
