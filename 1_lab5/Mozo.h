@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "ICollection/interfaces/ICollection.h"
+#include "ICollection/interfaces/IDictionary.h"
 #include "Empleado.h"
 #include "Mesa.h"
 using namespace std;
@@ -11,7 +12,7 @@ class Mozo : public Empleado
 {
 private:
     int cantMesas; 
-    ICollection* mesas;// referencia a mesa, coleccion
+    IDictionary* mesas;// referencia a mesa, coleccion
 public:
     Mozo(string, int, int); // constructor
     ~Mozo(); // destructor
