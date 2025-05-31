@@ -9,7 +9,7 @@ class Empleado : public ICollectible // una coleccion de empleados
 {
 protected:
     string nombre;
-    int idEmpleado;
+    int id;
 public:
     Empleado(string, int); // constructor
     virtual ~Empleado(); // destructor

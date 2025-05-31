@@ -2,7 +2,7 @@
 
 Empleado::Empleado(string nom, int id) {
     this->nombre = nom;
-    this->idEmpleado = id;
+    this->id = id;
 }
 Empleado::~Empleado() {}
 
@@ -11,7 +11,7 @@ string Empleado::getNombre() {
 }
 
 int Empleado::getIdEmpleado() {
-    return this->idEmpleado;
+    return this->id;
 }
 
 void Empleado::setNombre(string nom) {
@@ -19,6 +19,6 @@ void Empleado::setNombre(string nom) {
 }
 
 void Empleado::setIdEmpleado(int id) {
-    this->idEmpleado = id;
+    this->id = id;
 }
 
