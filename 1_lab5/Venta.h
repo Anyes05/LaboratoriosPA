@@ -15,9 +15,9 @@ private:
     float descuento;
     float total;
     Factura* factura;
-    ListIterator productos; // lista de productos 
+    ICollection * productos; // lista de productos 
 public:
-    Venta(int numero, float subTotal, float descuento, ListIterator productos); //constructor
+    Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor
     //getters y setters
     int getNumero();
@@ -25,13 +25,13 @@ public:
     float getDescuento();
     float getTotal();
     Factura* getFactura(); 
-    ListIterator getProductos();
+    ICollection * getProductos();
     void setNumero(int numero);
     void setSubTotal(float subTotal);
     void setDescuento(float descuento);
     void setTotal(float total);
     void setFactura(Factura* factura); 
-    void setProductos(ListIterator productos);
+    void setProductos(ICollection * productos);
     //metodos
     void eliminarMenu();
     ListNode productosVenta();  // Devuelve una lista de productos vendidos??

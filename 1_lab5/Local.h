@@ -11,7 +11,7 @@ public:
     Local(int numero, float subTotal, float descuento); // constructor
     virtual ~Local(); // destructor
 private:
-    // puntero a una mesa?? si, a la coleccion 
+    ICollection * mesas;
 };
 
 #endif

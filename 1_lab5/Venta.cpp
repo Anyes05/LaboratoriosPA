@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Venta::Venta(int numero, float subTotal, float descuento, ListIterator productos) : productos(productos) {
+Venta::Venta(int numero, float subTotal, float descuento) {
     this->numero = numero;
     this->subTotal = subTotal;
     this->descuento = descuento;
@@ -32,7 +32,7 @@ Factura* Venta::getFactura() {
     return factura;
 }
 
-ListIterator Venta::getProductos() {
+ICollection* Venta::getProductos() {
     return productos;
 }
 
@@ -56,7 +56,7 @@ void Venta::setFactura(Factura* factura) {
     this->factura = factura;
 }
 
-void Venta::setProductos(ListIterator productos) {
+void Venta::setProductos(ICollection * productos) {
     this->productos = productos;
 }
 
