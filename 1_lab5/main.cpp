@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-#include "Producto.h"
+#include "Factory.h"
 
 int main(int argc, char const *argv[])
 {

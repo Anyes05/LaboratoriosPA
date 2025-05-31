@@ -4,6 +4,7 @@
 #include <iostream>
 using namespace std;
 #include "ICollection/interfaces/ICollectible.h"
+#include "ICollection/interfaces/IDictionary.h"
 #include "./datatypes/DtVenta.h"
 #include "./datatypes/DtFactura.h"
 class DtVenta;

@@ -12,16 +12,13 @@ private:
     string codigo;
     string descripcion;
     float precio;
-    int cantVendido;
-
 public:
-    DtProducto(string, string, float, int);
+    DtProducto(string, string, float);
     virtual ~DtProducto();
     DtProducto();
     string getCodigo();
     string getdescripcion();
     float getprecio();
-    int getcantVendido();
 };
 
 #endif

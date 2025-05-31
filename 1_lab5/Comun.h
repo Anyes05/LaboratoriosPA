@@ -2,6 +2,7 @@
 #define COMUN_H
 
 #include "Producto.h"
+#include "./datatypes/DtComun.h"
 
 class Comun : public Producto //una coleccion de Comun
 {
@@ -15,7 +16,7 @@ public:
     void agregarProductoComun(string codigoComun, string descripcion, float precio);
     void darBaja(); //funcion heredada y polimorfica
     void agregarCant();
-    
+    DtProducto* getDT();
 };
 
 #endif

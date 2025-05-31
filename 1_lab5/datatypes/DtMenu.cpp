@@ -1,11 +1,16 @@
 #include "DtMenu.h"
 
-DtMenu::DtMenu(string codigo, string descripcion, float precio, int cant, int cantidadMenu) : DtProducto(codigo, descripcion, precio, cantidadMenu){
-    this->cantidad = cantidadMenu;
+DtMenu::DtMenu(string codigo, string descripcion, float precio, string nombre, float descuento) : DtProducto(codigo, descripcion, precio){
+    this->nombre = nombre;
+    this->descuentoMenu=descuento;
 }
 
 DtMenu::~DtMenu(){}
 
-int DtMenu::getCantidad(){
-    return this->cantidad;
+string DtMenu::getNombre(){
+    return this->nombre;
+}
+
+float DtMenu::getDescuentoMenu(){
+    return this->descuentoMenu;
 }

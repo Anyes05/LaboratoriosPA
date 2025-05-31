@@ -13,3 +13,7 @@ Comun::~Comun()
 void Comun::darBaja() {
     // lógica aquí
 }
+
+DtProducto* Comun::getDT() {
+    return new DtComun(codigo, descripcion, precio);
+}

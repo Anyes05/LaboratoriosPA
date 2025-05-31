@@ -17,17 +17,26 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
-#include "Sistema.h"
-
 // Declaraciones vacías para que el linker no dé error
 
 bool Sistema::existeProducto(string codigo)
 {
-    return false; // por ahora, para compilar
+    IIterator *it = productos->getIterator();
+    while(it->hasCurrent()){
+        Producto *p = dynamic_cast<Producto *>(it->getCurrent());
+        if(p != nullptr && !p->noExiste(codigo)) { // !noExiste -> sí existe  el producto
+            delete it;
+            return true;
+        }
+        it->next();
+    }
+    delete it;
+    return false; // si no existe el codigo devuleve false
 }
 
 ICollectible *Sistema::agregarMenu(string codigoMenu, string descripcion)
 {
+
 }
 
 void Sistema::seleccionarProductoComun(string codigoComun, int cantProducto)

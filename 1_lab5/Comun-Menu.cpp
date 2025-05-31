@@ -1,7 +1,8 @@
 #include "Comun-Menu.h"
 
 //constructor
-Comun_Menu::Comun_Menu(int cant){
+Comun_Menu::Comun_Menu(int cant, Comun * pc){
+    this->productoComun= pc;
     this->cantProducto= cant;
 
 }

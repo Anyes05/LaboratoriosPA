@@ -31,3 +31,7 @@ void Producto::setDescripcion(string desc){
 void Producto::setPrecio(float pre){
     this->precio=pre;
 }
+
+bool Producto::noExiste(string cod){
+    return this->getCodigo() != cod;
+}

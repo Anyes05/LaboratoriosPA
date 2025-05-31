@@ -5,8 +5,8 @@ Menu::Menu(string codigo, string desc, float precio, string nom, float descMenu)
 {
     this->nombre=nom;
     this->descuentoMenu = descMenu;
-    this-> productosComunes= new List(); // Inicializar con una instancia de ICollection
-    this->comun_menu = new List(); 
+    this-> productosComunes= new OrderedDictionary(); // Inicializar con una instancia de ICollection
+    this->comun_menu = new OrderedDictionary(); 
 }
 
 // destrcutor
@@ -23,11 +23,11 @@ float Menu::getDescuentoMenu(){
     return this->descuentoMenu;
 }
 
-ICollection *Menu::getProductosComunes(){
+IDictionary *Menu::getProductosComunes(){
     return this->productosComunes;
 }
 
-ICollection *Menu::getComun_Menu(){
+IDictionary *Menu::getComun_Menu(){
     return this->comun_menu;
 }
 
@@ -39,7 +39,7 @@ void Menu::setDescuentoMenu(float descMenu){
     this->descuentoMenu=descMenu;
 }
 
-void Menu::setProductosComunes(ICollection *productosComunes){
+void Menu::setProductosComunes(IDictionary *productosComunes){
     if(this->productosComunes!= nullptr)
         delete this->productosComunes;
     this->productosComunes = productosComunes;
@@ -47,4 +47,9 @@ void Menu::setProductosComunes(ICollection *productosComunes){
 
 void Menu::darBaja() {
     // lógica aquí
+}
+
+void Menu::agregarProducto(IDictionary* pc) {
+    //tiene que pasar la key(?)
+   // productosComunes->add(pc);
 }

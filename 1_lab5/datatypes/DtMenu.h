@@ -3,14 +3,18 @@
 
 #include "DtProducto.h"
 
-class DtMenu : public DtProducto, public virtual ICollectible{
-    private:
-        int cantidad;
-    public:
-        DtMenu(string, string, float, int, int);
-        ~DtMenu();
+class DtMenu : public DtProducto, public virtual ICollectible
+{
+private:
+    string nombre;
+    float descuentoMenu;
 
-        int getCantidad();
+public:
+    DtMenu(string, string, float, string, float);
+    ~DtMenu();
+
+    string getNombre();
+    float getDescuentoMenu();
 };
 
 #endif
