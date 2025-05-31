@@ -18,10 +18,10 @@ class Factura
         string codigo;
         DtFecha fecha;
         DtHora hora;
-        DtVenta venta; 
+        DtVenta venta; // hace falta un dtVenta? siempre accedo desde venta a factura, creo que sobra 
         ICollection * productos;// lista de productos vendidos
     public:
-        Factura(string, DtFecha, DtHora, DtVenta); // constructor
+        Factura(string, DtFecha, DtHora); // constructor
         virtual ~Factura(); // destructor
         // getters y setters
         string getCodigo();

@@ -46,7 +46,7 @@ ICollectible *Sistema::listarParaAgregar(int idMesa)
 {
 }
 
-void Sistema::seleccionarProducto(int idMesa, string codigo, int cantidad)
+void Sistema::seleccionarProductoAgregar(string codigo, int cantidad)
 {
 }
 
@@ -62,11 +62,11 @@ ICollectible *Sistema::productosVenta()
 {
 }
 
-void Sistema::seleccionarProducto(string codigo, int cant)
+void Sistema::seleccionarProductoQuitar(string codigo, int cant)
 {
 }
 
-void Sistema::confirmar(string codigo, int cant)
+void Sistema::quitarProductoVenta()
 {
 }
 
@@ -86,11 +86,11 @@ ICollectible *Sistema::mostrarProductos()
 {
 }
 
-void Sistema::seleccionarProducto(string codigo)
+void Sistema::seleccionarProductoBaja(string codigo)
 {
 }
 
-void Sistema::confirmar()
+void Sistema::darBajaProducto()
 {
 }
 

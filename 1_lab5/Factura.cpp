@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Factura::Factura(string codigo, DtFecha fecha, DtHora hora, DtVenta venta) : codigo(codigo), fecha(fecha), hora(hora), venta(venta)
+Factura::Factura(string codigo, DtFecha fecha, DtHora hora) : codigo(codigo), fecha(fecha), hora(hora)
 {
     this->productos = new List(); // Inicializar con una instancia de ICollection
 }

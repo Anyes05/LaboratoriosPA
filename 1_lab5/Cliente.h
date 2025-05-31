@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
+#include "datatypes/DtDireccion.h"
 using namespace std;
 
 class Cliente : public ICollectible // una coleccion de clientes. 
@@ -10,15 +11,17 @@ class Cliente : public ICollectible // una coleccion de clientes.
 protected:
     string telefono;
     string nombre;
-    // DtDireccion direccion;
+    DtDireccion direccion;
 public:
-    Cliente(string, string /*,DtDireccion**/); // constructor
+    Cliente(string, string, DtDireccion); // constructor
     ~Cliente(); // destructor
     // Getters y setters
     string getNombre();
     string getTelefono();
+    DtDireccion getDireccion();
     void setNombre(string); 
     void setTelefono(string);
+    void setDireccion(DtDireccion);
 };
 
 #endif
