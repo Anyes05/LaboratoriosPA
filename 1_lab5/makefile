@@ -1,8 +1,8 @@
 INTERFACES = ICollection/interfaces/
 COLECCIONES = ICollection/collections/
 
-all: DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
-	g++ Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
+all: DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
+	g++ DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
 
 ICollectible.o: $(INTERFACES)ICollectible.h
 	g++ -c $(INTERFACES)ICollectible.cpp
@@ -107,7 +107,16 @@ Pedido.o: Pedido.cpp ICollectible.o
 	g++ -c Pedido.cpp
 
 
-main.o: main.cpp Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o
+ISistema.o: ISistema.h
+	g++ -c ISistema.cpp
+
+Sistema.o: ISistema.o Sistema.h
+	g++ -c Sistema.cpp
+
+Factory.o: Factory.h ISistema.o Sistema.o
+	g++ -c Factory.cpp
+	
+main.o: ISistema.o Factory.o
 	g++ -c main.cpp
 
 clean:

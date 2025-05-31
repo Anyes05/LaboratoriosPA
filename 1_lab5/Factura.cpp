@@ -1,6 +1,5 @@
 #include "Factura.h"
-#include <iostream>
-#include "ICollection/interfaces/ICollectible.h"
+
 using namespace std;
 
 Factura::Factura(string codigo, DtFecha fecha, DtHora hora, DtVenta venta) : codigo(codigo), fecha(fecha), hora(hora), venta(venta)

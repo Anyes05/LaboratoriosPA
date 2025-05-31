@@ -3,7 +3,7 @@
 
 #include "Producto.h"
 #include "Comun.h"
-#include "./datatypes/DtProdcuto.h"
+#include "./datatypes/DtProducto.h"
 
 #include "ICollection/interfaces/ICollection.h"
 #include "ICollection/collections/List.h"

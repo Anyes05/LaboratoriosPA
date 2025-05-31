@@ -2,16 +2,17 @@
 #define FACTURA_H
 
 #include <iostream>
-#include "ICollection/interfaces/ICollectible.h"
 #include "ICollection/collections/List.h"
-#include "DataTypes/DtFecha.h"
-#include "DataTypes/DtHora.h"
-#include "DataTypes/DtVenta.h"
-#include "DataTypes/DtProducto.h"
-#include "DataTypes/DtHora.h"
+#include "datatypes/DtFecha.h"
+#include "datatypes/DtHora.h"
+#include "datatypes/DtVenta.h"
+#include "datatypes/DtProducto.h"
+#include "datatypes/DtHora.h"
 
 using namespace std;
-class Factura : public ICollectible // una coleccion de facturas
+
+
+class Factura
 {
     private:
         string codigo;
