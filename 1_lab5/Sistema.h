@@ -23,10 +23,10 @@ public:
     static Sistema *getInstance();
 
     /*------ ALTA PRODCUTO -----*/
-    bool existeProducto(string codigo); //retorna true si existe un producto con es codigo
-    ICollectible *agregarMenu(string codigoMenu, string descripcion); // devuele una coleccion de DtComun
-    void seleccionarProductoComun(string codigoComun, int cantProducto);
-    void agregarProductoComun(string codigoComun, string descripcion, float precio);
+    bool existeProducto(char codigo); //retorna true si existe un producto con es codigo
+    ICollectible *agregarMenu(char codigoMenu, string descripcion); // devuele una coleccion de DtComun
+    void seleccionarProductoComun(char codigoComun, int cantProducto);
+    void agregarProductoComun(char codigoComun, string descripcion, float precio);
     void darAltaProducto();
 
     /*------ ASIGNAR MESAS A MOZOS ------*/

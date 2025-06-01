@@ -19,7 +19,7 @@ Sistema *Sistema::getInstance()
 
 // Declaraciones vacías para que el linker no dé error
 
-bool Sistema::existeProducto(string codigo)
+bool Sistema::existeProducto(char codigo)
 {
     IIterator *it = productos->getIterator();
     while(it->hasCurrent()){
@@ -34,22 +34,22 @@ bool Sistema::existeProducto(string codigo)
     return false; // si no existe el codigo devuleve false
 }
 
-ICollectible *Sistema::agregarMenu(string codigoMenu, string descripcion)
-{
+// ICollectible *Sistema::agregarMenu(char codigoMenu, string descripcion)
+// {
+//     return nullptr;
+// }
 
-}
+// void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
+// {
+// }
 
-void Sistema::seleccionarProductoComun(string codigoComun, int cantProducto)
-{
-}
+// void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio)
+// {
+// }
 
-void Sistema::agregarProductoComun(string codigoComun, string descripcion, float precio)
-{
-}
-
-void Sistema::darAltaProducto()
-{
-}
+// void Sistema::darAltaProducto()
+// {
+//}
 
 // ASIGNAR MESAS A MOZOS
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
@@ -100,66 +100,66 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
 }
 */
 
-ICollectible *Sistema::listarParaAgregar(int idMesa)
-{
-}
+// ICollectible *Sistema::listarParaAgregar(int idMesa)
+// {
+// }
 
-void Sistema::seleccionarProductoAgregar(string codigo, int cantidad)
-{
-}
+// void Sistema::seleccionarProductoAgregar(string codigo, int cantidad)
+// {
+// }
 
-void Sistema::confirmarAgregarProducto()
-{
-}
+// void Sistema::confirmarAgregarProducto()
+// {
+// }
 
-void Sistema::ingresarMesa(int idMesa)
-{
-}
+// void Sistema::ingresarMesa(int idMesa)
+// {
+// }
 
-ICollectible *Sistema::productosVenta()
-{
-}
+// ICollectible *Sistema::productosVenta()
+// {
+// }
 
-void Sistema::seleccionarProductoQuitar(string codigo, int cant)
-{
-}
+// void Sistema::seleccionarProductoQuitar(string codigo, int cant)
+// {
+// }
 
-void Sistema::quitarProductoVenta()
-{
-}
+// void Sistema::quitarProductoVenta()
+// {
+// }
 
-void Sistema::finalizarVenta(int nroMesa)
-{
-}
+// void Sistema::finalizarVenta(int nroMesa)
+// {
+// }
 
-void Sistema::aplicarDescuento(int descuento)
-{
-}
+// void Sistema::aplicarDescuento(int descuento)
+// {
+// }
 
-DtFactura Sistema::generarFactura(DtVenta venta)
-{
-}
+// DtFactura Sistema::generarFactura(DtVenta venta)
+// {
+// }
 
-ICollectible *Sistema::mostrarProductos()
-{
-}
+// ICollectible *Sistema::mostrarProductos()
+// {
+// }
 
-void Sistema::seleccionarProductoBaja(string codigo)
-{
-}
+// void Sistema::seleccionarProductoBaja(string codigo)
+// {
+// }
 
-void Sistema::darBajaProducto()
-{
-}
+// void Sistema::darBajaProducto()
+// {
+// }
 
-ICollectible Sistema::ingresarIdMozo(int idMozo)
-{
-}
+// ICollectible Sistema::ingresarIdMozo(int idMozo)
+// {
+// }
 
-ICollectible Sistema::elegirMesas(int numero, int cantidad)
-{
-}
+// ICollectible Sistema::elegirMesas(int numero, int cantidad)
+// {
+// }
 
-void Sistema::confirmarVentaEnMesa()
-{
-}
+// void Sistema::confirmarVentaEnMesa()
+// {
+// }

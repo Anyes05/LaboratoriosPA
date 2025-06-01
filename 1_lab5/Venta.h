@@ -7,8 +7,6 @@
 #include "ICollection/collections/ListNode.h" 
 #include "ICollection/interfaces/IDictionary.h"
 #include "ICollection/interfaces/OrderedKey.h" 
-#include "ICollection/String.h"
-#include "ICollection/String.cpp"
 
 using namespace std;
 
