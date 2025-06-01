@@ -12,7 +12,9 @@ class Mozo : public Empleado
 {
 private:
     int cantMesas; 
-    IDictionary* mesas;// referencia a mesa, coleccion
+    IDictionary* misMesas;// referencia a mesa, coleccion
+    // Apunta solo a las mesas que le pertenecen al mozo, no a todas las mesas del sistema. Tiene que tambien apuntar a todas?
+    // El mozo apunta a las de si mismo, pero en la coleccion mesas estan las de todos los mozos? 
 public:
     Mozo(string, int, int); // constructor
     ~Mozo(); // destructor
