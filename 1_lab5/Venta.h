@@ -3,8 +3,13 @@
 
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
-#include "Factura.h" // incluir la clase Factura
-#include "ICollection/collections/ListNode.h" // incluir la clase ListNode
+#include "Factura.h" 
+#include "ICollection/collections/ListNode.h" 
+#include "ICollection/interfaces/IDictionary.h"
+#include "ICollection/interfaces/OrderedKey.h" 
+#include "ICollection/String.h"
+#include "ICollection/String.cpp"
+
 using namespace std;
 
 class Venta : public ICollectible //una coleccion de ventas
@@ -15,7 +20,7 @@ private:
     float descuento;
     float total;
     Factura* factura;
-    ICollection * productos; // lista de productos 
+    IDictionary * productos; // lista de productos 
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor
@@ -25,16 +30,16 @@ public:
     float getDescuento();
     float getTotal();
     Factura* getFactura(); 
-    ICollection * getProductos();
+    IDictionary * getProductos();
     void setNumero(int numero);
     void setSubTotal(float subTotal);
     void setDescuento(float descuento);
     void setTotal(float total);
     void setFactura(Factura* factura); 
-    void setProductos(ICollection * productos);
+    void setProductos(IDictionary * productos);
     //metodos
     void eliminarMenu();
-    ListNode productosVenta();  // Devuelve una lista de productos vendidos??
+    ListNode productosVenta();  
     bool activa();
     void eliminarProductoVenta();
         

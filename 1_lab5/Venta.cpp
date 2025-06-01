@@ -32,7 +32,7 @@ Factura* Venta::getFactura() {
     return factura;
 }
 
-ICollection* Venta::getProductos() {
+IDictionary* Venta::getProductos() {
     return productos;
 }
 
@@ -56,7 +56,28 @@ void Venta::setFactura(Factura* factura) {
     this->factura = factura;
 }
 
-void Venta::setProductos(ICollection * productos) {
+void Venta::setProductos(IDictionary * productos) {
     this->productos = productos;
 }
+
+bool Venta::activa() {
+    return (factura == nullptr); // Si no hay factura, la venta está activa
+}
+/*
+void Venta::eliminarProductoVenta() {
+    if (productos->isEmpty()) {
+        cout << "No hay productos para eliminar." << endl;
+        return;
+    }
+    IKey* key = new String(codigoProducto); 
+    if (productos->member(key)) {
+        productos->remove(key);
+        cout << "Producto con código " << codigoProducto << " eliminado de la venta." << endl;
+    } 
+    else {
+        cout << "No se encontró el producto con código " << codigoProducto << "." << endl;
+    }
+    
+}
+*/
 

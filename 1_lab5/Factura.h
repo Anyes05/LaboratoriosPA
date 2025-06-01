@@ -8,9 +8,12 @@
 #include "datatypes/DtVenta.h"
 #include "datatypes/DtProducto.h"
 #include "datatypes/DtHora.h"
+#include "ICollection/interfaces/IDictionary.h"
+#include "ICollection/interfaces/ICollectible.h"
+#include "ICollection/interfaces/IKey.h"
+#include "ICollection/collections/OrderedDictionary.h"
 
 using namespace std;
-
 
 class Factura
 {
@@ -18,24 +21,22 @@ class Factura
         string codigo;
         DtFecha fecha;
         DtHora hora;
-        DtVenta venta; // hace falta un dtVenta? siempre accedo desde venta a factura, creo que sobra 
-        ICollection * productos;// lista de productos vendidos
+        DtVenta venta; 
+        DtProducto ** productos; 
     public:
         Factura(string, DtFecha, DtHora); // constructor
         virtual ~Factura(); // destructor
         // getters y setters
         string getCodigo();
-        ICollection * getProductos();
         DtFecha getFecha(); 
         DtHora getHora(); 
         DtVenta getVenta(); 
-        DtProducto getProducto();
+        DtProducto** getProductos();
         void setCodigo(string codigo);
-        void setProductos(ICollection * productos);
+        void setProducto(ICollection * productos);
         void setFecha(DtFecha fecha); 
         void setHora(DtHora hora);
         void setVenta(DtVenta venta);
-        void setProducto(DtProducto producto);
 };
 
 #endif

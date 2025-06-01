@@ -1,10 +1,11 @@
 #include "Factura.h"
 
+
 using namespace std;
 
 Factura::Factura(string codigo, DtFecha fecha, DtHora hora) : codigo(codigo), fecha(fecha), hora(hora)
 {
-    this->productos = new List(); // Inicializar con una instancia de ICollection
+    this->productos = nullptr;
 }
 
 Factura::~Factura() {}
@@ -26,7 +27,7 @@ DtVenta Factura::getVenta() {
 }
 
 
-ICollection* Factura::getProductos() {
+DtProducto** Factura::getProductos() {
     return this->productos;
 }
 
@@ -46,7 +47,7 @@ void Factura::setVenta(DtVenta venta) {
     this->venta = venta;
 }
 
-void Factura::setProductos(ICollection * productos) {
-    this->productos = productos;
-}
+//void Factura::setProductos(IDictionary * productos) {
+//    this->productos = productos;
+//}
 
