@@ -9,6 +9,7 @@ class DtAsignacion{
         bool ventas;
     public:
         DtAsignacion(int, int*, int, bool);
+        DtAsignacion();
         ~DtAsignacion();
 
         int getidMozo();

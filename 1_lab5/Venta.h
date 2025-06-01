@@ -8,6 +8,7 @@
 #include "ICollection/interfaces/IDictionary.h"
 #include "ICollection/interfaces/OrderedKey.h" 
 
+
 using namespace std;
 
 class Venta : public ICollectible //una coleccion de ventas
@@ -19,7 +20,7 @@ private:
     float total;
     Factura* factura;
     IDictionary * productos; // lista de productos 
-    // ICollection * pedido;
+    ICollection * pedido;
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor

@@ -11,6 +11,7 @@ DtAsignacion::DtAsignacion(int idMozo, int* idMesas, int cantMesas, bool ventas)
         this->idMesas[i] = idMesas[i];
     }
 }
+DtAsignacion::DtAsignacion(){}
 
 int DtAsignacion::getidMozo(){
     return this->idMozo;

@@ -23,31 +23,33 @@ public:
     static Sistema *getInstance();
 
     /*------ ALTA PRODCUTO -----*/
+
     bool existeProducto(char codigo); //retorna true si existe un producto con es codigo
-    ICollectible *agregarMenu(char codigoMenu, string descripcion); // devuele una coleccion de DtComun
-    void seleccionarProductoComun(char codigoComun, int cantProducto);
-    void agregarProductoComun(char codigoComun, string descripcion, float precio);
-    void darAltaProducto();
+    // ICollectible *agregarMenu(char codigoMenu, string descripcion); // devuele una coleccion de DtComun
+    // void seleccionarProductoComun(char codigoComun, int cantProducto);
+    // void agregarProductoComun(char codigoComun, string descripcion, float precio);
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
-    DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos);
+  //  DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos);
+
+    /*------ INICIAR VENTA EN MESA ------*/
+    DtAsignacion ingresarIdMozo(int idMozo);    // devuele un DtAsignacion       
+    // ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
+    // void confirmarVentaEnMesa();
     
-    ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
-    void seleccionarProductoAgregar(string codigo, int cantidad);
-    void confirmarAgregarProducto();
-    void ingresarMesa(int idMesa);
-    ICollectible *productosVenta(); // devuele una coleccion de DtProducto
-    void seleccionarProductoQuitar(string codigo, int cant);
-    void quitarProductoVenta();
-    void finalizarVenta(int nroMesa);
-    void aplicarDescuento(int descuento);
-    DtFactura generarFactura(DtVenta venta);
-    ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
-    void seleccionarProductoBaja(string codigo);
-    void darBajaProducto();
-    ICollectible ingresarIdMozo(int idMozo);            // devuele una coleccion de DtAsignacion
-    ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
-    void confirmarVentaEnMesa();
+    // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
+    // void seleccionarProductoAgregar(char codigo, int cantidad);
+    // void confirmarAgregarProducto();
+    // void ingresarMesa(int idMesa);
+    // ICollectible *productosVenta(); // devuele una coleccion de DtProducto
+    // void seleccionarProductoQuitar(char codigo, int cant);
+    // void quitarProductoVenta();
+    // void finalizarVenta(int nroMesa);
+    // void aplicarDescuento(int descuento);
+    // DtFactura generarFactura(DtVenta venta);
+    // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
+    // void seleccionarProductoBaja(char codigo);
+    // void darBajaProducto();           
 };
 
 #endif

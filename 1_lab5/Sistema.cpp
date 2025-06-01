@@ -36,7 +36,7 @@ bool Sistema::existeProducto(char codigo)
 
 // ICollectible *Sistema::agregarMenu(char codigoMenu, string descripcion)
 // {
-//     return nullptr;
+
 // }
 
 // void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
@@ -49,7 +49,8 @@ bool Sistema::existeProducto(char codigo)
 
 // void Sistema::darAltaProducto()
 // {
-//}
+// }
+
 
 // ASIGNAR MESAS A MOZOS
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
@@ -104,7 +105,7 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
 // {
 // }
 
-// void Sistema::seleccionarProductoAgregar(string codigo, int cantidad)
+// void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
 // {
 // }
 
@@ -120,7 +121,7 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
 // {
 // }
 
-// void Sistema::seleccionarProductoQuitar(string codigo, int cant)
+// void Sistema::seleccionarProductoQuitar(char codigo, int cant)
 // {
 // }
 
@@ -144,7 +145,7 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
 // {
 // }
 
-// void Sistema::seleccionarProductoBaja(string codigo)
+// void Sistema::seleccionarProductoBaja(char codigo)
 // {
 // }
 
@@ -152,9 +153,24 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
 // {
 // }
 
-// ICollectible Sistema::ingresarIdMozo(int idMozo)
-// {
-// }
+// INICIAR VENTA EN MESA
+
+DtAsignacion Sistema::ingresarIdMozo(int idMozo)
+{
+    IIterator *it = mozos->getIterator();
+    while (it->hasCurrent()) {
+        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
+        if (mozo != nullptr && mozo->getIdEmpleado() == idMozo) {
+            delete it;
+            int* mesasAsignadas = mozo->getMesasId(); // obtiene las mesas asignadas al mozo
+            return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
+        }
+        it->next();
+    }
+        // **IMPORTANTE**: si no encontrás el mozo, igualmente debes devolver algo, porque el retorno es no void
+    return DtAsignacion(); // o lanza excepción si querés
+
+}
 
 // ICollectible Sistema::elegirMesas(int numero, int cantidad)
 // {

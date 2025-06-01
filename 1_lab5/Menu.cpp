@@ -5,7 +5,7 @@ Menu::Menu(char codigo, string desc, float precio, string nom, float descMenu) :
 {
     this->nombre = nom;
     this->descuentoMenu = descMenu;
-    this->productosComunes = new OrderedDictionary(); // Inicializar con una instancia de ICollection
+    this->productosComunes = new OrderedDictionary(); // Inicializar con una instancia de IDiconary
     this->comun_menu = new OrderedDictionary();
 }
 
@@ -77,6 +77,10 @@ void Menu::darBaja()
     // lógica aquí
 }
 
+DtProducto* Menu::getDT() {
+    // Devuelve un DtProducto con los datos del menú
+    return new DtProducto(this->getCodigo(), this->getDescripcion(), this->getPrecio());
+}
 
 void Menu::agregarProducto(IDictionary *pc)
 {

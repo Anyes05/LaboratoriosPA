@@ -6,8 +6,7 @@
 #include "./datatypes/DtProducto.h"
 #include "./datatypes/DtComun.h"
 
-#include "ICollection/interfaces/ICollection.h"
-#include "ICollection/collections/OrderedDictionary.h"
+#include "./ICollection/collections/OrderedDictionary.h"
 
 class DtProducto;
 
