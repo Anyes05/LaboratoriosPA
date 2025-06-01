@@ -7,8 +7,7 @@
 #include "ICollection/collections/ListNode.h" 
 #include "ICollection/interfaces/IDictionary.h"
 #include "ICollection/interfaces/OrderedKey.h" 
-#include "ICollection/String.h"
-#include "ICollection/String.cpp"
+
 
 using namespace std;
 
@@ -21,7 +20,7 @@ private:
     float total;
     Factura* factura;
     IDictionary * productos; // lista de productos 
-    // ICollection * pedido;
+    ICollection * pedido;
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor

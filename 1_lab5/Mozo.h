@@ -20,7 +20,8 @@ public:
     ~Mozo(); // destructor
     // Getters y setters
     int getCantMesas();
-    void setCantMesas(int); 
+    void setCantMesas(int);
+    int* getMesasId();
     // metodos adicionales
     // set<Mesas> buscarMesa(); ??
     void agregarMesa(Mesa*); // agrega una mesa a la coleccion de mesas del mozo

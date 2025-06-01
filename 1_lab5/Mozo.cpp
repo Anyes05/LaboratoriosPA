@@ -19,7 +19,7 @@ void Mozo::setCantMesas(int cantMesas) {
 
 void Mozo::agregarMesa(Mesa* mesa) {
     IKey* k = new Integer(mesa->getNumeroMesa());
-    this->mesas->add(k, mesa); // Agrega la mesa al diccionario usando su número como clave
+    this->misMesas->add(k, mesa); // Agrega la mesa al diccionario usando su número como clave
 }
 
 void Mozo::eliminarMesa(Mesa* mesa) {
@@ -27,10 +27,28 @@ void Mozo::eliminarMesa(Mesa* mesa) {
         throw std::invalid_argument("No hay mesas para eliminar.");
     }
     IKey* k = new Integer(mesa->getNumeroMesa());
-    if (!mesas->member(k)) {
+    if (!misMesas->member(k)) {
         delete k; // Liberar memoria del objeto clave
         throw std::invalid_argument("La mesa no existe en la colección.");
     }
-    mesas->remove(k); 
+    misMesas->remove(k); 
     delete k;
 }
+
+int* Mozo::getMesasId() {
+    int* ids = new int[cantMesas];
+    IIterator* it = misMesas->getIterator();
+    int i = 0;
+    while (it->hasCurrent() && i < cantMesas) {
+        Mesa* mesa = dynamic_cast<Mesa*>(it->getCurrent());
+        if (mesa != nullptr) {
+            ids[i] = mesa->getNumeroMesa();
+            i++;
+        }
+        it->next();
+    }
+    
+    delete it; // Liberar el iterador
+    return ids; // Retorna un arreglo de IDs de las mesas
+}
+

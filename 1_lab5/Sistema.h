@@ -31,6 +31,13 @@ public:
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
     DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos);
+
+    /*------ INICIAR VENTA EN MESA ------*/
+    DtAsignacion ingresarIdMozo(int idMozo);    // devuele un DtAsignacion       
+    ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
+    void confirmarVentaEnMesa();
+
+
     
     ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     void seleccionarProductoAgregar(string codigo, int cantidad);
@@ -44,10 +51,7 @@ public:
     DtFactura generarFactura(DtVenta venta);
     ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     void seleccionarProductoBaja(string codigo);
-    void darBajaProducto();
-    ICollectible ingresarIdMozo(int idMozo);            // devuele una coleccion de DtAsignacion
-    ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
-    void confirmarVentaEnMesa();
+    void darBajaProducto();           
 };
 
 #endif

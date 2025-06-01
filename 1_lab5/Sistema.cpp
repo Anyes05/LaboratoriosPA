@@ -152,8 +152,20 @@ void Sistema::darBajaProducto()
 {
 }
 
-ICollectible Sistema::ingresarIdMozo(int idMozo)
+// INICIAR VENTA EN MESA
+
+DtAsignacion Sistema::ingresarIdMozo(int idMozo)
 {
+    IIterator *it = mozos->getIterator();
+    while (it->hasCurrent()) {
+        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
+        if (mozo != nullptr && mozo->getIdEmpleado() == idMozo) {
+            delete it;
+            int* mesasAsignadas = mozo->getMesasId(); // obtiene las mesas asignadas al mozo
+            return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
+        }
+        it->next();
+    }
 }
 
 ICollectible Sistema::elegirMesas(int numero, int cantidad)

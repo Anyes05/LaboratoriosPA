@@ -7,6 +7,7 @@ using namespace std;
 #include "ICollection/interfaces/IDictionary.h"
 #include "./datatypes/DtVenta.h"
 #include "./datatypes/DtFactura.h"
+#include "./datatypes/DtAsignacion.h"
 class DtVenta;
 
 class ISistema
@@ -31,7 +32,7 @@ public:
     virtual ICollectible *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     virtual void seleccionarProductoBaja(string codigo) = 0;           
     virtual void darBajaProducto() = 0;                                 
-    virtual ICollectible ingresarIdMozo(int idMozo) = 0;            // devuele una coleccion de DtAsignacion
+    virtual DtAsignacion ingresarIdMozo(int idMozo) = 0;            // devuele un DtAsignacion
     virtual ICollectible elegirMesas(int numero, int cantidad) = 0; // devuele una coleccion de DtMesas
     virtual void confirmarVentaEnMesa() = 0;
 
