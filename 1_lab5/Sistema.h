@@ -30,7 +30,7 @@ public:
     void darAltaProducto();
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
-    DtAsignacion ** calcularAsignacion(int cantMesas, int cantMozos);
+    DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos);
     
     ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     void seleccionarProductoAgregar(string codigo, int cantidad);

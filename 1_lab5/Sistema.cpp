@@ -55,16 +55,25 @@ void Sistema::darAltaProducto()
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
 // la cantidad de mozos deberia de estar relacionada de alguna forma con la cantidad que estan dados de alta?
 /*
-DtAsignacion ** calcularAsignacion(int cantMesas, int cantMozos) {
-    if (cantMesas <= 0 || cantMozos <= 0) { // podria ir en la capa de presentacion
+DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
+    if (cantMesas <= 0 && cantMozos <= 0) { // primero chequeo que las cantidades que me pasan sean validas 
         throw std::invalid_argument("La cantidad de mesas y mozos debe ser mayor a cero.");
-    }
+    } // podria ir en la capa de presentacion(? 
     int mesasPorMozo = cantMesas / cantMozos; // mesasXmozo
     int mesasExtra = cantMesas % cantMozos; // Mesas restantes
 
-    DtAsignacion **asignaciones = new DtAsignacion*[cantMozos];
+    if (mozos == nullptr) { // chequeo si hay mozos en la coleccion. o podria utilizar el metodo isEmpty() de IDictionary
+        throw std::runtime_error("La colección de mozos no está inicializada.");
+    }
+    if (mozos->getSize() <= cantMozos) { // chequeo si hay suficientes mozos. No podria pasar por parametro una cantMozos mayor a los que estan dados de alta en la coleccion mozos
+        throw std::runtime_error("No hay suficientes mozos para asignar las mesas.");
+    }
+
+    DtAsignacion **asignaciones = new DtAsignacion*[cantMozos]; // creo un arreglo de punteros a DtAsignacion, que sera lo que devuelva al final de la funcion
     int mesaActual = 1;
 
+    // tengo que crear la coleccion mesa e ir añadiando las mesas a cada mozo segun la cantidad de mesas que se me pasan en cantMesas
+    // de esto en realidad se encarga el mozo, con la funcion agregarMesa
     IIterator* it = mozos->getIterator();
     int i = 0;
 

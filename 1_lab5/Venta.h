@@ -21,6 +21,7 @@ private:
     float total;
     Factura* factura;
     IDictionary * productos; // lista de productos 
+    // ICollection * pedido;
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor
@@ -38,7 +39,7 @@ public:
     void setFactura(Factura* factura); 
     void setProductos(IDictionary * productos);
     //metodos
-    void eliminarMenu();
+    void eliminarMenu(); // donde esta esto en el diagrama de comunicacion? creo que no está o no le corresponde a venta 
     ListNode productosVenta();  
     bool activa();
     void eliminarProductoVenta();
