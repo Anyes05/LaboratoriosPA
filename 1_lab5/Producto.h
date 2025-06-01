@@ -4,29 +4,30 @@
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
 #include "./datatypes/DtProducto.h"
+#include "ICollection/String.h"
 using namespace std;
 
 class Producto : public ICollectible // una coleccion de productos
 {
 protected:
-    string codigo;
+    char codigo;
     string descripcion;
     float precio;
 
 public:
-    Producto(string, string, float); // constructor
+    Producto(char, string, float); // constructor
     virtual ~Producto();             // destructor
     // getterts y setters
-    string getCodigo();
+    char getCodigo();
     string getDescripcion();
     float getPrecio();
-    void setCodigo(string);
+    void setCodigo(char);
     void setDescripcion(string);
     void setPrecio(float);
     // metodos
     bool esProductoBaja();
-    bool esMenu(string codigo);
-    bool noExiste(string codigo);
+    bool esMenu(char codigo);
+    bool noExiste(char codigo);
     void cancelarBaja();
     virtual void darBaja() = 0;
     virtual DtProducto *getDT() = 0; 

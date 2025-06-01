@@ -1,8 +1,8 @@
 INTERFACES = ICollection/interfaces/
 COLECCIONES = ICollection/collections/
 
-all: DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o
-	g++ DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o -o programa
+all: DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o OrderedDictionary.o String.o IKey.o OrderedKey.o Integer.o main.o
+	g++ DtCliente.o DtFactura.o DtFacturaDomicilio.o DtMedioTransporte.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o OrderedDictionary.o String.o OrderedKey.o  IKey.o Integer.o -o programa
 
 ICollectible.o: $(INTERFACES)ICollectible.h
 	g++ -c $(INTERFACES)ICollectible.cpp
@@ -22,6 +22,21 @@ ListIterator.o: $(COLECCIONES)ListIterator.h ListNode.o
 List.o: $(COLECCIONES)List.h ICollection.o ListIterator.o
 	g++ -c $(COLECCIONES)List.cpp
 
+OrderedDictionary.o: $(COLECCIONES)OrderedDictionary.cpp
+	g++ -c $(COLECCIONES)OrderedDictionary.cpp
+
+OrderedKey.o: $(INTERFACES)OrderedKey.cpp
+	g++ -c $(INTERFACES)OrderedKey.cpp
+
+IKey.o: $(INTERFACES)IKey.cpp
+	g++ -c $(INTERFACES)IKey.cpp
+
+String.o: ICollection/String.cpp ICollectible.o OrderedKey.o
+	g++ -c ICollection/String.cpp
+
+
+Integer.o: ICollection/Integer.cpp ICollectible.o OrderedKey.o
+	g++ -c ICollection/Integer.cpp
 DtDireccion.o:
 	g++ -c "./datatypes/DtDireccion.cpp"
 

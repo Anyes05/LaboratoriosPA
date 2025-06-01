@@ -3,32 +3,28 @@
 #include <string.h>
 #include "String.h"
 
-
 String::String(const char* str){
-    if(str == NULL)
+    if(str == nullptr) 
         throw std::invalid_argument("str es NULL");
         
     int strSize = strlen(str);
-    s = strcpy(new char[strSize+1], str);
+    s = new char[strSize + 1];
+    strcpy(s, str);
 }
 
 ComparisonRes String::compare(OrderedKey* k) const
 {
     String *str = dynamic_cast<String *>(k);
-    if(str == NULL) 
+    if(str == nullptr) 
         throw std::invalid_argument("Invalid key k");
     
     int cmp = strcmp(s, str->s);
-    if(cmp == 0)
-        return EQUAL;
-    else if(cmp > 0)
-        return GREATER;
-    else
-        return LESSER;
+    if(cmp == 0) return EQUAL;
+    else if(cmp > 0) return GREATER;
+    else return LESSER;
 }
 
-const char *String::getValue() const
-{
+const char *String::getValue() const {
     return s;
 }
 

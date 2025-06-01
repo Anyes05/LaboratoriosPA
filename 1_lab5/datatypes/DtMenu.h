@@ -10,7 +10,7 @@ private:
     float descuentoMenu;
 
 public:
-    DtMenu(string, string, float, string, float);
+    DtMenu(char, string, float, string, float);
     ~DtMenu();
 
     string getNombre();

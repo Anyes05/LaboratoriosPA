@@ -9,14 +9,14 @@ using namespace std;
 class DtProducto : public ICollectible
 {
 private:
-    string codigo;
+    char codigo;
     string descripcion;
     float precio;
 public:
-    DtProducto(string, string, float);
+    DtProducto(char, string, float);
     virtual ~DtProducto();
     DtProducto();
-    string getCodigo();
+    char getCodigo();
     string getdescripcion();
     float getprecio();
 };

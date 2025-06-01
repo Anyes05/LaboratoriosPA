@@ -1,7 +1,7 @@
 #include "Producto.h"
 
 //constructor
-Producto::Producto(string cod, string desc, float pre){
+Producto::Producto(char cod, string desc, float pre){
     this->codigo= cod;
     this->descripcion=desc;
     this->precio=pre;
@@ -10,7 +10,7 @@ Producto::Producto(string cod, string desc, float pre){
 //destructor
 Producto::~Producto(){}
 
-string Producto::getCodigo(){
+char Producto::getCodigo(){
     return this->codigo;
 }
 string Producto::getDescripcion(){
@@ -20,7 +20,7 @@ float Producto::getPrecio(){
     return this->precio;
 }
 
-void Producto::setCodigo(string cod){
+void Producto::setCodigo(char cod){
     this-> codigo=cod;
 }
 
@@ -32,6 +32,6 @@ void Producto::setPrecio(float pre){
     this->precio=pre;
 }
 
-bool Producto::noExiste(string cod){
+bool Producto::noExiste(char cod){
     return this->getCodigo() != cod;
 }

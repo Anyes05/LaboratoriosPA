@@ -1,7 +1,7 @@
 #include "Comun.h"
 
 // Constructor
-Comun::Comun(string codigo, string descripcion, float precio) : Producto(codigo, descripcion, precio)
+Comun::Comun(char codigo, string descripcion, float precio) : Producto(codigo, descripcion, precio)
 {
 }
 

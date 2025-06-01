@@ -19,7 +19,7 @@ private:
     IDictionary *productosComunes; // coleccion de productos comunes que tiene un menu
     IDictionary *comun_menu;       // coleccion de comun_menu indica la cant de Productos l
 public:
-    Menu(string, string, float, string, float);
+    Menu(char, string, float, string, float);
     ~Menu();
 
     string getNombre();
@@ -36,7 +36,9 @@ public:
     bool contieneProducto(DtProducto); // creo que se pdeberia pasar solamente un codigo en esta y la siguiente funcion
     void eliminarProdcuto(DtProducto);
     bool esVacio(Menu *);
-    void darAltaMenu(string codigoMenu, string descripcion);
+    void darAltaMenu(char codigoMenu, string descripcion);
+    
+    void agregarMenu(char codigoMenu, string descripcion);
     DtProducto *getDT();
     void agregarProducto(IDictionary *pc);
 };
