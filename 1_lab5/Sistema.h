@@ -6,6 +6,7 @@
 #include "Mozo.h"
 #include "Mesa.h"
 #include "Producto.h"
+#include "datatypes/DtAsignacion.h"
 
 class Sistema : public ISistema
 {
@@ -27,6 +28,9 @@ public:
     void seleccionarProductoComun(string codigoComun, int cantProducto);
     void agregarProductoComun(string codigoComun, string descripcion, float precio);
     void darAltaProducto();
+
+    /*------ ASIGNAR MESAS A MOZOS ------*/
+    DtAsignacion ** calcularAsignacion(int cantMesas, int cantMozos);
     
     ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     void seleccionarProductoAgregar(string codigo, int cantidad);
