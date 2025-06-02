@@ -131,13 +131,13 @@ Pedido.o: Pedido.cpp ICollectible.o
 ISistema.o: ISistema.h
 	g++ -c ISistema.cpp
 
-Sistema.o: ISistema.o Sistema.h
+Sistema.o: ISistema.o 
 	g++ -c Sistema.cpp
 
 Factory.o: Factory.h ISistema.o Sistema.o
 	g++ -c Factory.cpp
 	
-main.o: ISistema.o Factory.o
+main.o: Factory.o
 	g++ -c main.cpp
 
 clean:

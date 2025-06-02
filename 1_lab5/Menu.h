@@ -36,7 +36,7 @@ public:
     void eliminarProdcuto(DtProducto);
     bool esVacio(Menu *);
     void darAltaMenu(char codigoMenu, string descripcion);
-    
+
     void agregarMenu(char codigoMenu, string descripcion);
     DtProducto *getDT();
     void agregarProducto(IDictionary *pc);
