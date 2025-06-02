@@ -25,7 +25,7 @@ private:
     int cantidadProductoComunSeleccionada = 0;
     Menu *menuRecordado = nullptr;
 
-public:
+    public:
     ~Sistema();
     static Sistema *getInstance();
 
@@ -41,10 +41,10 @@ public:
     DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
-    DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
-    // ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
-    // void confirmarVentaEnMesa();
-
+    DtAsignacion ingresarIdMozo(int idMozo);    // devuele un DtAsignacion       
+    ICollection *elegirMesas(int numero); // devuele una coleccion de DtMesas
+    //void confirmarVentaEnMesa();
+    
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);
     // void confirmarAgregarProducto();
@@ -57,7 +57,7 @@ public:
     // DtFactura generarFactura(DtVenta venta);
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
-    // void darBajaProducto();
+    // void darBajaProducto();           
 };
 
 #endif

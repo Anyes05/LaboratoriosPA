@@ -252,9 +252,31 @@ DtAsignacion Sistema::ingresarIdMozo(int idMozo)
     return DtAsignacion(); // o lanza excepción si querés
 }
 
-// ICollectible Sistema::elegirMesas(int numero, int cantidad)
-// {
-// }
+ICollection *Sistema::elegirMesas(int numero)
+{
+    if (mesas == nullptr || mesas->isEmpty())
+    {
+        throw std::runtime_error("No hay mesas disponibles.");
+    }
+    ICollection *mesasElegidas = new List(); // Colección para almacenar las mesas elegidas
+    IIterator *it = mesas->getIterator();
+    while (it->hasCurrent())
+    {
+        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
+        if (mesa != nullptr && mesa->getLocal() == nullptr && mesa->getNumeroMesa() == numero)
+        {
+            mesasElegidas->add(mesa); // Agrega la mesa a la colección de mesas elegidas
+        }
+        it->next();
+    }
+    delete it;
+    if (mesasElegidas->isEmpty())
+    {
+        delete mesasElegidas; // Si no se encontraron mesas, se elimina la colección vacía
+        throw std::runtime_error("No se encontraron mesas con el número especificado.");
+    }
+    return mesasElegidas; // Devuelve la colección de mesas elegidas
+}
 
 // void Sistema::confirmarVentaEnMesa()
 // {
