@@ -36,7 +36,7 @@ public:
     virtual DtAsignacion ingresarIdMozo(int idMozo) = 0;            // devuele un DtAsignacion
     // virtual ICollectible elegirMesas(int numero, int cantidad) = 0; // devuele una coleccion de DtMesas
     // virtual void confirmarVentaEnMesa() = 0;
-    // virtual DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) = 0;
+    virtual DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) = 0;
 };
 
 #endif

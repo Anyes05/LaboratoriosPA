@@ -55,8 +55,7 @@ bool Sistema::existeProducto(char codigo)
 // ASIGNAR MESAS A MOZOS
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
 // la cantidad de mozos deberia de estar relacionada de alguna forma con la cantidad que estan dados de alta?
-/*
-DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
+DtAsignacion** Sistema::calcularAsignacion(int cantMesas, int cantMozos) {
     if (cantMesas <= 0 && cantMozos <= 0) { // primero chequeo que las cantidades que me pasan sean validas 
         throw std::invalid_argument("La cantidad de mesas y mozos debe ser mayor a cero.");
     } // podria ir en la capa de presentacion(? 
@@ -87,10 +86,15 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
             mesasAsignadas[j] = mesaActual;
             Mesa* nuevaMesa = new Mesa(mesaActual);
             mozo->agregarMesa(nuevaMesa);
+
+            // tambien tengo que agregar la mesa a la coleccion global del sistema
+            IKey* keyMesa = new Integer(mesaActual);
+            /*this-> ?*/mesas->add(keyMesa, nuevaMesa); // agrego la mesa a la coleccion de mesas del sistema
+            
             mesaActual++;
         }
 
-        asignaciones[i] = new DtAsignacion(mozo->getId(), mesasAsignadas, cantidad, false);
+        asignaciones[i] = new DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, cantidad, false);
         delete[] mesasAsignadas;
         it->next();
         i++;
@@ -99,7 +103,6 @@ DtAsignacion** calcularAsignacion(int cantMesas, int cantMozos) {
     return asignaciones; // devuelve un arreglo de punteros a DtAsignacion
     
 }
-*/
 
 // ICollectible *Sistema::listarParaAgregar(int idMesa)
 // {
