@@ -2,8 +2,8 @@
 #define MESA_H
 
 #include <iostream>
+class Local;
 #include "ICollection/interfaces/ICollectible.h"
-#include "Local.h" 
 using namespace std;
 
 class Mesa : public ICollectible // una coleccion de mesas 
