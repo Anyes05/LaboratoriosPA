@@ -20,7 +20,8 @@ void menuAdministrador(ISistema* sistema) {
                 string descripcion;
                 float precio;
                 cout << "Código: "; cin >> codigo;
-                cout << "Descripción: "; cin.ignore(); getline(cin, descripcion);
+                cout << "Descripción: "; cin.ignore(); 
+                getline(cin, descripcion);
                 cout << "Precio: "; cin >> precio;
                 try {
                     sistema->agregarProductoComun(codigo, descripcion, precio);

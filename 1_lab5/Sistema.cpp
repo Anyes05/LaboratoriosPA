@@ -44,7 +44,8 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     // Guardar en productos
     char codStr[2] = {codigoMenu, '\0'};
     IKey *key = new String(codStr);
-    productos->add(key, nuevoMenu);
+    menuRecordado = nuevoMenu;
+    // productos->add(key, nuevoMenu);
 
     // Listar todos los productos comunes y devolverlos como DtComun
     IIterator *it = productos->getIterator();
@@ -69,6 +70,8 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     // Devolver la colección de DtComun
     return listaDtComunes;
 }
+
+// ESTA FUNCION TIENE QUE RI DENTRO DE UN WHILE EN EL MAIN!!!!!
 void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
 {
     // Buscar el producto Comun en la colección de productos
@@ -97,20 +100,23 @@ void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
     delete key;
 }
 
-void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio) {
+void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio)
+{
     // Verificar si ya existe un producto con ese código usando tu función
-    if (existeProducto(codigoComun)) {
+    if (existeProducto(codigoComun))
+    {
         throw invalid_argument("Ya existe un producto con ese código.");
     }
 
     // Crear el producto Comun
-    Comun* nuevoComun = new Comun(codigoComun, descripcion, precio);
+    Comun *nuevoComun = new Comun(codigoComun, descripcion, precio);
 
     // Guardar en la colección de productos
     char codStr[2] = {codigoComun, '\0'};
-    IKey* key = new String(codStr);
+    IKey *key = new String(codStr);
 
-    productos->add(key, nuevoComun);
+    productoComunSeleccionado = nuevoComun;
+    // productos->add(key, nuevoComun);
 }
 
 // void Sistema::darAltaProducto()

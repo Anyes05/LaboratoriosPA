@@ -15,14 +15,15 @@ class Sistema : public ISistema
 private:
     Sistema();
     static Sistema *instance;
-    IDictionary *productos;
-    IDictionary *ventas;
-    IDictionary *mozos;
-    IDictionary *mesas;
+    IDictionary *productos = new OrderedDictionary();
+    IDictionary *ventas = new OrderedDictionary();
+    IDictionary *mozos = new OrderedDictionary();
+    IDictionary *mesas = new OrderedDictionary();
 
     // Variables para recordar la selección
     Comun *productoComunSeleccionado = nullptr;
     int cantidadProductoComunSeleccionada = 0;
+    Menu *menuRecordado = nullptr;
 
 public:
     ~Sistema();
