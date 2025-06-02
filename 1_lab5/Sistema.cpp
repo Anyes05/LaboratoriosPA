@@ -38,9 +38,6 @@ bool Sistema::existeProducto(char codigo)
 
 IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
 {
-    if (existeProducto(codigoMenu)) {
-        throw invalid_argument("Ya existe un producto con ese código.");
-    }
     // Crear el menú
     Menu *nuevoMenu = new Menu(codigoMenu, descripcion, /*precio*/ 0, /*nombre*/ "", /*descuento*/ 0);
 
@@ -49,15 +46,7 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     IKey *key = new String(codStr);
     productos->add(key, nuevoMenu);
 
-    // Guardar el menú en la colección de menús del sistema
-    char codStr[2] = {codigoMenu, '\0'};
-    IKey *key = new String(codStr);
-    productos->add(key, nuevoMenu);
-
     // Listar todos los productos comunes y devolverlos como DtComun
-    IIterator *it = productos->getIterator();
-    OrderedDictionary *listaDtComunes = new OrderedDictionary();
-
     IIterator *it = productos->getIterator();
     OrderedDictionary *listaDtComunes = new OrderedDictionary();
 
@@ -68,7 +57,10 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
         if (comun != nullptr)
         {
             DtComun *dt = dynamic_cast<DtComun *>(comun->getDT());
-            listaDtComunes->add(key, dt);
+            // Usa el código del producto común como clave
+            char codComunStr[2] = {comun->getCodigo(), '\0'};
+            IKey *keyComun = new String(codComunStr);
+            listaDtComunes->add(keyComun, dt);
         }
         it->next();
     }
