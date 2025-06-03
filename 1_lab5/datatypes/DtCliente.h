@@ -9,15 +9,15 @@ using namespace std;
 
 class DtCliente {
 private:
-    string telefono;
-    string nombre;
+    char telefono;
+    char nombre;
     DtDireccion direccion;
 
 public:
     DtCliente();
-    DtCliente(string telefono, string nombre, DtDireccion direccion);
-    string getTelefono();
-    string getNombre();
+    DtCliente(char telefono, char nombre, DtDireccion direccion);
+    char getTelefono();
+    char getNombre();
     DtDireccion getDireccion();
 };
 

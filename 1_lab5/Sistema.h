@@ -9,6 +9,8 @@
 #include "Menu.h"
 #include "datatypes/DtAsignacion.h"
 #include "ICollection/Integer.h"
+#include "Cliente.h"
+#include "datatypes/DtCliente.h"
 
 class Sistema : public ISistema
 {
@@ -19,6 +21,7 @@ private:
     IDictionary *ventas = new OrderedDictionary();
     IDictionary *mozos = new OrderedDictionary();
     IDictionary *mesas = new OrderedDictionary();
+    IDictionary *clientes = new OrderedDictionary();
 
     // Variables para recordar la selección
     Comun *productoComunSeleccionado = nullptr;
@@ -26,6 +29,10 @@ private:
     int cantidadProductoComunSeleccionada = 0;
     Menu *menuRecordado = nullptr;
     IDictionary *productosComunSeleccionados = new OrderedDictionary();
+
+
+    Cliente *clienteTemp = nullptr;
+
 
 public:
     ~Sistema();
@@ -60,6 +67,16 @@ public:
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
+
+
+// ALTA CLIENTE
+DtCliente altaCliente(char telefono, char nombre, DtDireccion direccion);
+void cancelarAlta();
+void confirmarAlta();
+bool existeCliente(char telefono);
+
 };
+
+
 
 #endif

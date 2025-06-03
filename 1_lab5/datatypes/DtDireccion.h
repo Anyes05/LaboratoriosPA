@@ -8,25 +8,25 @@ using namespace std;
 class DtDireccion
 {
 private:
-    string nombreCalle;
+    char nombreCalle;
     int numero;
-    string calleEsquina;
+    char calleEsquina;
     bool apartamento;
     int numeroEdificio;
-    string nombreEdificio;
+    char nombreEdificio;
 
 public:
     DtDireccion();
-    DtDireccion(string, int, bool, string, int, string);
-    DtDireccion(string, int, string);
+    DtDireccion(char, int, bool, char, int, char);
+    DtDireccion(char, int, char);
     ~DtDireccion();
 
-    string getnombreCalle();
+    char getnombreCalle();
     int getnumero();
     bool getapartamento();
-    string getcalleEsquina();
+    char getcalleEsquina();
     int getnumeroEdificio();
-    string getnombreEdificio();
+    char getnombreEdificio();
 };
 
 #endif

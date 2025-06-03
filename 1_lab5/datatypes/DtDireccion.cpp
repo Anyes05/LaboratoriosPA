@@ -1,7 +1,7 @@
 #include "DtDireccion.h"
 #include <iostream>
 
-DtDireccion::DtDireccion(string calle, int num, bool apart, string esquina, int numEdificio, string nomEdificio){
+DtDireccion::DtDireccion(char calle, int num, bool apart, char esquina, int numEdificio, char nomEdificio){
     this->nombreCalle = calle;
     this->numero = num;
     this->apartamento = apart;
@@ -18,7 +18,7 @@ DtDireccion::DtDireccion() {
 }
 
 
-DtDireccion::DtDireccion(string calle, int num, string esquina){
+DtDireccion::DtDireccion(char calle, int num, char esquina){
     this->nombreCalle = calle;
     this->numero = num;
     this->calleEsquina = esquina;
@@ -26,7 +26,7 @@ DtDireccion::DtDireccion(string calle, int num, string esquina){
 
 DtDireccion::~DtDireccion(){}
 
-string DtDireccion::getnombreCalle(){
+char DtDireccion::getnombreCalle(){
     return this->nombreCalle;
 }
 
@@ -38,7 +38,7 @@ bool DtDireccion::getapartamento(){
     return this->apartamento;
 }
 
-string DtDireccion::getcalleEsquina(){
+char DtDireccion::getcalleEsquina(){
     return this->calleEsquina;
 }
 
@@ -46,6 +46,6 @@ int DtDireccion::getnumeroEdificio(){
     return this->numeroEdificio;
 }
 
-string DtDireccion::getnombreEdificio(){
+char DtDireccion::getnombreEdificio(){
     return this->nombreEdificio;
 }

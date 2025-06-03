@@ -342,3 +342,46 @@ ICollection *Sistema::elegirMesas(int numero)
 // void Sistema::confirmarVentaEnMesa()
 // {
 // }
+
+
+//ALTA CLIENTE
+
+DtCliente Sistema::altaCliente(char telefono, char nombre, DtDireccion direccion){
+    if (clienteTemp != nullptr){
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
+
+    clienteTemp = new Cliente(telefono, nombre, direccion);
+
+    return DtCliente(telefono, nombre, direccion);
+}
+
+void Sistema::confirmarAlta(){
+    char telefonoStr[2] = {clienteTemp->getTelefono(), '\0'};
+    IKey* keyCliente = new String(telefonoStr);
+    clientes->add(keyCliente, clienteTemp);
+
+    clienteTemp = nullptr;
+}
+
+void Sistema::cancelarAlta(){
+    if (clienteTemp != nullptr) {
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
+}
+
+bool Sistema::existeCliente(char telefono){
+    IIterator* it = clientes->getIterator();
+    while(it->hasCurrent()){
+        Cliente* c = dynamic_cast<Cliente*>(it->getCurrent());
+        if(c != nullptr && c->getTelefono() == telefono){
+            delete it;
+            return true;
+        }
+        it->next();
+    }
+    delete it;
+    return false;
+}

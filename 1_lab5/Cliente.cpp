@@ -1,14 +1,14 @@
 #include "Cliente.h"
 
-Cliente::Cliente(string nom, string tel, DtDireccion dir) : nombre(nom), telefono(tel), direccion(dir) {}
+Cliente::Cliente(char nom, char tel, DtDireccion dir) : nombre(nom), telefono(tel), direccion(dir) {}
 
 Cliente::~Cliente() {}
 
-string Cliente::getNombre() {
+char Cliente::getNombre() {
     return nombre;
 }
 
-string Cliente::getTelefono() {
+char Cliente::getTelefono() {
     return telefono;
 }
 
@@ -16,11 +16,11 @@ DtDireccion Cliente::getDireccion() {
     return direccion;
 }   
 
-void Cliente::setNombre(string nom) {
+void Cliente::setNombre(char nom) {
     nombre = nom;
 }
 
-void Cliente::setTelefono(string tel) {
+void Cliente::setTelefono(char tel) {
     telefono = tel;
 }
 
