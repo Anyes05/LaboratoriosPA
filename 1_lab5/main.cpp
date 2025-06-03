@@ -3,37 +3,231 @@
 
 using namespace std;
 
-void menuAdministrador(ISistema* sistema) {
+void menuAdministrador(ISistema *sistema)
+{
     int opcion;
-    do { //CODIGO TEMPORAL DE PRUEBA
+    do
+    { // CODIGO TEMPORAL DE PRUEBA
         cout << "\n--- Administrador ---" << endl;
         cout << "1. Alta Producto" << endl;
         cout << "2. Alta Cliente" << endl;
         cout << "3. Alta Empleado" << endl;
-        cout << "0. Volver" << endl;
+        cout << "4. Asignar mesas a mozos" << endl;
+        cout << "5. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
-        switch(opcion) {
-            case 1: { //CODIGO TEMPORAL DE PRUEBA
-                char codigo;
+        switch (opcion)
+        {
+        case 1:
+        {
+            system("clear");
+            cout << "ALTA DE PRODUCTO" << endl;
+            cout << "1 - Producto Común" << endl;
+            cout << "2 - Menú" << endl;
+            cout << "Seleccione una opción: ";
+            char tipoProducto;
+            cin >> tipoProducto;
+            cin.ignore();
+
+            if (tipoProducto == '1')
+            {
+                // Alta de producto común
+                char codigoComun;
                 string descripcion;
                 float precio;
-                cout << "Código: "; cin >> codigo;
-                cout << "Descripción: "; cin.ignore(); getline(cin, descripcion);
-                cout << "Precio: "; cin >> precio;
-                try {
-                    sistema->agregarProductoComun(codigo, descripcion, precio);
-                    cout << "Producto común agregado." << endl;
-                } catch (exception& e) {
-                    cout << "Error: " << e.what() << endl;
+
+                cout << "Ingrese el código del producto común: ";
+                cin >> codigoComun;
+                cin.ignore();
+
+                if (sistema->existeProducto(codigoComun))
+                {
+                    cout << "Ya existe un producto con ese código." << endl;
+                    cin.get();
+                    break;
                 }
-                break;
+
+                cout << "Ingrese la descripción: ";
+                getline(cin, descripcion);
+
+                cout << "Ingrese el precio: ";
+                cin >> precio;
+                cin.ignore();
+
+                sistema->agregarProductoComun(codigoComun, descripcion, precio);
+
+                cout << "¿Desea confirmar el alta del producto? (S/N): ";
+                char confirmar;
+                cin >> confirmar;
+                cin.ignore();
+
+                if (confirmar == 'S' || confirmar == 's')
+                {
+                    sistema->darAltaProducto();
+                    cout << "Producto común dado de alta correctamente." << endl;
+                }
+                else
+                {
+                    cout << "Alta de producto cancelada." << endl;
+                }
+                cin.get();
             }
-            case 2:
-                // Lógica 
-                break;
-            case 3:{
+            else if (tipoProducto == '2')
+            {
+                // Alta de menú
+                char codigoMenu;
+                string descripcionMenu;
+
+                cout << "Ingrese el código del menú: ";
+                cin >> codigoMenu;
+                cin.ignore();
+
+                if (sistema->existeProducto(codigoMenu))
+                {
+                    cout << "Ya existe un producto con ese código." << endl;
+                    cin.get();
+                    break;
+                }
+
+                cout << "Ingrese la descripción del menú: ";
+                getline(cin, descripcionMenu);
+
+                // Se obtiene la colección de productos comunes disponibles para agregar al menú
+                IDictionary *comunesDisponibles = sistema->agregarMenu(codigoMenu, descripcionMenu);
+
+                // Mostrar productos comunes disponibles
+                cout << "Productos comunes disponibles para agregar al menú:" << endl;
+                IIterator *it = comunesDisponibles->getIterator();
+                while (it->hasCurrent())
+                {
+                    DtComun *dt = dynamic_cast<DtComun *>(it->getCurrent());
+                    if (dt)
+                    {
+                        cout << "Código: " << dt->getCodigo() << " | Descripción: " << dt->getdescripcion() << " | Precio: " << dt->getprecio() << endl;
+                    }
+                    it->next();
+                }
+                delete it;
+
+                // Selección de productos comunes para el menú
+                char agregarOtro;
+                do
+                {
+                    bool productoValido = false;
+                    while (!productoValido)
+                    {
+                        char codigoComun;
+                        int cantidad;
+                        cout << "Ingrese el código del producto común a agregar al menú: ";
+                        cin >> codigoComun;
+                        cin.ignore();
+                        cout << "Ingrese la cantidad de este producto en el menú: ";
+                        cin >> cantidad;
+                        cin.ignore();
+
+                        try
+                        {
+                            sistema->seleccionarProductoComun(codigoComun, cantidad);
+                            productoValido = true; // Solo salgo si fue exitoso
+                        }
+                        catch (const std::exception &e)
+                        {
+                            cout << "Error: " << e.what() << endl;
+                            cout << "¿Desea intentar con otro código? (S/N): ";
+                            char reintentar;
+                            cin >> reintentar;
+                            cin.ignore();
+                            if (reintentar != 'S' && reintentar != 's')
+                            {
+                                // El usuario no quiere intentar de nuevo, salgo del sub-ciclo
+                                break;
+                            }
+                        }
+                    }
+
+                    cout << "¿Desea agregar otro producto común al menú? (S/N): ";
+                    cin >> agregarOtro;
+                    cin.ignore();
+                } while (agregarOtro == 'S' || agregarOtro == 's');
+
+                cout << "¿Desea confirmar el alta del menú? (S/N): ";
+                char confirmar;
+                cin >> confirmar;
+                cin.ignore();
+
+                if (confirmar == 'S' || confirmar == 's')
+                {
+                    sistema->darAltaProducto();
+                    cout << "Menú dado de alta correctamente." << endl;
+                }
+                else
+                {
+                    cout << "Alta de menú cancelada." << endl;
+                }
+                cin.get();
+            }
+            else
+            {
+                cout << "Opción inválida." << endl;
+                cin.get();
+            }
+            break;
+        }
+
+        case 2:
+            {
+
+            char telefono;
+            string nombre, calle, calleEsquina;
+            int nroPuerta;
+
+            system("clear");
+
+            cout<<"ALTA CLIENTE"<<endl;
+            cout<<"Ingrese telefono: ";
+            cin>>telefono;
+            cout<<"\nIngrese nombre: ";
+            cin>>nombre;
+            cout<<"\nIngrese calle: ";
+            cin>>calle;
+            cout<<"\nIngrese calleEsquina: ";
+            cin>>calleEsquina;
+            cout<<"\nIngrese nro de puerta: ";   
+            cin>>nroPuerta;
+            /*
+            hay que preguntar tambien si la dir es apartamento pa poner los datos
+            pero ahora me da paja 
+            */
+            DtDireccion direccion(calle, nroPuerta, calleEsquina);
+            
+            DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
+
+            cout<<"Cliente:"<<endl;
+            cout<<"Nombre: "<<dt.getNombre()<<endl;
+            cout<<"Telefono: "<<dt.getTelefono()<<endl;
+            cout<<"Dirección: "<<direccion.getnombreCalle()<<" y "<<direccion.getcalleEsquina()<<", "<<direccion.getnumero()<<endl;
+            cout<<endl;
+            
+            char opt;
+            cout<<"\n¿Desea confirmar? (s/n): ";
+            cin>>opt;
+
+            if(opt == 's' || opt == 'S'){
+                if(sistema->existeCliente(telefono)){
+                    cout<<"Ya existe un cliente con ese telefono. Alta cancelada."<<endl;
+                    sistema->cancelarAlta();
+                }else{
+                    sistema->confirmarAlta();
+                }
+            }else{
+                sistema->cancelarAlta();
+            }
+
+            }
+            break;
+
+        case 3:{
                cout << "--- Alta Empleado ---" << endl;
     
                 string nombre;
@@ -82,30 +276,67 @@ void menuAdministrador(ISistema* sistema) {
     break;
 }
             break;
-            case 4: cout << "Volviendo al menú principal..." << endl; break;
-            default: cout << "Opción inválida." << endl;
+        case 4:
+        {
+            system("clear");
+            cout << "ASIGNAR MESAS A MOZOS" << endl;
+            cout << "Ingrese la cantidad de mesas a asignar: " << endl;
+            int cantMesas;
+            cin >> cantMesas;
+            cin.ignore();
+            cout << "Ingrese la cantidad de mozos: " << endl;
+            int cantMozos;
+            cin >> cantMozos;
+            cin.ignore();
+
+            DtAsignacion** asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
+            for (int i = 0; i < cantMozos; i++)
+            {
+                DtAsignacion *asignacion = asignaciones[i];
+                cout << "Mozo ID: " << asignacion->getidMozo() << endl;
+                cout << "Mesas asignadas: ";
+                int *mesas = asignacion->getidMesas();
+                for (int j = 0; j < asignacion->getcantMesas(); j++)
+                {
+                    cout << mesas[j] << " ";
+                }
+                cout << endl;
+                delete asignacion; // Liberar memoria del DtAsignacion
+            }
+        case 5:
+            cout << "Volviendo al menú principal..." << endl;
+            break;
+        default:
+            cout << "Opción inválida." << endl;
+
         }
-    } while(opcion != 4);
+    } while (opcion != 4);
 }
 
-void menuMozo(ISistema* sistema) {
+void menuMozo(ISistema *sistema)
+{
     cout << "Menú Mozo (a implementar)" << endl;
 }
-void menuRepartidor(ISistema* sistema) {
+void menuRepartidor(ISistema *sistema)
+{
     cout << "Menú Repartidor (a implementar)" << endl;
 }
-void menuCliente(ISistema* sistema) {
+void menuCliente(ISistema *sistema)
+{
     cout << "Menú Cliente (a implementar)" << endl;
 }
-void cargarDatosPrueba(ISistema* sistema) {
+void cargarDatosPrueba(ISistema *sistema)
+{
     cout << "Cargar datos de prueba (a implementar)" << endl;
 }
 
-int main() {
-    ISistema* sistema = Factory::getSistema(); // Singleton a través de Factory
+int main()
+{
+    ISistema *sistema = Factory::getSistema(); // Singleton a través de Factory
 
     int opcion;
-    do {
+    do
+    {
         cout << "===== MENU PRINCIPAL =====" << endl;
         cout << "1. Administrador" << endl;
         cout << "2. Mozo" << endl;
@@ -116,16 +347,30 @@ int main() {
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
-        switch(opcion) {
-            case 1: menuAdministrador(sistema); break;
-            case 2: menuMozo(sistema); break;
-            case 3: menuRepartidor(sistema); break;
-            case 4: menuCliente(sistema); break;
-            case 5: cargarDatosPrueba(sistema); break;
-            case 6: cout << "Saliendo..." << endl; break;
-            default: cout << "Opción inválida." << endl;
+        switch (opcion)
+        {
+        case 1:
+            menuAdministrador(sistema);
+            break;
+        case 2:
+            menuMozo(sistema);
+            break;
+        case 3:
+            menuRepartidor(sistema);
+            break;
+        case 4:
+            menuCliente(sistema);
+            break;
+        case 5:
+            cargarDatosPrueba(sistema);
+            break;
+        case 6:
+            cout << "Saliendo..." << endl;
+            break;
+        default:
+            cout << "Opción inválida." << endl;
         }
-    } while(opcion != 6);
+    } while (opcion != 6);
 
     return 0;
 }

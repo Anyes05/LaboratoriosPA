@@ -1,3 +1,4 @@
+
 #ifndef SISTEMA_H
 #define SISTEMA_H
 #include <set>
@@ -65,6 +66,11 @@ void elegirMedio(Transporte medio);
 void darAltaEmpleado();
 
 void mostrarEmpleados();
+
+DtCliente altaCliente(char, string, DtDireccion);
+    void confirmarAlta();
+    void cancelarAlta();
+    bool existeCliente(char);
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);
     // void confirmarAgregarProducto();
@@ -79,6 +85,7 @@ void mostrarEmpleados();
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
 };
+
 
 
 #endif

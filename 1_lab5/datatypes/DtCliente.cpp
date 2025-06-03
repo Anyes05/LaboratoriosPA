@@ -2,13 +2,13 @@
 
 DtCliente::DtCliente() {}
 
-DtCliente::DtCliente(string telefono, string nombre, DtDireccion direccion) {
+DtCliente::DtCliente(char telefono, string nombre, DtDireccion direccion) {
     this->telefono = telefono;
     this->nombre = nombre;
     this->direccion = direccion;
 }
 
-string DtCliente::getTelefono() {
+char DtCliente::getTelefono() {
     return telefono;
 }
 

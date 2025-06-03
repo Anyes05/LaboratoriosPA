@@ -4,6 +4,7 @@
 
 #include "Producto.h"
 #include "Comun.h"
+#include "Comun-Menu.h"
 #include "./datatypes/DtProducto.h"
 #include "./datatypes/DtComun.h"
 
@@ -37,8 +38,8 @@ public:
     void eliminarProdcuto(DtProducto);
     bool esVacio(Menu *);
     void darAltaMenu(char codigoMenu, string descripcion);
-    
-    void agregarMenu(char codigoMenu, string descripcion);
+    void darAltaMenu(Comun *comun, int cantidad);
+
     DtProducto *getDT();
     void agregarProducto(IDictionary *pc);
 };

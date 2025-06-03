@@ -1,3 +1,4 @@
+
 #include "Menu.h"
 
 // Constructor
@@ -102,3 +103,16 @@ void Menu::agregarProducto(IDictionary *pc)
     }
     delete it;
 }
+
+void Menu::darAltaMenu(Comun *comun, int cantidad)
+{
+    // 1. Agregar el producto común al diccionario de productos comunes
+    char codStr[2] = {comun->getCodigo(), '\0'};
+    IKey *key = new String(codStr);
+    productosComunes->add(key, comun);
+
+    // 2. Crear la relación Comun_Menu y agregarla
+    Comun_Menu *relacion = new Comun_Menu(cantidad, comun);
+    comun_menu->add(key, relacion);
+}
+

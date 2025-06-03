@@ -1,3 +1,4 @@
+
 #include "DtAsignacion.h"
 #include <iostream>
 
@@ -13,6 +14,8 @@ DtAsignacion::DtAsignacion(int idMozo, int* idMesas, int cantMesas, bool ventas)
 }
 DtAsignacion::DtAsignacion(){}
 
+DtAsignacion::~DtAsignacion(){}
+
 int DtAsignacion::getidMozo(){
     return this->idMozo;
 }
@@ -27,3 +30,4 @@ int DtAsignacion::getcantMesas(){
 bool DtAsignacion::getventas(){
     return this->ventas;
 }
+

@@ -6,12 +6,19 @@
 using namespace std;
 #include "ICollection/interfaces/ICollectible.h"
 #include "ICollection/interfaces/IDictionary.h"
+#include "ICollection/interfaces/ICollection.h"
+
 #include "./datatypes/DtVenta.h"
 #include "./datatypes/DtFactura.h"
 #include "./datatypes/DtAsignacion.h"
+
 #include "./datatypes/DtMedioTransporte.h"
 #include "ICollection/interfaces/ICollection.h"
 #include "./datatypes/Transporte.h"
+
+#include "./datatypes/DtCliente.h"
+
+
 class DtVenta;
 
 class ISistema
@@ -22,6 +29,10 @@ public:
     // virtual ICollectible *agregarMenu(char codigoMenu, string descripcion) = 0; // devuele una coleccion de DtComun
     // virtual void seleccionarProductoComun(char codigoComun, int cantProducto) = 0;
     virtual void agregarProductoComun(char codigoComun, string descripcion, float precio) = 0;
+
+
+    virtual void darAltaProducto() = 0;
+
 
     // virtual void darAltaProducto() = 0;
     // virtual ICollectible *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
@@ -35,6 +46,7 @@ public:
     // virtual void aplicarDescuento(int descuento) = 0;
     // virtual DtFactura generarFactura(DtVenta venta) = 0;
     // virtual ICollectible *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
+
     // virtual void seleccionarProductoBaja(string codigo) = 0;           
     // virtual void darBajaProducto() = 0;                                 
     virtual DtAsignacion ingresarIdMozo(int idMozo) = 0;            // devuele un DtAsignacion
@@ -46,6 +58,19 @@ public:
     virtual void elegirMedio(Transporte medio) = 0;
     virtual void darAltaEmpleado() = 0;
     virtual void mostrarEmpleados() = 0;
+
+    // virtual void seleccionarProductoBaja(string codigo) = 0;
+    // virtual void darBajaProducto() = 0;
+    virtual DtAsignacion ingresarIdMozo(int idMozo) = 0; // devuele un DtAsignacion
+    virtual ICollection *elegirMesas(int numero) = 0; // devuele una coleccion de mesas
+    // virtual void confirmarVentaEnMesa() = 0;
+    virtual DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos) = 0;
+
+    DtCliente altaCliente(char, string, DtDireccion);
+    void confirmarAlta();
+    void cancelarAlta();
+    bool existeCliente(char);
+
 };
 
 #endif
