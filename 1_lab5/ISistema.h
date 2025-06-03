@@ -5,10 +5,12 @@
 using namespace std;
 #include "ICollection/interfaces/ICollectible.h"
 #include "ICollection/interfaces/IDictionary.h"
+#include "ICollection/interfaces/ICollection.h"
+
 #include "./datatypes/DtVenta.h"
 #include "./datatypes/DtFactura.h"
 #include "./datatypes/DtAsignacion.h"
-#include "ICollection/interfaces/ICollection.h"
+
 class DtVenta;
 
 class ISistema
@@ -19,7 +21,7 @@ public:
     virtual IDictionary *agregarMenu(char codigoMenu, string descripcion) = 0; // devuele una coleccion de DtComun
     virtual void seleccionarProductoComun(char codigoComun, int cantProducto) = 0;
     virtual void agregarProductoComun(char codigoComun, string descripcion, float precio) = 0;
-    //virtual void darAltaProducto() = 0;
+    virtual void darAltaProducto() = 0;
 
     // virtual ICollectible *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;

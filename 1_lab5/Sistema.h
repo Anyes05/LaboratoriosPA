@@ -15,15 +15,19 @@ class Sistema : public ISistema
 private:
     Sistema();
     static Sistema *instance;
-    IDictionary *productos;
-    IDictionary *ventas;
-    IDictionary *mozos;
-    IDictionary *mesas;
+    IDictionary *productos = new OrderedDictionary();
+    IDictionary *ventas = new OrderedDictionary();
+    IDictionary *mozos = new OrderedDictionary();
+    IDictionary *mesas = new OrderedDictionary();
+
     // Variables para recordar la selección
     Comun *productoComunSeleccionado = nullptr;
+    IDictionary *productosSeleccionados = new OrderedDictionary(); // clave: código, valor: cantidad (Integer)
     int cantidadProductoComunSeleccionada = 0;
+    Menu *menuRecordado = nullptr;
+    IDictionary *productosComunSeleccionados = new OrderedDictionary();
 
-    public:
+public:
     ~Sistema();
     static Sistema *getInstance();
 
@@ -33,16 +37,16 @@ private:
     IDictionary *agregarMenu(char codigoMenu, string descripcion); // devuele una coleccion de DtComun
     void seleccionarProductoComun(char codigoComun, int cantProducto);
     void agregarProductoComun(char codigoComun, string descripcion, float precio);
-    // void Sistema::darAltaProducto();
+    void darAltaProducto();
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
     DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
-    DtAsignacion ingresarIdMozo(int idMozo);    // devuele un DtAsignacion       
-    ICollection *elegirMesas(int numero); // devuele una coleccion de DtMesas
-    //void confirmarVentaEnMesa();
-    
+    DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
+    ICollection *elegirMesas(int numero);    // devuele una coleccion de DtMesas
+    // void confirmarVentaEnMesa();
+
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);
     // void confirmarAgregarProducto();
@@ -55,7 +59,7 @@ private:
     // DtFactura generarFactura(DtVenta venta);
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
-    // void darBajaProducto();           
+    // void darBajaProducto();
 };
 
 #endif
