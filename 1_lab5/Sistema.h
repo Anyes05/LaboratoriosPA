@@ -19,58 +19,49 @@ class Sistema : public ISistema
 private:
     Sistema();
     static Sistema *instance;
-    IDictionary *productos = new OrderedDictionary();
-    IDictionary *ventas = new OrderedDictionary();
-    IDictionary *mozos = new OrderedDictionary();
-    IDictionary *mesas = new OrderedDictionary();
-    IDictionary *repartidores = new OrderedDictionary();
-    IDictionary *empleados = new OrderedDictionary();
-    ICollection *medios = new List();
-    
-    // Variables para recordar la selección
-    Comun *productoComunSeleccionado = nullptr;
-    int cantidadProductoComunSeleccionada = 0;
-    string nomEmp;
-    Transporte medioSeleccionado;
-    int ultimoIdEmpleado = 0;
+    IDictionary *productos;
+    IDictionary *ventas;
+    IDictionary *mozos;
+    IDictionary *mesas;
 
 
+
+    IDictionary *repartidores;
+    IDictionary *empleados;
+    ICollection *medios;
 
 public:
     ~Sistema();
     static Sistema *getInstance();
 
     /*------ ALTA PRODCUTO -----*/
-
     bool existeProducto(char codigo);                              // retorna true si existe un producto con es codigo
     IDictionary *agregarMenu(char codigoMenu, string descripcion); // devuele una coleccion de DtComun
     void seleccionarProductoComun(char codigoComun, int cantProducto);
     void agregarProductoComun(char codigoComun, string descripcion, float precio);
-    // void Sistema::darAltaProducto();
+    void darAltaProducto();
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
     DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
     DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
-    // ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
-    // void confirmarVentaEnMesa();
+    ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
+    //void confirmarVentaEnMesa();
 
     /*------ ALTA EMPLEADO ------*/
-void agregarEmpleado(string nombre);
+    void agregarEmpleado(string nombre);
+    set<Transporte> listarMedioTransporte(); // devuelve una coleccion de DtMedioTransporte
+    void elegirMedio(Transporte medio);
+    void darAltaEmpleado();
+    void mostrarEmpleados();
 
-set<Transporte> listarMedioTransporte();// devuelve una coleccion de DtMedioTransporte
-
-void elegirMedio(Transporte medio);
-
-void darAltaEmpleado();
-
-void mostrarEmpleados();
-
-DtCliente altaCliente(char, string, DtDireccion);
+    /*----- ALTA CLIENTE -----*/
+    DtCliente altaCliente(char, string, DtDireccion);
     void confirmarAlta();
     void cancelarAlta();
     bool existeCliente(char);
+
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);
     // void confirmarAgregarProducto();
@@ -85,7 +76,5 @@ DtCliente altaCliente(char, string, DtDireccion);
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
 };
-
-
 
 #endif

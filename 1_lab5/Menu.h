@@ -1,4 +1,3 @@
-
 #ifndef MENU_H
 #define MENU_H
 
@@ -37,9 +36,8 @@ public:
     bool contieneProducto(DtProducto); // creo que se pdeberia pasar solamente un codigo en esta y la siguiente funcion
     void eliminarProdcuto(DtProducto);
     bool esVacio(Menu *);
-    void darAltaMenu(char codigoMenu, string descripcion);
-    void darAltaMenu(Comun *comun, int cantidad);
 
+    void darAltaMenu(Comun *comun, int cantidad);
     DtProducto *getDT();
     void agregarProducto(IDictionary *pc);
 };

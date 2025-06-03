@@ -1,4 +1,3 @@
-
 #include "Menu.h"
 
 // Constructor
@@ -115,4 +114,3 @@ void Menu::darAltaMenu(Comun *comun, int cantidad)
     Comun_Menu *relacion = new Comun_Menu(cantidad, comun);
     comun_menu->add(key, relacion);
 }
-

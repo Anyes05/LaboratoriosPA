@@ -13,7 +13,7 @@ void menuAdministrador(ISistema *sistema)
         cout << "2. Alta Cliente" << endl;
         cout << "3. Alta Empleado" << endl;
         cout << "4. Asignar mesas a mozos" << endl;
-        cout << "5. Volver" << endl;
+        cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
@@ -174,9 +174,8 @@ void menuAdministrador(ISistema *sistema)
             }
             break;
         }
-
         case 2:
-            {
+        {
 
             char telefono;
             string nombre, calle, calleEsquina;
@@ -184,98 +183,117 @@ void menuAdministrador(ISistema *sistema)
 
             system("clear");
 
-            cout<<"ALTA CLIENTE"<<endl;
-            cout<<"Ingrese telefono: ";
-            cin>>telefono;
-            cout<<"\nIngrese nombre: ";
-            cin>>nombre;
-            cout<<"\nIngrese calle: ";
-            cin>>calle;
-            cout<<"\nIngrese calleEsquina: ";
-            cin>>calleEsquina;
-            cout<<"\nIngrese nro de puerta: ";   
-            cin>>nroPuerta;
+            cout << "ALTA CLIENTE" << endl;
+            cout << "Ingrese telefono: ";
+            cin >> telefono;
+            cout << "\nIngrese nombre: ";
+            cin >> nombre;
+            cout << "\nIngrese calle: ";
+            cin >> calle;
+            cout << "\nIngrese calleEsquina: ";
+            cin >> calleEsquina;
+            cout << "\nIngrese nro de puerta: ";
+            cin >> nroPuerta;
             /*
             hay que preguntar tambien si la dir es apartamento pa poner los datos
-            pero ahora me da paja 
+            pero ahora me da paja
             */
             DtDireccion direccion(calle, nroPuerta, calleEsquina);
-            
+
             DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
 
-            cout<<"Cliente:"<<endl;
-            cout<<"Nombre: "<<dt.getNombre()<<endl;
-            cout<<"Telefono: "<<dt.getTelefono()<<endl;
-            cout<<"Dirección: "<<direccion.getnombreCalle()<<" y "<<direccion.getcalleEsquina()<<", "<<direccion.getnumero()<<endl;
-            cout<<endl;
-            
-            char opt;
-            cout<<"\n¿Desea confirmar? (s/n): ";
-            cin>>opt;
+            cout << "Cliente:" << endl;
+            cout << "Nombre: " << dt.getNombre() << endl;
+            cout << "Telefono: " << dt.getTelefono() << endl;
+            cout << "Dirección: " << direccion.getnombreCalle() << " y " << direccion.getcalleEsquina() << ", " << direccion.getnumero() << endl;
+            cout << endl;
 
-            if(opt == 's' || opt == 'S'){
-                if(sistema->existeCliente(telefono)){
-                    cout<<"Ya existe un cliente con ese telefono. Alta cancelada."<<endl;
+            char opt;
+            cout << "\n¿Desea confirmar? (s/n): ";
+            cin >> opt;
+
+            if (opt == 's' || opt == 'S')
+            {
+                if (sistema->existeCliente(telefono))
+                {
+                    cout << "Ya existe un cliente con ese telefono. Alta cancelada." << endl;
                     sistema->cancelarAlta();
-                }else{
+                }
+                else
+                {
                     sistema->confirmarAlta();
                 }
-            }else{
+            }
+            else
+            {
                 sistema->cancelarAlta();
             }
-
-            }
-            break;
-
-        case 3:{
-               cout << "--- Alta Empleado ---" << endl;
-    
-                string nombre;
-                cout << "Nombre del empleado: ";
-                cin.ignore(); 
-                getline(cin, nombre);
-                
-                sistema->agregarEmpleado(nombre);
-                // Mostrar medios y pedir selección
-                cout << "¿El empleado es repartidor? (s/n): ";
-    char esRepartidor;
-    cin >> esRepartidor;
-
-    if (esRepartidor == 's' || esRepartidor == 'S') {
-        cout << "Seleccione medio de transporte:" << endl;
-        cout << "1. Bicicleta" << endl;
-        cout << "2. Auto" << endl;
-        cout << "3. Moto" << endl;
-        cout << "Opción: ";
-        int opcion;
-        cin >> opcion;
-
-        Transporte medio;
-        switch (opcion) {
-            case 1: medio = Bicicleta; break;
-            case 2: medio = Auto; break;
-            case 3: medio = Moto; break;
-            default:
-                cout << "Opción inválida. Se asignará Bicicleta por defecto." << endl;
-                medio = Bicicleta;
         }
+        break;
 
-        sistema->elegirMedio(medio);
-    } else{
-        sistema->elegirMedio(Transporte::Ninguno);
-    }
-        
-    try {
-        sistema->darAltaEmpleado();
-        cout << "Empleado dado de alta con éxito." << endl;
-        sistema->mostrarEmpleados();
-    } catch (exception& e) {
-        cout << "Error al dar de alta al empleado: " << e.what() << endl;
-    }
+        case 3:
+        {
+            cout << "--- Alta Empleado ---" << endl;
 
-    break;
-}
+            string nombre;
+            cout << "Nombre del empleado: ";
+            cin.ignore();
+            getline(cin, nombre);
+
+            sistema->agregarEmpleado(nombre);
+            // Mostrar medios y pedir selección
+            cout << "¿El empleado es repartidor? (s/n): ";
+            char esRepartidor;
+            cin >> esRepartidor;
+
+            if (esRepartidor == 's' || esRepartidor == 'S')
+            {
+                cout << "Seleccione medio de transporte:" << endl;
+                cout << "1. Bicicleta" << endl;
+                cout << "2. Auto" << endl;
+                cout << "3. Moto" << endl;
+                cout << "Opción: ";
+                int opcion;
+                cin >> opcion;
+
+                Transporte medio;
+                switch (opcion)
+                {
+                case 1:
+                    medio = Bicicleta;
+                    break;
+                case 2:
+                    medio = Auto;
+                    break;
+                case 3:
+                    medio = Moto;
+                    break;
+                default:
+                    cout << "Opción inválida. Se asignará Bicicleta por defecto." << endl;
+                    medio = Bicicleta;
+                }
+
+                sistema->elegirMedio(medio);
+            }
+            else
+            {
+                sistema->elegirMedio(Transporte::Ninguno);
+            }
+
+            try
+            {
+                sistema->darAltaEmpleado();
+                cout << "Empleado dado de alta con éxito." << endl;
+                sistema->mostrarEmpleados();
+            }
+            catch (exception &e)
+            {
+                cout << "Error al dar de alta al empleado: " << e.what() << endl;
+            }
+
             break;
+        }
+        break;
         case 4:
         {
             system("clear");
@@ -289,7 +307,7 @@ void menuAdministrador(ISistema *sistema)
             cin >> cantMozos;
             cin.ignore();
 
-            DtAsignacion** asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
+            DtAsignacion **asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
             for (int i = 0; i < cantMozos; i++)
             {
                 DtAsignacion *asignacion = asignaciones[i];
@@ -303,14 +321,17 @@ void menuAdministrador(ISistema *sistema)
                 cout << endl;
                 delete asignacion; // Liberar memoria del DtAsignacion
             }
+        }
         case 5:
+        {
             cout << "Volviendo al menú principal..." << endl;
             break;
+        }
+
         default:
             cout << "Opción inválida." << endl;
-
         }
-    } while (opcion != 4);
+    } while (opcion != 0);
 }
 
 void menuMozo(ISistema *sistema)
