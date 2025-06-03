@@ -178,7 +178,8 @@ void menuAdministrador(ISistema *sistema)
         case 2:
             {
 
-            char telefono, nombre, calle, calleEsquina;
+            char telefono;
+            string nombre, calle, calleEsquina;
             int nroPuerta;
 
             system("clear");
@@ -198,7 +199,7 @@ void menuAdministrador(ISistema *sistema)
             hay que preguntar tambien si la dir es apartamento pa poner los datos
             pero ahora me da paja 
             */
-            DtDireccion direccion(calle, calleEsquina, nroPuerta);
+            DtDireccion direccion(calle, nroPuerta, calleEsquina);
             
             DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
 

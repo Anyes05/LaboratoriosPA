@@ -42,10 +42,10 @@ public:
     // virtual void confirmarVentaEnMesa() = 0;
     virtual DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos) = 0;
 
-    DtCliente altaCliente(char telefono, char nombre, DtDireccion direccion);
-    void cancelarAlta();
+    DtCliente altaCliente(char, string, DtDireccion);
     void confirmarAlta();
-    bool existeCliente(char telefono);
+    void cancelarAlta();
+    bool existeCliente(char);
 };
 
 #endif

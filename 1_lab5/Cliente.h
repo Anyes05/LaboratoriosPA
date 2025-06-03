@@ -10,17 +10,17 @@ class Cliente : public ICollectible // una coleccion de clientes.
 {
 protected:
     char telefono;
-    char nombre;
+    string nombre;
     DtDireccion direccion;
 public:
-    Cliente(char, char, DtDireccion); // constructor
+    Cliente(char, string, DtDireccion); // constructor
     ~Cliente(); // destructor
     
     // Getters y setters
-    char getNombre();
+    string getNombre();
     char getTelefono();
     DtDireccion getDireccion();
-    void setNombre(char); 
+    void setNombre(string); 
     void setTelefono(char);
     void setDireccion(DtDireccion);
 };

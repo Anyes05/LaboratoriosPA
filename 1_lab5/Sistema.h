@@ -30,9 +30,7 @@ private:
     Menu *menuRecordado = nullptr;
     IDictionary *productosComunSeleccionados = new OrderedDictionary();
 
-
-    Cliente *clienteTemp = nullptr;
-
+    Cliente *clienteTemp = nullptr; //guadra cliente temporalmente hasta confirmar
 
 public:
     ~Sistema();
@@ -68,15 +66,10 @@ public:
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
 
-
-// ALTA CLIENTE
-DtCliente altaCliente(char telefono, char nombre, DtDireccion direccion);
-void cancelarAlta();
-void confirmarAlta();
-bool existeCliente(char telefono);
-
+    DtCliente altaCliente(char, string, DtDireccion);
+    void confirmarAlta();
+    void cancelarAlta();
+    bool existeCliente(char);
 };
-
-
 
 #endif

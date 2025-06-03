@@ -17,16 +17,14 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
-/*----- DAR DE ALTA PRODUCTO -----*/
+// Declaraciones vacías para que el linker no dé error
 
 bool Sistema::existeProducto(char codigo)
 {
     IIterator *it = productos->getIterator();
-    while (it->hasCurrent())
-    {
+    while(it->hasCurrent()){
         Producto *p = dynamic_cast<Producto *>(it->getCurrent());
-        if (p != nullptr && !p->noExiste(codigo))
-        { // !noExiste -> sí existe  el producto
+        if(p != nullptr && !p->noExiste(codigo)) { // !noExiste -> sí existe  el producto
             delete it;
             return true;
         }
@@ -36,199 +34,63 @@ bool Sistema::existeProducto(char codigo)
     return false; // si no existe el codigo devuleve false
 }
 
-IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
-{
-    // Crear el menú
-    if (menuRecordado != nullptr)
-        delete menuRecordado; // Limpia si ya había uno recordado
-    menuRecordado = new Menu(codigoMenu, descripcion, /*precio*/ 0, /*nombre*/ "", /*descuento*/ 0);
-    // productosComunSeleccionados->removeAll(); // Opcional: limpiar selección anterior
+// ICollectible *Sistema::agregarMenu(char codigoMenu, string descripcion)
+// {
 
-    // Guardar en productos
-    char codStr[2] = {codigoMenu, '\0'};
-    IKey *key = new String(codStr);
-    // productos->add(key, nuevoMenu);
+// }
 
-    // Listar todos los productos comunes y devolverlos como DtComun
-    IIterator *it = productos->getIterator();
-    OrderedDictionary *listaDtComunes = new OrderedDictionary();
+// void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
+// {
+// }
 
-    while (it->hasCurrent())
-    {
-        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
-        Comun *comun = dynamic_cast<Comun *>(prod);
-        if (comun != nullptr)
-        {
-            DtComun *dt = dynamic_cast<DtComun *>(comun->getDT());
-            // Usa el código del producto común como clave
-            char codComunStr[2] = {comun->getCodigo(), '\0'};
-            IKey *keyComun = new String(codComunStr);
-            listaDtComunes->add(keyComun, dt);
-        }
-        it->next();
-    }
-    delete it;
+// void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio)
+// {
+// }
 
-    // Devolver la colección de DtComun
-    return listaDtComunes;
-}
+// void Sistema::darAltaProducto()
+// {
+// }
 
-void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
-{
-    // Buscar el producto Comun en la colección de productos
-    char codStr[2] = {codigoComun, '\0'};
-    IKey *key = new String(codStr);
 
-    if (!productos->member(key))
-    {
-        delete key;
-        throw invalid_argument("No existe un producto Comun con ese código.");
-    }
-
-    Producto *prod = dynamic_cast<Producto *>(productos->find(key));
-    Comun *comun = dynamic_cast<Comun *>(prod);
-
-    if (comun == nullptr)
-    {
-        delete key;
-        throw invalid_argument("El producto con ese código no es de tipo Comun.");
-    }
-
-    // Recordar el objeto Comun y la cantidad seleccionada
-    productosComunSeleccionados->add(key, new Integer(cantProducto));
-}
-
-void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio)
-{
-    // Verificar si ya existe un producto con ese código usando tu función
-    if (existeProducto(codigoComun))
-    {
-        throw invalid_argument("Ya existe un producto con ese código.");
-    }
-
-    // Crear el producto Comun
-    Comun *nuevoComun = new Comun(codigoComun, descripcion, precio);
-
-    // Guardar en la colección de productos
-    char codStr[2] = {codigoComun, '\0'};
-    IKey *key = new String(codStr);
-
-    productoComunSeleccionado = nuevoComun;
-    // productos->add(key, nuevoComun);
-}
-
-void Sistema::darAltaProducto()
-{
-    if (menuRecordado != nullptr)
-    {
-        // 1. Recorrer productosComunSeleccionados y delegar a Menu
-        IIterator *keyIt = productosComunSeleccionados->getIterator();
-        while (keyIt->hasCurrent())
-        {
-            IKey *keySel = dynamic_cast<IKey *>(keyIt->getCurrent());
-            Integer *cantidad = dynamic_cast<Integer *>(productosComunSeleccionados->find(keySel));
-            Comun *comun = nullptr;
-
-            // Extraer el código del producto desde la clave String
-            String *strKey = dynamic_cast<String *>(keySel);
-            char codigo = strKey->getValue()[0]; // Suponiendo que getValue() devuelve un const char*
-
-            // Buscar el producto en 'productos' comparando el código
-            IIterator *prodIt = productos->getIterator();
-            while (prodIt->hasCurrent())
-            {
-                Producto *prod = dynamic_cast<Producto *>(prodIt->getCurrent());
-                if (prod && prod->getCodigo() == codigo)
-                {
-                    comun = dynamic_cast<Comun *>(prod);
-                    break;
-                }
-                prodIt->next();
-            }
-            delete prodIt;
-
-            if (comun != nullptr && cantidad != nullptr)
-            {
-                menuRecordado->darAltaMenu(comun, cantidad->getValue());
-            }
-            keyIt->next();
-        }
-        delete keyIt;
-
-        // 2. Agregar el menú a la colección de productos
-        char codStr[2] = {menuRecordado->getCodigo(), '\0'};
-        IKey *keyMenu = new String(codStr);
-        productos->add(keyMenu, menuRecordado);
-
-        // 3. Limpiar variables recordadas
-        menuRecordado = nullptr;
-        // Limpiar productosComunSeleccionados
-        IIterator *clearIt = productosComunSeleccionados->getIterator();
-        while (clearIt->hasCurrent())
-        {
-            IKey *key = dynamic_cast<IKey *>(clearIt->getCurrent());
-            if (key != nullptr)
-            {
-                productosComunSeleccionados->remove(key);
-            }
-            clearIt->next();
-        }
-        delete clearIt;
-    }
-    else if (productoComunSeleccionado != nullptr)
-    {
-        // Producto común: solo agregarlo
-        char codStr[2] = {productoComunSeleccionado->getCodigo(), '\0'};
-        IKey *key = new String(codStr);
-        productos->add(key, productoComunSeleccionado);
-        productoComunSeleccionado = nullptr;
-    }
-}
-/*------ ASIGNAR MESAS A MOZOS ------*/
+// ASIGNAR MESAS A MOZOS
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
 // la cantidad de mozos deberia de estar relacionada de alguna forma con la cantidad que estan dados de alta?
-DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
-{
-    if (cantMesas <= 0 && cantMozos <= 0)
-    { // primero chequeo que las cantidades que me pasan sean validas
+DtAsignacion** Sistema::calcularAsignacion(int cantMesas, int cantMozos) {
+    if (cantMesas <= 0 && cantMozos <= 0) { // primero chequeo que las cantidades que me pasan sean validas 
         throw std::invalid_argument("La cantidad de mesas y mozos debe ser mayor a cero.");
-    } // podria ir en la capa de presentacion(?
+    } // podria ir en la capa de presentacion(? 
     int mesasPorMozo = cantMesas / cantMozos; // mesasXmozo
-    int mesasExtra = cantMesas % cantMozos;   // Mesas restantes
+    int mesasExtra = cantMesas % cantMozos; // Mesas restantes
 
-    if (mozos == nullptr)
-    { // chequeo si hay mozos en la coleccion. o podria utilizar el metodo isEmpty() de IDictionary
+    if (mozos == nullptr) { // chequeo si hay mozos en la coleccion. o podria utilizar el metodo isEmpty() de IDictionary
         throw std::runtime_error("La colección de mozos no está inicializada.");
     }
-    if (mozos->getSize() <= cantMozos)
-    { // chequeo si hay suficientes mozos. No podria pasar por parametro una cantMozos mayor a los que estan dados de alta en la coleccion mozos
+    if (mozos->getSize() <= cantMozos) { // chequeo si hay suficientes mozos. No podria pasar por parametro una cantMozos mayor a los que estan dados de alta en la coleccion mozos
         throw std::runtime_error("No hay suficientes mozos para asignar las mesas.");
     }
 
-    DtAsignacion **asignaciones = new DtAsignacion *[cantMozos]; // creo un arreglo de punteros a DtAsignacion, que sera lo que devuelva al final de la funcion
+    DtAsignacion **asignaciones = new DtAsignacion*[cantMozos]; // creo un arreglo de punteros a DtAsignacion, que sera lo que devuelva al final de la funcion
     int mesaActual = 1;
 
     // tengo que crear la coleccion mesa e ir añadiando las mesas a cada mozo segun la cantidad de mesas que se me pasan en cantMesas
     // de esto en realidad se encarga el mozo, con la funcion agregarMesa
-    IIterator *it = mozos->getIterator();
+    IIterator* it = mozos->getIterator();
     int i = 0;
 
-    while (it->hasCurrent() && i < cantMozos)
-    {
-        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent());
+    while (it->hasCurrent() && i < cantMozos) {
+        Mozo* mozo = dynamic_cast<Mozo*>(it->getCurrent());
         int cantidad = mesasPorMozo + (i < mesasExtra ? 1 : 0);
-        int *mesasAsignadas = new int[cantidad];
+        int* mesasAsignadas = new int[cantidad];
 
-        for (int j = 0; j < cantidad; j++)
-        {
+        for (int j = 0; j < cantidad; j++) {
             mesasAsignadas[j] = mesaActual;
-            Mesa *nuevaMesa = new Mesa(mesaActual);
+            Mesa* nuevaMesa = new Mesa(mesaActual);
             mozo->agregarMesa(nuevaMesa);
 
             // tambien tengo que agregar la mesa a la coleccion global del sistema
-            IKey *keyMesa = new Integer(mesaActual);
-            /*this-> ?*/ mesas->add(keyMesa, nuevaMesa); // agrego la mesa a la coleccion de mesas del sistema
-
+            IKey* keyMesa = new Integer(mesaActual);
+            /*this-> ?*/mesas->add(keyMesa, nuevaMesa); // agrego la mesa a la coleccion de mesas del sistema
+            
             mesaActual++;
         }
 
@@ -239,6 +101,7 @@ DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
     }
     delete it;
     return asignaciones; // devuelve un arreglo de punteros a DtAsignacion
+    
 }
 
 // ICollectible *Sistema::listarParaAgregar(int idMesa)
@@ -293,51 +156,28 @@ DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 // {
 // }
 
-/*----- INICIAR VENTA EN MESA -----*/
+// INICIAR VENTA EN MESA
 
 DtAsignacion Sistema::ingresarIdMozo(int idMozo)
 {
     IIterator *it = mozos->getIterator();
-    while (it->hasCurrent())
-    {
+    while (it->hasCurrent()) {
         Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
-        if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
-        {
+        if (mozo != nullptr && mozo->getIdEmpleado() == idMozo) {
             delete it;
-            int *mesasAsignadas = mozo->getMesasId();                                                // obtiene las mesas asignadas al mozo
+            int* mesasAsignadas = mozo->getMesasId(); // obtiene las mesas asignadas al mozo
             return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
         }
         it->next();
     }
-    // **IMPORTANTE**: si no encontrás el mozo, igualmente debes devolver algo, porque el retorno es no void
+        // **IMPORTANTE**: si no encontrás el mozo, igualmente debes devolver algo, porque el retorno es no void
     return DtAsignacion(); // o lanza excepción si querés
+
 }
 
-ICollection *Sistema::elegirMesas(int numero)
-{
-    if (mesas == nullptr || mesas->isEmpty())
-    {
-        throw std::runtime_error("No hay mesas disponibles.");
-    }
-    ICollection *mesasElegidas = new List(); // Colección para almacenar las mesas elegidas
-    IIterator *it = mesas->getIterator();
-    while (it->hasCurrent())
-    {
-        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
-        if (mesa != nullptr && mesa->getLocal() == nullptr && mesa->getNumeroMesa() == numero)
-        {
-            mesasElegidas->add(mesa); // Agrega la mesa a la colección de mesas elegidas
-        }
-        it->next();
-    }
-    delete it;
-    if (mesasElegidas->isEmpty())
-    {
-        delete mesasElegidas; // Si no se encontraron mesas, se elimina la colección vacía
-        throw std::runtime_error("No se encontraron mesas con el número especificado.");
-    }
-    return mesasElegidas; // Devuelve la colección de mesas elegidas
-}
+// ICollectible Sistema::elegirMesas(int numero, int cantidad)
+// {
+// }
 
 // void Sistema::confirmarVentaEnMesa()
 // {
@@ -345,8 +185,7 @@ ICollection *Sistema::elegirMesas(int numero)
 
 
 //ALTA CLIENTE
-
-DtCliente Sistema::altaCliente(char telefono, char nombre, DtDireccion direccion){
+DtCliente Sistema::altaCliente(char telefono, string nombre, DtDireccion direccion){
     if (clienteTemp != nullptr){
         delete clienteTemp;
         clienteTemp = nullptr;
@@ -358,15 +197,15 @@ DtCliente Sistema::altaCliente(char telefono, char nombre, DtDireccion direccion
 }
 
 void Sistema::confirmarAlta(){
-    char telefonoStr[2] = {clienteTemp->getTelefono(), '\0'};
-    IKey* keyCliente = new String(telefonoStr);
+    //?
+    IKey* keyCliente = new String(clienteTemp->getTelefono()); 
     clientes->add(keyCliente, clienteTemp);
 
     clienteTemp = nullptr;
 }
 
 void Sistema::cancelarAlta(){
-    if (clienteTemp != nullptr) {
+    if(clienteTemp != nullptr){
         delete clienteTemp;
         clienteTemp = nullptr;
     }
