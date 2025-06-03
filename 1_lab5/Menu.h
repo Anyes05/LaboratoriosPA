@@ -1,3 +1,4 @@
+
 #ifndef MENU_H
 #define MENU_H
 
@@ -37,8 +38,8 @@ public:
     void eliminarProdcuto(DtProducto);
     bool esVacio(Menu *);
     void darAltaMenu(char codigoMenu, string descripcion);
-
     void darAltaMenu(Comun *comun, int cantidad);
+
     DtProducto *getDT();
     void agregarProducto(IDictionary *pc);
 };

@@ -4,6 +4,9 @@ Sistema *Sistema::instance = NULL;
 
 Sistema::Sistema()
 {
+    medios->add(new DtMedioTransporte("Bicicleta"));
+    medios->add(new DtMedioTransporte("Moto"));
+    medios->add(new DtMedioTransporte("Auto"));
 }
 
 Sistema::~Sistema()
@@ -182,14 +185,123 @@ DtAsignacion Sistema::ingresarIdMozo(int idMozo)
 
 }
 
-// ICollectible Sistema::elegirMesas(int numero, int cantidad)
-// {
-// }
+ICollection *Sistema::elegirMesas(int numero)
+{
+    if (mesas == nullptr || mesas->isEmpty())
+    {
+        throw std::runtime_error("No hay mesas disponibles.");
+    }
+    ICollection *mesasElegidas = new List(); // Colección para almacenar las mesas elegidas
+    IIterator *it = mesas->getIterator();
+    while (it->hasCurrent())
+    {
+        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
+        if (mesa != nullptr && mesa->getLocal() == nullptr && mesa->getNumeroMesa() == numero)
+        {
+            mesasElegidas->add(mesa); // Agrega la mesa a la colección de mesas elegidas
+        }
+        it->next();
+    }
+    delete it;
+    if (mesasElegidas->isEmpty())
+    {
+        delete mesasElegidas; // Si no se encontraron mesas, se elimina la colección vacía
+        throw std::runtime_error("No se encontraron mesas con el número especificado.");
+    }
+    return mesasElegidas; // Devuelve la colección de mesas elegidas
+}
 
 // void Sistema::confirmarVentaEnMesa()
 // {
 // }
 
+
+
+/*------ ALTA EMPLEADO ------*/
+void Sistema::agregarEmpleado(string nombre){
+    this->nomEmp = nombre;
+
+}
+
+set<Transporte> Sistema::listarMedioTransporte(){
+    return { Bicicleta, Auto, Moto };
+}
+
+void Sistema::elegirMedio(Transporte medio){
+    this->medioSeleccionado = medio;
+}
+
+string transporteToString(Transporte t) {
+    switch(t) {
+        case Transporte::Bicicleta: return "Bicicleta";
+        case Transporte::Auto: return "Auto";
+        case Transporte::Moto: return "Moto";
+        case Transporte::Ninguno: return "";
+        default: return "Desconocido";
+    }
+}
+//Creo que no iría ningún parámetro
+void Sistema::darAltaEmpleado(){
+    int idEmpleado = ++ultimoIdEmpleado; // Empieza desde 1
+
+    IKey* key = new Integer(idEmpleado);
+
+    Empleado* nuevoEmpleado;
+
+    if (medioSeleccionado != Transporte::Ninguno) {
+        // Es repartidor
+        string medioStr = transporteToString(this->medioSeleccionado);
+        nuevoEmpleado = new Repartidor(nomEmp, idEmpleado, medioStr);
+        repartidores->add(key, nuevoEmpleado);
+    } else {
+        // Es mozo
+        nuevoEmpleado = new Mozo(nomEmp,idEmpleado , 0);
+        mozos->add(key, nuevoEmpleado);
+    }
+
+    //colección general
+    empleados->add(key, nuevoEmpleado);
+
+}
+
+
+void Sistema::mostrarEmpleados() {
+    cout << "\n--- Empleados registrados ---" << endl;
+
+    IIterator* itEmp = empleados->getIterator();
+    while (itEmp->hasCurrent()) {
+        Empleado* emp = dynamic_cast<Empleado*>(itEmp->getCurrent());
+        if (emp != nullptr) {
+            cout << "ID: " << emp->getIdEmpleado() << ", Nombre: " << emp->getNombre() << endl;
+        }
+        itEmp->next();
+    }
+    delete itEmp;
+
+    cout << "\n--- Mozos registrados ---" << endl;
+
+    IIterator* itMozo = mozos->getIterator();
+    while (itMozo->hasCurrent()) {
+        Mozo* mozo = dynamic_cast<Mozo*>(itMozo->getCurrent());
+        if (mozo != nullptr) {
+            cout << "ID: " << mozo->getIdEmpleado() << ", Nombre: " << mozo->getNombre() << endl;
+        }
+        itMozo->next();
+    }
+    delete itMozo;
+
+    cout << "\n--- Repartidores registrados ---" << endl;
+
+    IIterator* itrep = repartidores->getIterator();
+    while (itrep->hasCurrent()) {
+        Repartidor* rep = dynamic_cast<Repartidor*>(itrep->getCurrent());
+        if (rep != nullptr) {
+            cout << "ID: " << rep->getIdEmpleado() << ", Nombre: " << rep->getNombre() << ", Medio: "<< rep->getTransporte() << endl;
+        }
+        itrep->next();
+    }
+    delete itrep;
+}
 
 //ALTA CLIENTE
 DtCliente Sistema::altaCliente(char telefono, string nombre, DtDireccion direccion){
@@ -231,3 +343,4 @@ bool Sistema::existeCliente(char telefono){
     delete it;
     return false;
 }
+

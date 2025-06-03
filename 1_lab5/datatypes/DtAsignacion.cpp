@@ -1,3 +1,4 @@
+
 #include "DtAsignacion.h"
 #include <iostream>
 
@@ -29,3 +30,4 @@ int DtAsignacion::getcantMesas(){
 bool DtAsignacion::getventas(){
     return this->ventas;
 }
+
