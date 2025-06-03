@@ -10,6 +10,7 @@ using namespace std;
 #include "./datatypes/DtVenta.h"
 #include "./datatypes/DtFactura.h"
 #include "./datatypes/DtAsignacion.h"
+#include "./datatypes/DtCliente.h"
 
 class DtVenta;
 
@@ -40,6 +41,11 @@ public:
     virtual ICollection *elegirMesas(int numero) = 0; // devuele una coleccion de mesas
     // virtual void confirmarVentaEnMesa() = 0;
     virtual DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos) = 0;
+
+    DtCliente altaCliente(char, string, DtDireccion);
+    void confirmarAlta();
+    void cancelarAlta();
+    bool existeCliente(char);
 };
 
 #endif

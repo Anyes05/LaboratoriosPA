@@ -174,11 +174,60 @@ void menuAdministrador(ISistema *sistema)
             }
             break;
         }
+
         case 2:
-            // Lógica
+            {
+
+            char telefono;
+            string nombre, calle, calleEsquina;
+            int nroPuerta;
+
+            system("clear");
+
+            cout<<"ALTA CLIENTE"<<endl;
+            cout<<"Ingrese telefono: ";
+            cin>>telefono;
+            cout<<"\nIngrese nombre: ";
+            cin>>nombre;
+            cout<<"\nIngrese calle: ";
+            cin>>calle;
+            cout<<"\nIngrese calleEsquina: ";
+            cin>>calleEsquina;
+            cout<<"\nIngrese nro de puerta: ";   
+            cin>>nroPuerta;
+            /*
+            hay que preguntar tambien si la dir es apartamento pa poner los datos
+            pero ahora me da paja 
+            */
+            DtDireccion direccion(calle, nroPuerta, calleEsquina);
+            
+            DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
+
+            cout<<"Cliente:"<<endl;
+            cout<<"Nombre: "<<dt.getNombre()<<endl;
+            cout<<"Telefono: "<<dt.getTelefono()<<endl;
+            cout<<"Dirección: "<<direccion.getnombreCalle()<<" y "<<direccion.getcalleEsquina()<<", "<<direccion.getnumero()<<endl;
+            cout<<endl;
+            
+            char opt;
+            cout<<"\n¿Desea confirmar? (s/n): ";
+            cin>>opt;
+
+            if(opt == 's' || opt == 'S'){
+                if(sistema->existeCliente(telefono)){
+                    cout<<"Ya existe un cliente con ese telefono. Alta cancelada."<<endl;
+                    sistema->cancelarAlta();
+                }else{
+                    sistema->confirmarAlta();
+                }
+            }else{
+                sistema->cancelarAlta();
+            }
+
+            }
             break;
+
         case 3:
-            // Lógica
             break;
         case 4:
         {

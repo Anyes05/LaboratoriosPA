@@ -26,7 +26,7 @@ public:
     bool getapartamento();
     string getcalleEsquina();
     int getnumeroEdificio();
-    string getnombreEdificio();
+    char getnombreEdificio();
 };
 
 #endif
