@@ -39,12 +39,14 @@ bool Sistema::existeProducto(char codigo)
 IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
 {
     // Crear el menú
-    Menu *nuevoMenu = new Menu(codigoMenu, descripcion, /*precio*/ 0, /*nombre*/ "", /*descuento*/ 0);
+    if (menuRecordado != nullptr)
+        delete menuRecordado; // Limpia si ya había uno recordado
+    menuRecordado = new Menu(codigoMenu, descripcion, /*precio*/ 0, /*nombre*/ "", /*descuento*/ 0);
+    // productosComunSeleccionados->removeAll(); // Opcional: limpiar selección anterior
 
     // Guardar en productos
     char codStr[2] = {codigoMenu, '\0'};
     IKey *key = new String(codStr);
-    menuRecordado = nuevoMenu;
     // productos->add(key, nuevoMenu);
 
     // Listar todos los productos comunes y devolverlos como DtComun
@@ -71,7 +73,6 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     return listaDtComunes;
 }
 
-// ESTA FUNCION TIENE QUE RI DENTRO DE UN WHILE EN EL MAIN!!!!!
 void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
 {
     // Buscar el producto Comun en la colección de productos
@@ -94,10 +95,7 @@ void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
     }
 
     // Recordar el objeto Comun y la cantidad seleccionada
-    productoComunSeleccionado = comun;
-    cantidadProductoComunSeleccionada = cantProducto;
-
-    delete key;
+    productosComunSeleccionados->add(key, new Integer(cantProducto));
 }
 
 void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio)
@@ -119,11 +117,74 @@ void Sistema::agregarProductoComun(char codigoComun, string descripcion, float p
     // productos->add(key, nuevoComun);
 }
 
-// void Sistema::darAltaProducto()
-// {
-// }
+void Sistema::darAltaProducto()
+{
+    if (menuRecordado != nullptr)
+    {
+        // 1. Recorrer productosComunSeleccionados y delegar a Menu
+        IIterator *keyIt = productosComunSeleccionados->getIterator();
+        while (keyIt->hasCurrent())
+        {
+            IKey *keySel = dynamic_cast<IKey *>(keyIt->getCurrent());
+            Integer *cantidad = dynamic_cast<Integer *>(productosComunSeleccionados->find(keySel));
+            Comun *comun = nullptr;
 
-// ASIGNAR MESAS A MOZOS
+            // Extraer el código del producto desde la clave String
+            String *strKey = dynamic_cast<String *>(keySel);
+            char codigo = strKey->getValue()[0]; // Suponiendo que getValue() devuelve un const char*
+
+            // Buscar el producto en 'productos' comparando el código
+            IIterator *prodIt = productos->getIterator();
+            while (prodIt->hasCurrent())
+            {
+                Producto *prod = dynamic_cast<Producto *>(prodIt->getCurrent());
+                if (prod && prod->getCodigo() == codigo)
+                {
+                    comun = dynamic_cast<Comun *>(prod);
+                    break;
+                }
+                prodIt->next();
+            }
+            delete prodIt;
+
+            if (comun != nullptr && cantidad != nullptr)
+            {
+                menuRecordado->darAltaMenu(comun, cantidad->getValue());
+            }
+            keyIt->next();
+        }
+        delete keyIt;
+
+        // 2. Agregar el menú a la colección de productos
+        char codStr[2] = {menuRecordado->getCodigo(), '\0'};
+        IKey *keyMenu = new String(codStr);
+        productos->add(keyMenu, menuRecordado);
+
+        // 3. Limpiar variables recordadas
+        menuRecordado = nullptr;
+        // Limpiar productosComunSeleccionados
+        IIterator *clearIt = productosComunSeleccionados->getIterator();
+        while (clearIt->hasCurrent())
+        {
+            IKey *key = dynamic_cast<IKey *>(clearIt->getCurrent());
+            if (key != nullptr)
+            {
+                productosComunSeleccionados->remove(key);
+            }
+            clearIt->next();
+        }
+        delete clearIt;
+    }
+    else if (productoComunSeleccionado != nullptr)
+    {
+        // Producto común: solo agregarlo
+        char codStr[2] = {productoComunSeleccionado->getCodigo(), '\0'};
+        IKey *key = new String(codStr);
+        productos->add(key, productoComunSeleccionado);
+        productoComunSeleccionado = nullptr;
+    }
+}
+/*------ ASIGNAR MESAS A MOZOS ------*/
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
 // la cantidad de mozos deberia de estar relacionada de alguna forma con la cantidad que estan dados de alta?
 DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
@@ -232,7 +293,7 @@ DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 // {
 // }
 
-// INICIAR VENTA EN MESA
+/*----- INICIAR VENTA EN MESA -----*/
 
 DtAsignacion Sistema::ingresarIdMozo(int idMozo)
 {
