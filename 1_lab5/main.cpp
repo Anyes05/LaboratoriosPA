@@ -12,7 +12,8 @@ void menuAdministrador(ISistema *sistema)
         cout << "1. Alta Producto" << endl;
         cout << "2. Alta Cliente" << endl;
         cout << "3. Alta Empleado" << endl;
-        cout << "0. Volver" << endl;
+        cout << "4. Asignar mesas a mozos" << endl;
+        cout << "5. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
@@ -180,6 +181,37 @@ void menuAdministrador(ISistema *sistema)
             // Lógica
             break;
         case 4:
+        {
+            system("clear");
+            cout << "ASIGNAR MESAS A MOZOS" << endl;
+            cout << "Ingrese la cantidad de mesas a asignar: " << endl;
+            int cantMesas;
+            cin >> cantMesas;
+            cin.ignore();
+            cout << "Ingrese la cantidad de mozos: " << endl;
+            int cantMozos;
+            cin >> cantMozos;
+            cin.ignore();
+
+            DtAsignacion** asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
+            for (int i = 0; i < cantMozos; i++)
+            {
+                DtAsignacion *asignacion = asignaciones[i];
+                cout << "Mozo ID: " << asignacion->getidMozo() << endl;
+                cout << "Mesas asignadas: ";
+                int *mesas = asignacion->getidMesas();
+                for (int j = 0; j < asignacion->getcantMesas(); j++)
+                {
+                    cout << mesas[j] << " ";
+                }
+                cout << endl;
+                delete asignacion; // Liberar memoria del DtAsignacion
+            }
+            delete[] asignaciones; // Liberar memoria del arreglo de DtAsignacion
+            cout << "Mesas asignadas a mozos correctamente." << endl;
+            break;
+        }    
+        case 5:
             cout << "Volviendo al menú principal..." << endl;
             break;
         default:
