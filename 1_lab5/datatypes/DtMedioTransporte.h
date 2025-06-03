@@ -4,8 +4,9 @@
 #include <iostream>
 #include <string>
 using namespace std;
+#include "../ICollection/interfaces/ICollectible.h"
 
-class DtMedioTransporte {
+class DtMedioTransporte: public ICollectible {
 private:
     string medioTransporte;
 

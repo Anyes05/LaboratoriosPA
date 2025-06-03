@@ -33,9 +33,55 @@ void menuAdministrador(ISistema* sistema) {
             case 2:
                 // Lógica 
                 break;
-            case 3:
-                // Lógica
-                break;
+            case 3:{
+               cout << "--- Alta Empleado ---" << endl;
+    
+                string nombre;
+                cout << "Nombre del empleado: ";
+                cin.ignore(); 
+                getline(cin, nombre);
+                
+                sistema->agregarEmpleado(nombre);
+                // Mostrar medios y pedir selección
+                cout << "¿El empleado es repartidor? (s/n): ";
+    char esRepartidor;
+    cin >> esRepartidor;
+
+    if (esRepartidor == 's' || esRepartidor == 'S') {
+        cout << "Seleccione medio de transporte:" << endl;
+        cout << "1. Bicicleta" << endl;
+        cout << "2. Auto" << endl;
+        cout << "3. Moto" << endl;
+        cout << "Opción: ";
+        int opcion;
+        cin >> opcion;
+
+        Transporte medio;
+        switch (opcion) {
+            case 1: medio = Bicicleta; break;
+            case 2: medio = Auto; break;
+            case 3: medio = Moto; break;
+            default:
+                cout << "Opción inválida. Se asignará Bicicleta por defecto." << endl;
+                medio = Bicicleta;
+        }
+
+        sistema->elegirMedio(medio);
+    } else{
+        sistema->elegirMedio(Transporte::Ninguno);
+    }
+        
+    try {
+        sistema->darAltaEmpleado();
+        cout << "Empleado dado de alta con éxito." << endl;
+        sistema->mostrarEmpleados();
+    } catch (exception& e) {
+        cout << "Error al dar de alta al empleado: " << e.what() << endl;
+    }
+
+    break;
+}
+            break;
             case 4: cout << "Volviendo al menú principal..." << endl; break;
             default: cout << "Opción inválida." << endl;
         }
