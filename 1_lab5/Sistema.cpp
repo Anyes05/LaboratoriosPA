@@ -173,6 +173,13 @@ DtAsignacion Sistema::ingresarIdMozo(int idMozo)
         // **IMPORTANTE**: si no encontrás el mozo, igualmente debes devolver algo, porque el retorno es no void
     return DtAsignacion(); // o lanza excepción si querés
 
+
+    if (it != nullptr) {
+        delete it;
+        throw std::runtime_error("No existe un mozo con el ID especificado.");
+    }
+    return DtAsignacion(); 
+
 }
 
 // ICollectible Sistema::elegirMesas(int numero, int cantidad)
