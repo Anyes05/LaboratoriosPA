@@ -4,13 +4,6 @@ Sistema *Sistema::instance = NULL;
 
 Sistema::Sistema()
 {
-    medios->add(new DtMedioTransporte("Bicicleta"));
-    medios->add(new DtMedioTransporte("Moto"));
-    medios->add(new DtMedioTransporte("Auto"));
-}
-
-Sistema::~Sistema()
-{
     IDictionary *productos = new OrderedDictionary();
     IDictionary *ventas = new OrderedDictionary();
     IDictionary *mozos = new OrderedDictionary();
@@ -18,6 +11,11 @@ Sistema::~Sistema()
     IDictionary *repartidores = new OrderedDictionary();
     IDictionary *empleados = new OrderedDictionary();
     ICollection *medios = new List();
+}
+
+Sistema::~Sistema()
+{
+
 }
 
 Sistema *Sistema::getInstance()

@@ -46,7 +46,7 @@ public:
 
     /*------ INICIAR VENTA EN MESA ------*/
     DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
-    ICollectible elegirMesas(int numero, int cantidad); // devuele una coleccion de DtMesas
+    ICollection *elegirMesas(int numero); // devuele una coleccion de DtMesas
     //void confirmarVentaEnMesa();
 
     /*------ ALTA EMPLEADO ------*/
