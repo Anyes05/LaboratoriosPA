@@ -1,51 +1,59 @@
 #include "DtDireccion.h"
-#include <iostream>
 
-DtDireccion::DtDireccion(char calle, int num, bool apart, char esquina, int numEdificio, char nomEdificio){
-    this->nombreCalle = calle;
-    this->numero = num;
-    this->apartamento = apart;
-    this->calleEsquina = esquina;
-    this->nombreEdificio = nomEdificio;
-}
-DtDireccion::DtDireccion() {
-    // podés dejar valores vacíos o de prueba
+// Constructor por defecto
+DtDireccion::DtDireccion()
+{
     this->nombreCalle = "";
     this->numero = 0;
     this->apartamento = false;
     this->calleEsquina = "";
+    this->numeroEdificio = 0;
     this->nombreEdificio = "";
 }
 
-
-DtDireccion::DtDireccion(char calle, int num, char esquina){
-    this->nombreCalle = calle;
-    this->numero = num;
-    this->calleEsquina = esquina;
+// Constructor con parámetros
+DtDireccion::DtDireccion(string nombreCalle, int numero, bool apartamento, string calleEsquina, int numeroEdificio, string nombreEdificio)
+{
+    this->nombreCalle = nombreCalle;
+    this->numero = numero;
+    this->apartamento = apartamento;
+    this->calleEsquina = calleEsquina;
+    this->numeroEdificio = numeroEdificio;
+    this->nombreEdificio = nombreEdificio;
 }
 
-DtDireccion::~DtDireccion(){}
-
-char DtDireccion::getnombreCalle(){
-    return this->nombreCalle;
+// Destructor
+DtDireccion::~DtDireccion()
+{
 }
 
-int DtDireccion::getnumero(){
-    return this->numero;
+// Getters
+string DtDireccion::getnombreCalle()
+{
+    return nombreCalle;
 }
 
-bool DtDireccion::getapartamento(){
-    return this->apartamento;
+int DtDireccion::getnumero()
+{
+    return numero;
 }
 
-char DtDireccion::getcalleEsquina(){
-    return this->calleEsquina;
+bool DtDireccion::getapartamento()
+{
+    return apartamento;
 }
 
-int DtDireccion::getnumeroEdificio(){
-    return this->numeroEdificio;
+string DtDireccion::getcalleEsquina()
+{
+    return calleEsquina;
 }
 
-char DtDireccion::getnombreEdificio(){
-    return this->nombreEdificio;
+int DtDireccion::getnumeroEdificio()
+{
+    return numeroEdificio;
+}
+
+string DtDireccion::getnombreEdificio()
+{
+    return nombreEdificio;
 }

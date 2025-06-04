@@ -18,7 +18,6 @@ private:
 public:
     DtDireccion();
     DtDireccion(string, int, bool, string, int, string);
-    DtDireccion(string, int, string);
     ~DtDireccion();
 
     string getnombreCalle();
@@ -26,7 +25,7 @@ public:
     bool getapartamento();
     string getcalleEsquina();
     int getnumeroEdificio();
-    char getnombreEdificio();
+    string getnombreEdificio();
 };
 
 #endif
