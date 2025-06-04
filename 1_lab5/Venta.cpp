@@ -60,9 +60,19 @@ void Venta::setProductos(IDictionary * productos) {
     this->productos = productos;
 }
 
-bool Venta::activa() {
+bool Venta::getActiva() {
     return (factura == nullptr); // Si no hay factura, la venta está activa
 }
+
+void Venta::setActiva(bool activa) {
+    if (activa) {
+        factura = nullptr; // Si se activa, no hay factura
+    } else {
+        activa = false; 
+    }
+}
+
+
 /*
 void Venta::eliminarProductoVenta() {
     if (productos->isEmpty()) {

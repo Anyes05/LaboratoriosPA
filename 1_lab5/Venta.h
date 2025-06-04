@@ -18,6 +18,7 @@ private:
     float subTotal;
     float descuento;
     float total;
+    bool activa; // indica si la venta está activa o no
     Factura* factura;
     IDictionary * productos; // lista de productos 
     ICollection * pedido;
@@ -29,6 +30,7 @@ public:
     float getSubTotal();
     float getDescuento();
     float getTotal();
+    bool getActiva();
     Factura* getFactura(); 
     IDictionary * getProductos();
     void setNumero(int numero);
@@ -37,10 +39,10 @@ public:
     void setTotal(float total);
     void setFactura(Factura* factura); 
     void setProductos(IDictionary * productos);
+    void setActiva(bool activa); 
     //metodos
     void eliminarMenu(); // donde esta esto en el diagrama de comunicacion? creo que no está o no le corresponde a venta 
     ListNode productosVenta();  
-    bool activa();
     void eliminarProductoVenta();
         
 };

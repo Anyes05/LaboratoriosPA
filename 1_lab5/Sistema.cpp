@@ -320,20 +320,17 @@ DtAsignacion Sistema::ingresarIdMozo(int idMozo)
         if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
         {
             delete it;
-            int *mesasAsignadas = mozo->getMesasId();                                                // obtiene las mesas asignadas al mozo
+            int *mesasAsignadas = mozo->getMesasId();
+            idMozoSeleccionado = idMozo;                                               // obtiene las mesas asignadas al mozo
             return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
         }
         it->next();
     }
-    // **IMPORTANTE**: si no encontrás el mozo, igualmente debes devolver algo, porque el retorno es no void
-    return DtAsignacion(); // o lanza excepción si querés
-
     if (it != nullptr)
     {
         delete it;
         throw std::runtime_error("No existe un mozo con el ID especificado.");
     }
-    return DtAsignacion();
 }
 
 ICollection *Sistema::elegirMesas(int numero)
@@ -342,29 +339,49 @@ ICollection *Sistema::elegirMesas(int numero)
     {
         throw std::runtime_error("No hay mesas disponibles.");
     }
-    ICollection *mesasElegidas = new List(); // Colección para almacenar las mesas elegidas
+    ICollection *mesasSeleccionadas = new List(); // Colección para almacenar las mesas elegidas
     IIterator *it = mesas->getIterator();
     while (it->hasCurrent())
     {
         Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
         if (mesa != nullptr && mesa->getLocal() == nullptr && mesa->getNumeroMesa() == numero)
         {
-            mesasElegidas->add(mesa); // Agrega la mesa a la colección de mesas elegidas
+            mesasSeleccionadas->add(mesa); // Agrega la mesa a la colección de mesas elegidas
         }
         it->next();
     }
     delete it;
-    if (mesasElegidas->isEmpty())
+    if (mesasSeleccionadas->isEmpty())
     {
-        delete mesasElegidas; // Si no se encontraron mesas, se elimina la colección vacía
+        delete mesasSeleccionadas; // Si no se encontraron mesas, se elimina la colección vacía
         throw std::runtime_error("No se encontraron mesas con el número especificado.");
     }
-    return mesasElegidas; // Devuelve la colección de mesas elegidas
+    mesasElegidasParaVenta = mesasSeleccionadas; // Asigna las mesas elegidas a la colección global
+    return mesasSeleccionadas; // Devuelve la colección de mesas elegidas
 }
 
-// void Sistema::confirmarVentaEnMesa()
-// {
-// }
+void Sistema::confirmarVentaEnMesa()
+{
+    if (mesasElegidasParaVenta == nullptr || mesasElegidasParaVenta->isEmpty())
+    {
+        throw std::runtime_error("No hay mesas elegidas para la venta.");
+    }
+    Local *venta = new Local(0,0,0); // Crear una nueva venta, sin valores iniciales
+    venta->setActiva(true);
+    venta->setNumero(ventas->getSize() + 1); // Asignar un número de venta basado en el tamaño actual de ventas
+    venta->setMesas(mesasElegidasParaVenta); // Asignar las mesas elegidas a la venta
+    
+    IIterator *it = mesasElegidasParaVenta->getIterator(); //Asignar a cada mesa la venta actual
+    while (it->hasCurrent()) {
+        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
+        if (mesa != nullptr)
+        {
+            mesa->setLocal(venta); 
+        }
+        it->next();
+    }
+    venta->setMozo(dynamic_cast<Mozo *>(mozos->find(new Integer(idMozoSeleccionado)))); // Asignar el mozo seleccionado a la venta
+}
 
 /*------ ALTA EMPLEADO ------*/
 void Sistema::agregarEmpleado(string nombre)
