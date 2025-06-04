@@ -1,7 +1,9 @@
 #ifndef DTASIGNACION_H
 #define DTASIGNACION_H
 
-class DtAsignacion{
+
+
+class DtAsignacion : public ICollectible{
     private:
         int idMozo;
         int* idMesas;
