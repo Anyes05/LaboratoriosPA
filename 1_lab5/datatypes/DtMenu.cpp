@@ -4,6 +4,11 @@ DtMenu::DtMenu(char codigo, string descripcion, float precio, string nombre, flo
     this->nombre = nombre;
     this->descuentoMenu=descuento;
 }
+DtMenu::DtMenu() {
+    this->nombre = "";
+    this->descuentoMenu= 0.0;
+}
+
 
 DtMenu::~DtMenu(){}
 

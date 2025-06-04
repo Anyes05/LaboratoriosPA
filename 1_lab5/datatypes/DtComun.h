@@ -8,6 +8,7 @@ class DtComun : public DtProducto{
 
     public:
         DtComun(char, string, float);
+        DtComun();
         ~DtComun();
 };
 

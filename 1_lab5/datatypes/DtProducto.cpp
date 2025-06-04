@@ -6,7 +6,7 @@ DtProducto::DtProducto(char codigo, string desc, float precio){
     this->precio = precio;
 }
 DtProducto::DtProducto() {
-    this->codigo = codigo;
+    this->codigo = '\0';
     this->descripcion = "";
     this->precio = 0.0;
 }

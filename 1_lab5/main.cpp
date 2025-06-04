@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Factory.h"
+#include "ISistema.h"
 
 using namespace std;
 
@@ -307,7 +308,7 @@ void menuAdministrador(ISistema *sistema)
             cin >> cantMozos;
             cin.ignore();
 
-            ICollection* asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
+            ICollection *asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
             IIterator *it = asignaciones->getIterator();
             while (it->hasCurrent())
             {
@@ -328,7 +329,6 @@ void menuAdministrador(ISistema *sistema)
             }
             delete it;
             delete asignaciones;
-            
         }
         case 5:
         {
@@ -361,9 +361,14 @@ void cargarDatosPrueba(ISistema *sistema)
 
 int main()
 {
-    ISistema *sistema = Factory::getSistema(); // Singleton a través de Factory
-
-    int opcion;
+        try {
+        ISistema* sistema = Sistema::getInstance();
+        if (sistema == nullptr) {
+            cout << "Error: No se pudo inicializar el sistema" << endl;
+            return 1;
+        }
+        
+        int opcion;
     do
     {
         cout << "===== MENU PRINCIPAL =====" << endl;
@@ -401,5 +406,13 @@ int main()
         }
     } while (opcion != 6);
 
+        
+    } catch (const exception& e) {
+        cout << "Error: " << e.what() << endl;
+        return 1;
+    }
+    return 0;
+
+    
     return 0;
 }

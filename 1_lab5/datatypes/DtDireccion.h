@@ -11,13 +11,10 @@ private:
     string nombreCalle;
     int numero;
     string calleEsquina;
-    bool apartamento;
-    int numeroEdificio;
-    string nombreEdificio;
 
 public:
     DtDireccion();
-    DtDireccion(string, int, bool, string, int, string);
+    DtDireccion(string, int, string);
     ~DtDireccion();
 
     string getnombreCalle();
