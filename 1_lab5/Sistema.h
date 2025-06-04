@@ -8,6 +8,7 @@
 #include "Mesa.h"
 #include "Producto.h"
 #include "Menu.h"
+#include "Local.h"
 #include "Repartidor.h"
 #include "datatypes/DtAsignacion.h"
 #include "datatypes/DtMedioTransporte.h"
@@ -24,6 +25,8 @@ private:
     IDictionary *mozos;
     IDictionary *mesas;
 
+    ICollection *mesasElegidasParaVenta;
+    int idMozoSeleccionado;
 
 
     IDictionary *repartidores;
@@ -47,7 +50,7 @@ public:
     /*------ INICIAR VENTA EN MESA ------*/
     DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
     ICollection *elegirMesas(int numero); // devuele una coleccion de DtMesas
-    //void confirmarVentaEnMesa();
+    void confirmarVentaEnMesa();
 
     /*------ ALTA EMPLEADO ------*/
     void agregarEmpleado(string nombre);
