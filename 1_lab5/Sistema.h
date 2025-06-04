@@ -42,7 +42,7 @@ public:
     void darAltaProducto();
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
-    DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos);
+    ICollection* calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
     DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion

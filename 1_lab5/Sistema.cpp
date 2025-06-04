@@ -1,4 +1,4 @@
-#include "Sistema.h"
+ #include "Sistema.h"
 
 Sistema *Sistema::instance = NULL;
 
@@ -203,7 +203,7 @@ void Sistema::darAltaProducto()
 // ASIGNAR MESAS A MOZOS
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
 // la cantidad de mozos deberia de estar relacionada de alguna forma con la cantidad que estan dados de alta?
-DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
+ICollection* Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 {
     if (cantMesas <= 0 && cantMozos <= 0)
     { // primero chequeo que las cantidades que me pasan sean validas
@@ -221,7 +221,7 @@ DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         throw std::runtime_error("No hay suficientes mozos para asignar las mesas.");
     }
 
-    DtAsignacion **asignaciones = new DtAsignacion *[cantMozos]; // creo un arreglo de punteros a DtAsignacion, que sera lo que devuelva al final de la funcion
+    ICollection* asignaciones = new List(); // creo un arreglo de punteros a DtAsignacion, que sera lo que devuelva al final de la funcion
     int mesaActual = 1;
 
     // tengo que crear la coleccion mesa e ir añadiando las mesas a cada mozo segun la cantidad de mesas que se me pasan en cantMesas
@@ -248,7 +248,7 @@ DtAsignacion **Sistema::calcularAsignacion(int cantMesas, int cantMozos)
             mesaActual++;
         }
 
-        asignaciones[i] = new DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, cantidad, false);
+        asignaciones->add(new DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, cantidad, false));
         delete[] mesasAsignadas;
         it->next();
         i++;

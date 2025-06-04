@@ -307,20 +307,28 @@ void menuAdministrador(ISistema *sistema)
             cin >> cantMozos;
             cin.ignore();
 
-            DtAsignacion **asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
-            for (int i = 0; i < cantMozos; i++)
+            ICollection* asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
+            IIterator *it = asignaciones->getIterator();
+            while (it->hasCurrent())
             {
-                DtAsignacion *asignacion = asignaciones[i];
-                cout << "Mozo ID: " << asignacion->getidMozo() << endl;
-                cout << "Mesas asignadas: ";
-                int *mesas = asignacion->getidMesas();
-                for (int j = 0; j < asignacion->getcantMesas(); j++)
+                DtAsignacion *dtAsignacion = dynamic_cast<DtAsignacion *>(it->getCurrent());
+                if (dtAsignacion)
                 {
-                    cout << mesas[j] << " ";
+                    cout << "Mozo ID: " << dtAsignacion->getidMozo() << endl;
+                    cout << "Mesas asignadas: ";
+                    int *mesas = dtAsignacion->getidMesas();
+                    for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
+                    {
+                        cout << mesas[j] << " ";
+                    }
+                    cout << endl;
                 }
-                cout << endl;
-                delete asignacion; // Liberar memoria del DtAsignacion
+                delete dtAsignacion;
+                it->next();
             }
+            delete it;
+            delete asignaciones;
+            
         }
         case 5:
         {

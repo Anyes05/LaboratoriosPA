@@ -30,7 +30,7 @@ public:
     virtual void agregarProductoComun(char codigoComun, string descripcion, float precio) = 0;
     virtual void darAltaProducto() = 0;
 
-    virtual DtAsignacion **calcularAsignacion(int cantMesas, int cantMozos) = 0;
+    virtual ICollection* calcularAsignacion(int cantMesas, int cantMozos) = 0;
 
     virtual DtAsignacion ingresarIdMozo(int idMozo) = 0;
     virtual ICollection *elegirMesas(int numero) = 0; // devuele una coleccion de DtMesas
