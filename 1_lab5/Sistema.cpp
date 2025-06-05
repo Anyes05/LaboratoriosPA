@@ -458,7 +458,7 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
     int mesasPorMozo = cantMesas / cantMozos; // mesasXmozo
     int mesasExtra = cantMesas % cantMozos;   // Mesas restantes
 
-    if (mozos == nullptr)
+    if (mozos == nullptr || mozos->isEmpty())
     { // chequeo si hay mozos en la coleccion. o podria utilizar el metodo isEmpty() de IDictionary
         throw std::runtime_error("La colección de mozos no está inicializada.");
     }

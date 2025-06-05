@@ -315,7 +315,8 @@ void menuAdministrador(ISistema *sistema)
             int cantMozos;
             cin >> cantMozos;
             cin.ignore();
-
+            
+            try {
             ICollection *asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
             IIterator *it = asignaciones->getIterator();
             while (it->hasCurrent())
@@ -337,6 +338,12 @@ void menuAdministrador(ISistema *sistema)
             }
             delete it;
             delete asignaciones;
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error al calcular asignación: " << e.what() << endl;
+            }
+            break;
         }
         case 5:
         {
