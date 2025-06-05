@@ -579,31 +579,30 @@ DtAsignacion Sistema::ingresarIdMozo(int idMozo)
     }
 }
 
-ICollection *Sistema::elegirMesas(int numero)
+void Sistema::elegirMesas(int numero)
 {
     if (mesas == nullptr || mesas->isEmpty())
     {
         throw std::runtime_error("No hay mesas disponibles.");
     }
-    ICollection *mesasSeleccionadas = new List(); // Colección para almacenar las mesas elegidas
-    IIterator *it = mesas->getIterator();
-    while (it->hasCurrent())
+    Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(numero)));
+    if (mesaSeleccionada == nullptr)
     {
-        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
-        if (mesa != nullptr && mesa->getLocal() == nullptr && mesa->getNumeroMesa() == numero)
-        {
-            mesasSeleccionadas->add(mesa); // Agrega la mesa a la colección de mesas elegidas
-        }
-        it->next();
+        throw std::runtime_error("No existe una mesa con el número especificado.");
     }
-    delete it;
-    if (mesasSeleccionadas->isEmpty())
+    if (mesaSeleccionada->getLocal() != nullptr)
     {
-        delete mesasSeleccionadas; // Si no se encontraron mesas, se elimina la colección vacía
-        throw std::runtime_error("No se encontraron mesas con el número especificado.");
+        throw std::runtime_error("La mesa ya está ocupada por una venta activa.");
     }
-    mesasElegidasParaVenta = mesasSeleccionadas; // Asigna las mesas elegidas a la colección global
-    return mesasSeleccionadas;                   // Devuelve la colección de mesas elegidas
+    if (mesasElegidasParaVenta == nullptr)
+    {
+        mesasElegidasParaVenta = new List(); // Inicializar la colección si es nula
+    }
+    if (mesasElegidasParaVenta->member(mesaSeleccionada))
+    {
+        throw std::runtime_error("La mesa ya ha sido elegida para la venta.");
+    }
+    mesasElegidasParaVenta->add(mesaSeleccionada); // Agregar la mesa a la colección de mesas elegidas
 }
 
 void Sistema::confirmarVentaEnMesa()
@@ -628,6 +627,9 @@ void Sistema::confirmarVentaEnMesa()
         it->next();
     }
     venta->setMozo(dynamic_cast<Mozo *>(mozos->find(new Integer(idMozoSeleccionado)))); // Asignar el mozo seleccionado a la venta
+    ventas->add(new Integer(venta->getNumero()), venta); // Agregar la venta a la colección de ventas
+    mesasElegidasParaVenta = nullptr; // Limpiar la colección de mesas elegidas
+    idMozoSeleccionado = 0; // Reiniciar el ID del mozo seleccionado
 }
 
 /*------ ALTA EMPLEADO ------*/
