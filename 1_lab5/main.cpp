@@ -7,7 +7,7 @@ void menuAdministrador(ISistema *sistema)
 {
     int opcion;
     do
-    { 
+    {
         cout << "\n--- Administrador ---" << endl;
         cout << "1. Alta Producto" << endl;
         cout << "2. Alta Cliente" << endl;
@@ -365,8 +365,9 @@ void menuCliente(ISistema *sistema)
 void cargarDatosPrueba(ISistema *sistema)
 {
     cout << "Cargando datos de prueba..." << endl;
-    
-    try {
+
+    try
+    {
         // Bebidas
         sistema->agregarProductoComun('A', "Agua Mineral", 2.50);
         sistema->darAltaProducto();
@@ -376,7 +377,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
         sistema->agregarProductoComun('D', "Vino Tinto", 8.00);
         sistema->darAltaProducto();
-        
+
         // Entradas
         sistema->agregarProductoComun('E', "Ensalada César", 6.50);
         sistema->darAltaProducto();
@@ -384,7 +385,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
         sistema->agregarProductoComun('G', "Pan con Mantequilla", 2.00);
         sistema->darAltaProducto();
-        
+
         // Platos Principales
         sistema->agregarProductoComun('H', "Bife de Chorizo", 15.00);
         sistema->darAltaProducto();
@@ -394,7 +395,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
         sistema->agregarProductoComun('K', "Pollo a la Parrilla", 11.00);
         sistema->darAltaProducto();
-        
+
         // Postres
         sistema->agregarProductoComun('L', "Flan Casero", 4.50);
         sistema->darAltaProducto();
@@ -406,7 +407,7 @@ void cargarDatosPrueba(ISistema *sistema)
         cout << "Productos comunes cargados exitosamente. Creando menús..." << endl;
 
         // Crear Menú Ejecutivo
-        IDictionary* productosComunes = sistema->agregarMenu('X', "Menú Ejecutivo");
+        IDictionary *productosComunes = sistema->agregarMenu('X', "Menú Ejecutivo");
         sistema->seleccionarProductoComun('A', 1); // Agua Mineral
         sistema->seleccionarProductoComun('E', 1); // Ensalada César
         sistema->seleccionarProductoComun('H', 1); // Bife de Chorizo
@@ -431,65 +432,68 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
 
         cout << "Datos de prueba cargados exitosamente!" << endl;
-    } catch (const exception& e) {
+    }
+    catch (const exception &e)
+    {
         cout << "Error al cargar datos de prueba: " << e.what() << endl;
     }
 }
 
 int main()
 {
-        try {
-        ISistema* sistema = Sistema::getInstance();
-        if (sistema == nullptr) {
+    try
+    {
+        ISistema *sistema = Sistema::getInstance();
+        if (sistema == nullptr)
+        {
             cout << "Error: No se pudo inicializar el sistema" << endl;
             return 1;
         }
-        
+
         int opcion;
-    do
-    {
-        cout << "===== MENU PRINCIPAL =====" << endl;
-        cout << "1. Administrador" << endl;
-        cout << "2. Mozo" << endl;
-        cout << "3. Repartidor" << endl;
-        cout << "4. Cliente" << endl;
-        cout << "5. Cargar datos de prueba" << endl;
-        cout << "6. Salir" << endl;
-        cout << "Seleccione una opción: ";
-        cin >> opcion;
-
-        switch (opcion)
+        do
         {
-        case 1:
-            menuAdministrador(sistema);
-            break;
-        case 2:
-            menuMozo(sistema);
-            break;
-        case 3:
-            menuRepartidor(sistema);
-            break;
-        case 4:
-            menuCliente(sistema);
-            break;
-        case 5:
-            cargarDatosPrueba(sistema);
-            break;
-        case 6:
-            cout << "Saliendo..." << endl;
-            break;
-        default:
-            cout << "Opción inválida." << endl;
-        }
-    } while (opcion != 6);
+            cout << "===== MENU PRINCIPAL =====" << endl;
+            cout << "1. Administrador" << endl;
+            cout << "2. Mozo" << endl;
+            cout << "3. Repartidor" << endl;
+            cout << "4. Cliente" << endl;
+            cout << "5. Cargar datos de prueba" << endl;
+            cout << "6. Salir" << endl;
+            cout << "Seleccione una opción: ";
+            cin >> opcion;
 
-        
-    } catch (const exception& e) {
+            switch (opcion)
+            {
+            case 1:
+                menuAdministrador(sistema);
+                break;
+            case 2:
+                menuMozo(sistema);
+                break;
+            case 3:
+                menuRepartidor(sistema);
+                break;
+            case 4:
+                menuCliente(sistema);
+                break;
+            case 5:
+                cargarDatosPrueba(sistema);
+                break;
+            case 6:
+                cout << "Saliendo..." << endl;
+                break;
+            default:
+                cout << "Opción inválida." << endl;
+            }
+        } while (opcion != 6);
+    }
+    catch (const exception &e)
+    {
         cout << "Error: " << e.what() << endl;
         return 1;
     }
     return 0;
 
-    
     return 0;
 }
