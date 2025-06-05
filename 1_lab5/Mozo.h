@@ -16,7 +16,7 @@ private:
     // Apunta solo a las mesas que le pertenecen al mozo, no a todas las mesas del sistema. Tiene que tambien apuntar a todas?
     // El mozo apunta a las de si mismo, pero en la coleccion mesas estan las de todos los mozos? 
 public:
-    Mozo(string, int, int); // constructor
+    Mozo(string, int, int, int); // constructor
     ~Mozo(); // destructor
     // Getters y setters
     int getCantMesas();

@@ -1,10 +1,13 @@
 #include "Producto.h"
 
+using namespace std;
+
 //constructor
-Producto::Producto(char cod, string desc, float pre){
-    this->codigo= cod;
-    this->descripcion=desc;
-    this->precio=pre;
+Producto::Producto(char codigo, string descripcion, float precio)
+{
+    this->codigo = codigo;
+    this->descripcion = descripcion;
+    this->precio = precio;
 }
 
 //destructor

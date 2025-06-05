@@ -1,10 +1,12 @@
 #include "Comun-Menu.h"
 
-//constructor
-Comun_Menu::Comun_Menu(int cant, Comun * pc){
-    this->productoComun= pc;
-    this->cantProducto= cant;
+using namespace std;
 
+//constructor
+Comun_Menu::Comun_Menu(int cant, Comun *pc)
+{
+    this->productoComun = pc;
+    this->cantProducto = cant;
 }
 
 //destructor

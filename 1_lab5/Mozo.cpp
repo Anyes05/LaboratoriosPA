@@ -3,7 +3,7 @@
 #include "ICollection/interfaces/IKey.h"
 #include "ICollection/Integer.h"
 
-Mozo::Mozo(string nombre, int idEmpleado, int cantMesas) : Empleado(nombre, idEmpleado), cantMesas(cantMesas) {}
+Mozo::Mozo(string nombre, int idEmpleado, int cantMesas, int idIngresado) : Empleado(nombre, idEmpleado, idIngresado), cantMesas(cantMesas) {}
 
 Mozo::~Mozo() {}
 

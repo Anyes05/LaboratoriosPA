@@ -11,7 +11,7 @@ class Repartidor : public Empleado
 private:
     string medioDeTransporte; // podria ser un enumerado, no?
 public:
-    Repartidor(string, int, string); // constructor
+    Repartidor(string, int, string, int); // constructor
     ~Repartidor(); // destructor
     // Getters y setters
     string getTransporte();

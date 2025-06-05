@@ -36,11 +36,12 @@ public:
     virtual ICollection *elegirMesas(int numero) = 0; // devuele una coleccion de DtMesas
     // virtual void confirmarVentaEnMesa() = 0;
 
-    virtual void agregarEmpleado(string nombre) = 0;
+    virtual void agregarEmpleado(string nombre, int idIngresado) = 0;
     virtual void listarMedioTransporte() = 0; // devuelve una coleccion de DtMedioTransporte
     virtual void elegirMedio(int opcion) = 0;
     virtual void darAltaEmpleado() = 0;
     virtual void mostrarEmpleados() = 0;
+    virtual bool existeEmpleado(int idEmpleado) = 0;
 
     virtual DtCliente altaCliente(char, string, DtDireccion) = 0;
     virtual void confirmarAlta() = 0;

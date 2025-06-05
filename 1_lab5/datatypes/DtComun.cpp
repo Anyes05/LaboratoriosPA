@@ -2,4 +2,6 @@
 
 DtComun::DtComun(char codigo, string descripcion, float precio) : DtProducto(codigo, descripcion, precio){}
 
+DtComun::DtComun(){}
+
 DtComun::~DtComun(){}

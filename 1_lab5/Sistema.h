@@ -14,6 +14,8 @@
 #include "datatypes/DtMedioTransporte.h"
 #include "ICollection/Integer.h"
 #include "datatypes/Transporte.h"
+#include "datatypes/DtMenu.h"
+#include "datatypes/DtComun.h"
 
 class Sistema : public ISistema
 {
@@ -22,16 +24,20 @@ private:
     static Sistema *instance;
     IDictionary *productos;
     IDictionary *ventas;
+    IDictionary *repartidores;
+    IDictionary *empleados;
     IDictionary *mozos;
     IDictionary *mesas;
+    
 
     ICollection *mesasElegidasParaVenta;
     int idMozoSeleccionado;
 
 
-    IDictionary *repartidores;
-    IDictionary *empleados;
-    //ICollection *medios;
+    DtComun *productoComunTemp;
+    DtMenu *menuTemp;
+    IDictionary *productosComunSeleccionados;
+
 
 public:
     ~Sistema();
@@ -45,19 +51,20 @@ public:
     void darAltaProducto();
 
     /*------ ASIGNAR MESAS A MOZOS ------*/
-    ICollection* calcularAsignacion(int cantMesas, int cantMozos);
+    ICollection *calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
     DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
-    ICollection *elegirMesas(int numero); // devuele una coleccion de DtMesas
+    ICollection *elegirMesas(int numero);    // devuele una coleccion de DtMesas
     void confirmarVentaEnMesa();
 
     /*------ ALTA EMPLEADO ------*/
-    void agregarEmpleado(string nombre);
+    void agregarEmpleado(string nombre, int idIngresado);
     void listarMedioTransporte(); // devuelve una coleccion de DtMedioTransporte
     void elegirMedio(int opcion);
     void darAltaEmpleado();
     void mostrarEmpleados();
+    bool existeEmpleado(int idEmpleado);
 
     /*----- ALTA CLIENTE -----*/
     DtCliente altaCliente(char, string, DtDireccion);

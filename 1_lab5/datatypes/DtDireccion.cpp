@@ -1,51 +1,39 @@
 #include "DtDireccion.h"
-#include <iostream>
 
-DtDireccion::DtDireccion(char calle, int num, bool apart, char esquina, int numEdificio, char nomEdificio){
-    this->nombreCalle = calle;
-    this->numero = num;
-    this->apartamento = apart;
-    this->calleEsquina = esquina;
-    this->nombreEdificio = nomEdificio;
-}
-DtDireccion::DtDireccion() {
-    // podés dejar valores vacíos o de prueba
+// Constructor por defecto
+DtDireccion::DtDireccion()
+{
     this->nombreCalle = "";
     this->numero = 0;
-    this->apartamento = false;
     this->calleEsquina = "";
-    this->nombreEdificio = "";
+}
+
+// Constructor con parámetros
+DtDireccion::DtDireccion(string nombreCalle, int numero, string calleEsquina)
+{
+    this->nombreCalle = nombreCalle;
+    this->numero = numero;
+    this->calleEsquina = calleEsquina;
+}
+// Destructor
+DtDireccion::~DtDireccion()
+{
+}
+
+// Getters
+string DtDireccion::getnombreCalle()
+{
+    return nombreCalle;
+}
+
+int DtDireccion::getnumero()
+{
+    return numero;
 }
 
 
-DtDireccion::DtDireccion(char calle, int num, char esquina){
-    this->nombreCalle = calle;
-    this->numero = num;
-    this->calleEsquina = esquina;
+string DtDireccion::getcalleEsquina()
+{
+    return calleEsquina;
 }
 
-DtDireccion::~DtDireccion(){}
-
-char DtDireccion::getnombreCalle(){
-    return this->nombreCalle;
-}
-
-int DtDireccion::getnumero(){
-    return this->numero;
-}
-
-bool DtDireccion::getapartamento(){
-    return this->apartamento;
-}
-
-char DtDireccion::getcalleEsquina(){
-    return this->calleEsquina;
-}
-
-int DtDireccion::getnumeroEdificio(){
-    return this->numeroEdificio;
-}
-
-char DtDireccion::getnombreEdificio(){
-    return this->nombreEdificio;
-}

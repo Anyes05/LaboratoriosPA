@@ -1,6 +1,6 @@
 #include "Repartidor.h"
 
-Repartidor::Repartidor(string nom, int id, string transporte) : Empleado(nom, id) {
+Repartidor::Repartidor(string nom, int id, string transporte, int idIngresado) : Empleado(nom, id, idIngresado) {
     this->medioDeTransporte = transporte;
 }
 

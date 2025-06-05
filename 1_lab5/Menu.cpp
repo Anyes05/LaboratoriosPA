@@ -1,16 +1,26 @@
 #include "Menu.h"
 
 // Constructor
-Menu::Menu(char codigo, string desc, float precio, string nom, float descMenu) : Producto(codigo, desc, precio)
+Menu::Menu(char codigo, string descripcion, float precio, string nombre, float descuento) : Producto(codigo, descripcion, precio)
 {
-    this->nombre = nom;
-    this->descuentoMenu = descMenu;
-    this->productosComunes = new OrderedDictionary(); // Inicializar con una instancia de IDiconary
+    this->nombre = nombre;
+    this->descuentoMenu = descuento;
+    this->productosComunes = new OrderedDictionary();
     this->comun_menu = new OrderedDictionary();
 }
 
 // destrcutor
-Menu::~Menu() {}
+Menu::~Menu() {
+    if (productosComunes != nullptr) {
+        delete productosComunes;
+        productosComunes = nullptr;
+    }
+    
+    if (comun_menu != nullptr) {
+        delete comun_menu;
+        comun_menu = nullptr;
+    }
+}
 
 // getters y setters
 
@@ -105,12 +115,10 @@ void Menu::agregarProducto(IDictionary *pc)
 
 void Menu::darAltaMenu(Comun *comun, int cantidad)
 {
-    // 1. Agregar el producto común al diccionario de productos comunes
     char codStr[2] = {comun->getCodigo(), '\0'};
-    IKey *key = new String(codStr);
+    String *key = new String(codStr);
     productosComunes->add(key, comun);
 
-    // 2. Crear la relación Comun_Menu y agregarla
     Comun_Menu *relacion = new Comun_Menu(cantidad, comun);
     comun_menu->add(key, relacion);
 }
