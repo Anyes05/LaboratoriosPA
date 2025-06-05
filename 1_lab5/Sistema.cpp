@@ -12,7 +12,7 @@ Sistema::Sistema()
     empleados = new OrderedDictionary();
     medios = new List();
 
-    // Inicializar los punteros temporales a nullptr
+    // Inicializar los punteros temporales
     productoComunTemp = nullptr;
     menuTemp = nullptr;
     productosComunSeleccionados = new OrderedDictionary();
