@@ -232,68 +232,42 @@ void menuAdministrador(ISistema *sistema)
         break;
 
         case 3:
-        {
-            cout << "--- Alta Empleado ---" << endl;
+{
+    cout << "--- Alta Empleado ---" << endl;
 
-            string nombre;
-            cout << "Nombre del empleado: ";
-            cin.ignore();
-            getline(cin, nombre);
+    string nombre;
+    cout << "Nombre del empleado: ";
+    cin.ignore();
+    getline(cin, nombre);
 
-            sistema->agregarEmpleado(nombre);
-            // Mostrar medios y pedir selección
-            cout << "¿El empleado es repartidor? (s/n): ";
-            char esRepartidor;
-            cin >> esRepartidor;
+    sistema->agregarEmpleado(nombre);
 
-            if (esRepartidor == 's' || esRepartidor == 'S')
-            {
-                cout << "Seleccione medio de transporte:" << endl;
-                cout << "1. Bicicleta" << endl;
-                cout << "2. Auto" << endl;
-                cout << "3. Moto" << endl;
-                cout << "Opción: ";
-                int opcion;
-                cin >> opcion;
+    cout << "¿El empleado es repartidor? (s/n): ";
+    char esRepartidor;
+    cin >> esRepartidor;
 
-                Transporte medio;
-                switch (opcion)
-                {
-                case 1:
-                    medio = Bicicleta;
-                    break;
-                case 2:
-                    medio = Auto;
-                    break;
-                case 3:
-                    medio = Moto;
-                    break;
-                default:
-                    cout << "Opción inválida. Se asignará Bicicleta por defecto." << endl;
-                    medio = Bicicleta;
-                }
+    if (esRepartidor == 's' || esRepartidor == 'S') {
+        sistema->listarMedioTransporte(); // Muestra medios con índices
 
-                sistema->elegirMedio(medio);
-            }
-            else
-            {
-                sistema->elegirMedio(Transporte::Ninguno);
-            }
+        cout << "Opción: ";
+        int opcion;
+        cin >> opcion;
 
-            try
-            {
-                sistema->darAltaEmpleado();
-                cout << "Empleado dado de alta con éxito." << endl;
-                sistema->mostrarEmpleados();
-            }
-            catch (exception &e)
-            {
-                cout << "Error al dar de alta al empleado: " << e.what() << endl;
-            }
+        sistema->elegirMedio(opcion); // Pasás la opción directamente
+    } else {
+        sistema->elegirMedio(0); // Opción inválida, para que asigne Ninguno
+    }
 
-            break;
-        }
-        break;
+    try {
+        sistema->darAltaEmpleado();
+        cout << "Empleado dado de alta con éxito." << endl;
+        sistema->mostrarEmpleados(); // Solo para testeo
+    } catch (exception &e) {
+        cout << "Error al dar de alta al empleado: " << e.what() << endl;
+    }
+
+    break;
+}
         case 4:
         {
             system("clear");

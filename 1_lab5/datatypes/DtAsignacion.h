@@ -1,6 +1,6 @@
 #ifndef DTASIGNACION_H
 #define DTASIGNACION_H
-
+#include "../ICollection/interfaces/ICollectible.h"
 
 
 class DtAsignacion : public ICollectible{

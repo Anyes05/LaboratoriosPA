@@ -31,6 +31,12 @@ IDictionary *productosSeleccionados = new OrderedDictionary(); // clave: código
 int cantidadProductoComunSeleccionada = 0;
 Menu *menuRecordado = nullptr;
 IDictionary *productosComunSeleccionados = new OrderedDictionary();
+string nomEmp;
+Transporte medioSeleccionado;
+int ultimoIdEmpleado = 0;
+Transporte medios[3] = {Bicicleta, Auto, Moto};
+int cantidadMedios = 3;
+
 
 // Declaraciones vacías para que el linker no dé error
 
@@ -386,17 +392,24 @@ void Sistema::confirmarVentaEnMesa()
 /*------ ALTA EMPLEADO ------*/
 void Sistema::agregarEmpleado(string nombre)
 {
-    this->nomEmp = nombre;
+    nomEmp = nombre;
 }
 
-set<Transporte> Sistema::listarMedioTransporte()
-{
-    return {Bicicleta, Auto, Moto};
+void Sistema::listarMedioTransporte() {
+    cout << "Seleccione un medio de transporte:" << endl;
+    for (int i = 0; i < cantidadMedios; i++) {
+        cout << (i + 1) << ". " << transporteToString(medios[i]) << endl;
+    }
 }
 
-void Sistema::elegirMedio(Transporte medio)
-{
-    this->medioSeleccionado = medio;
+void Sistema::elegirMedio(int opcion) {
+    if (opcion < 1 || opcion > cantidadMedios) {
+        cout << "Opción inválida. Seleccione un número válido." << endl;
+        medioSeleccionado = Transporte::Ninguno;
+    } else {
+        medioSeleccionado = medios[opcion - 1];
+        cout << "Medio seleccionado: " << transporteToString(medioSeleccionado) << endl;
+    }
 }
 
 string transporteToString(Transporte t)
@@ -427,7 +440,7 @@ void Sistema::darAltaEmpleado()
     if (medioSeleccionado != Transporte::Ninguno)
     {
         // Es repartidor
-        string medioStr = transporteToString(this->medioSeleccionado);
+        string medioStr = transporteToString(medioSeleccionado);
         nuevoEmpleado = new Repartidor(nomEmp, idEmpleado, medioStr);
         repartidores->add(key, nuevoEmpleado);
     }
@@ -487,7 +500,7 @@ void Sistema::mostrarEmpleados()
     delete itrep;
 }
 
-// ALTA CLIENTE
+/*/ ALTA CLIENTE
 DtCliente Sistema::altaCliente(char telefono, string nombre, DtDireccion direccion)
 {
     if (clienteTemp != nullptr)
@@ -534,4 +547,6 @@ bool Sistema::existeCliente(char telefono)
     }
     delete it;
     return false;
+
 }
+*/

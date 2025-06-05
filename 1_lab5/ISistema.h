@@ -37,8 +37,8 @@ public:
     // virtual void confirmarVentaEnMesa() = 0;
 
     virtual void agregarEmpleado(string nombre) = 0;
-    virtual set<Transporte> listarMedioTransporte() = 0; // devuelve una coleccion de DtMedioTransporte
-    virtual void elegirMedio(Transporte medio) = 0;
+    virtual void listarMedioTransporte() = 0; // devuelve una coleccion de DtMedioTransporte
+    virtual void elegirMedio(int opcion) = 0;
     virtual void darAltaEmpleado() = 0;
     virtual void mostrarEmpleados() = 0;
 

@@ -31,7 +31,7 @@ private:
 
     IDictionary *repartidores;
     IDictionary *empleados;
-    ICollection *medios;
+    //ICollection *medios;
 
 public:
     ~Sistema();
@@ -54,8 +54,8 @@ public:
 
     /*------ ALTA EMPLEADO ------*/
     void agregarEmpleado(string nombre);
-    set<Transporte> listarMedioTransporte(); // devuelve una coleccion de DtMedioTransporte
-    void elegirMedio(Transporte medio);
+    void listarMedioTransporte(); // devuelve una coleccion de DtMedioTransporte
+    void elegirMedio(int opcion);
     void darAltaEmpleado();
     void mostrarEmpleados();
 
