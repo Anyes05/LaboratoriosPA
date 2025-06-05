@@ -1,42 +1,25 @@
 #include "Menu.h"
 
 // Constructor
-Menu::Menu(char codigo, string desc, float precio, string nom, float descMenu) : Producto(codigo, desc, precio)
+Menu::Menu(char codigo, string descripcion, float precio, string nombre, float descuento) : Producto(codigo, descripcion, precio)
 {
-    cout << "Debug Menu::Constructor: Iniciando construcción del menú" << endl;
-    cout << "Debug Menu::Constructor: Código: " << codigo << endl;
-    cout << "Debug Menu::Constructor: Descripción: " << desc << endl;
-    cout << "Debug Menu::Constructor: Precio: " << precio << endl;
-    cout << "Debug Menu::Constructor: Nombre: " << nom << endl;
-    cout << "Debug Menu::Constructor: Descuento: " << descMenu << endl;
-
-    this->nombre = nom;
-    this->descuentoMenu = descMenu;
-    
-    cout << "Debug Menu::Constructor: Creando diccionario de productos comunes" << endl;
+    this->nombre = nombre;
+    this->descuentoMenu = descuento;
     this->productosComunes = new OrderedDictionary();
-    cout << "Debug Menu::Constructor: Creando diccionario de comun_menu" << endl;
     this->comun_menu = new OrderedDictionary();
-    cout << "Debug Menu::Constructor: Construcción completada" << endl;
 }
 
 // destrcutor
 Menu::~Menu() {
-    cout << "Debug Menu::Destructor: Iniciando destrucción" << endl;
-    
     if (productosComunes != nullptr) {
-        cout << "Debug Menu::Destructor: Liberando productosComunes" << endl;
         delete productosComunes;
         productosComunes = nullptr;
     }
     
     if (comun_menu != nullptr) {
-        cout << "Debug Menu::Destructor: Liberando comun_menu" << endl;
         delete comun_menu;
         comun_menu = nullptr;
     }
-    
-    cout << "Debug Menu::Destructor: Destrucción completada" << endl;
 }
 
 // getters y setters
@@ -132,21 +115,10 @@ void Menu::agregarProducto(IDictionary *pc)
 
 void Menu::darAltaMenu(Comun *comun, int cantidad)
 {
-    cout << "Debug Menu::darAltaMenu: Iniciando" << endl;
-    cout << "Debug Menu::darAltaMenu: Código del producto común: " << comun->getCodigo() << endl;
-    cout << "Debug Menu::darAltaMenu: Cantidad: " << cantidad << endl;
-
-    // 1. Agregar el producto común al diccionario de productos comunes
     char codStr[2] = {comun->getCodigo(), '\0'};
-    IKey *key = new String(codStr);
-    cout << "Debug Menu::darAltaMenu: Agregando producto común al diccionario" << endl;
+    String *key = new String(codStr);
     productosComunes->add(key, comun);
-    cout << "Debug Menu::darAltaMenu: Producto común agregado exitosamente" << endl;
 
-    // 2. Crear la relación Comun_Menu y agregarla
-    cout << "Debug Menu::darAltaMenu: Creando relación Comun_Menu" << endl;
     Comun_Menu *relacion = new Comun_Menu(cantidad, comun);
-    cout << "Debug Menu::darAltaMenu: Agregando relación al diccionario" << endl;
     comun_menu->add(key, relacion);
-    cout << "Debug Menu::darAltaMenu: Relación agregada exitosamente" << endl;
 }

@@ -1,21 +1,13 @@
 #include "Producto.h"
-#include <iostream>
 
 using namespace std;
 
 //constructor
-Producto::Producto(char cod, string desc, float prec)
+Producto::Producto(char codigo, string descripcion, float precio)
 {
-    cout << "Debug Producto::Constructor: Iniciando construcción" << endl;
-    cout << "Debug Producto::Constructor: Código: " << cod << endl;
-    cout << "Debug Producto::Constructor: Descripción: " << desc << endl;
-    cout << "Debug Producto::Constructor: Precio: " << prec << endl;
-
-    this->codigo = cod;
-    this->descripcion = desc;
-    this->precio = prec;
-
-    cout << "Debug Producto::Constructor: Construcción completada" << endl;
+    this->codigo = codigo;
+    this->descripcion = descripcion;
+    this->precio = precio;
 }
 
 //destructor

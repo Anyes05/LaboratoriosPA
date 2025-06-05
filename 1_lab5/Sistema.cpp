@@ -23,73 +23,70 @@ Sistema::Sistema()
 
 Sistema::~Sistema()
 {
-    cout << "Debug Sistema::Destructor: Iniciando destrucción" << endl;
-    
+
     // Limpiar menuTemp si existe
-    if (menuTemp != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando menuTemp" << endl;
+    if (menuTemp != nullptr)
+    {
         delete menuTemp;
         menuTemp = nullptr;
     }
-    
+
     // Limpiar productoComunTemp si existe
-    if (productoComunTemp != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando productoComunTemp" << endl;
+    if (productoComunTemp != nullptr)
+    {
         delete productoComunTemp;
         productoComunTemp = nullptr;
     }
-    
+
     // Limpiar productosComunSeleccionados si existe
-    if (productosComunSeleccionados != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando productosComunSeleccionados" << endl;
+    if (productosComunSeleccionados != nullptr)
+    {
         delete productosComunSeleccionados;
         productosComunSeleccionados = nullptr;
     }
-    
+
     // Limpiar otras colecciones
-    if (productos != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando productos" << endl;
+    if (productos != nullptr)
+    {
         delete productos;
         productos = nullptr;
     }
-    
-    if (ventas != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando ventas" << endl;
+
+    if (ventas != nullptr)
+    {
         delete ventas;
         ventas = nullptr;
     }
-    
-    if (mozos != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando mozos" << endl;
+
+    if (mozos != nullptr)
+    {
         delete mozos;
         mozos = nullptr;
     }
-    
-    if (mesas != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando mesas" << endl;
+
+    if (mesas != nullptr)
+    {
         delete mesas;
         mesas = nullptr;
     }
-    
-    if (repartidores != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando repartidores" << endl;
+
+    if (repartidores != nullptr)
+    {
         delete repartidores;
         repartidores = nullptr;
     }
-    
-    if (empleados != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando empleados" << endl;
+
+    if (empleados != nullptr)
+    {
         delete empleados;
         empleados = nullptr;
     }
-    
-    if (medios != nullptr) {
-        cout << "Debug Sistema::Destructor: Liberando medios" << endl;
+
+    if (medios != nullptr)
+    {
         delete medios;
         medios = nullptr;
     }
-    
-    cout << "Debug Sistema::Destructor: Destrucción completada" << endl;
 }
 
 Sistema *Sistema::getInstance()
@@ -145,33 +142,47 @@ bool Sistema::existeProducto(char codigo)
 
 IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
 {
-    cout << "Debug Sistema::agregarMenu: Iniciando" << endl;
-    cout << "Debug Sistema::agregarMenu: Código: " << codigoMenu << endl;
-    cout << "Debug Sistema::agregarMenu: Descripción: " << descripcion << endl;
-
     if (existeProducto(codigoMenu))
     {
-        cout << "Debug Sistema::agregarMenu: Producto ya existe" << endl;
         throw invalid_argument("Ya existe un producto con ese código.");
     }
 
+    // Verificar si hay productos comunes en el sistema
+    bool hayProductosComunes = false;
+    IIterator *it = productos->getIterator();
+    while (it->hasCurrent())
+    {
+        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+        Comun *comun = dynamic_cast<Comun *>(prod);
+        if (comun != nullptr)
+        {
+            hayProductosComunes = true;
+            break;
+        }
+        it->next();
+    }
+    delete it;
+
+    if (!hayProductosComunes)
+    {
+        throw invalid_argument("No se puede crear un menú porque no hay productos comunes en el sistema.");
+    }
+
     // Limpiar instancia anterior si existe
-    if (menuTemp != nullptr) {
-        cout << "Debug Sistema::agregarMenu: Limpiando menuTemp anterior" << endl;
+    if (menuTemp != nullptr)
+    {
         delete menuTemp;
         menuTemp = nullptr;
     }
 
-    // Guardar los datos en el datatype
-    cout << "Debug Sistema::agregarMenu: Creando nuevo menuTemp" << endl;
+    // Guardar los datos en el datatypes
     string nombreMenu = "Menu ";
     nombreMenu += codigoMenu;
     menuTemp = new DtMenu(codigoMenu, descripcion, 0, nombreMenu, 0.0);
-    cout << "Debug Sistema::agregarMenu: menuTemp creado exitosamente" << endl;
 
     // Listar todos los productos comunes y devolverlos como DtComun
-    cout << "Debug Sistema::agregarMenu: Obteniendo lista de productos comunes" << endl;
-    IIterator *it = productos->getIterator();
+
+    it = productos->getIterator();
     OrderedDictionary *listaDtComunes = new OrderedDictionary();
 
     while (it->hasCurrent())
@@ -189,59 +200,47 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     }
     delete it;
 
-    cout << "Debug Sistema::agregarMenu: Lista de productos comunes creada" << endl;
     return listaDtComunes;
 }
 
 void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
 {
-    cout << "Debug Sistema::seleccionarProductoComun: Iniciando" << endl;
-    cout << "Debug Sistema::seleccionarProductoComun: Código: " << codigoComun << ", Cantidad: " << cantProducto << endl;
 
     // Verificar que tenemos un menú temporal
     if (menuTemp == nullptr)
     {
-        cout << "Debug Sistema::seleccionarProductoComun: No hay menú temporal" << endl;
         throw invalid_argument("No hay un menú en proceso de creación.");
     }
 
-    // Verificar que el diccionario de selección existe
     if (productosComunSeleccionados == nullptr)
     {
-        cout << "Debug Sistema::seleccionarProductoComun: Creando nuevo diccionario de selección" << endl;
         productosComunSeleccionados = new OrderedDictionary();
     }
 
-    // Verificar que el producto existe
-    cout << "Debug Sistema::seleccionarProductoComun: Verificando existencia del producto" << endl;
     char codStr[2] = {codigoComun, '\0'};
-    cout << "Debug Sistema::seleccionarProductoComun: Creando clave con código: " << codStr << endl;
     String *key = new String(codStr);
 
     if (!productos->member(key))
     {
-        cout << "Debug Sistema::seleccionarProductoComun: Producto no encontrado" << endl;
         delete key;
         throw invalid_argument("No existe un producto común con ese código.");
     }
 
     // Obtener el producto
-    cout << "Debug Sistema::seleccionarProductoComun: Obteniendo producto" << endl;
     Producto *prod = dynamic_cast<Producto *>(productos->find(key));
     Comun *comun = dynamic_cast<Comun *>(prod);
 
     if (comun == nullptr)
     {
-        cout << "Debug Sistema::seleccionarProductoComun: Producto no es de tipo común" << endl;
         delete key;
         throw invalid_argument("El producto con ese código no es de tipo común.");
     }
 
     // Manejar la cantidad
-    cout << "Debug Sistema::seleccionarProductoComun: Verificando si el producto ya está seleccionado" << endl;
+
     if (productosComunSeleccionados->member(key))
     {
-        cout << "Debug Sistema::seleccionarProductoComun: Producto ya seleccionado, actualizando cantidad" << endl;
+
         // Si ya existe, obtener la cantidad actual
         Integer *cantActual = dynamic_cast<Integer *>(productosComunSeleccionados->find(key));
         if (cantActual != nullptr)
@@ -250,7 +249,6 @@ void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
             productosComunSeleccionados->remove(key);
             // Crear nueva entrada con la suma de cantidades
             int nuevaCantidad = cantActual->getValue() + cantProducto;
-            cout << "Debug Sistema::seleccionarProductoComun: Nueva cantidad total: " << nuevaCantidad << endl;
             productosComunSeleccionados->add(key, new Integer(nuevaCantidad));
             delete cantActual; // Liberar la memoria del Integer anterior
         }
@@ -258,10 +256,9 @@ void Sistema::seleccionarProductoComun(char codigoComun, int cantProducto)
     else
     {
         // Si no existe, agregar nueva entrada
-        cout << "Debug Sistema::seleccionarProductoComun: Agregando nuevo producto seleccionado" << endl;
+
         productosComunSeleccionados->add(key, new Integer(cantProducto));
     }
-    cout << "Debug Sistema::seleccionarProductoComun: Producto agregado exitosamente" << endl;
 }
 
 void Sistema::agregarProductoComun(char codigoComun, string descripcion, float precio)
@@ -298,12 +295,11 @@ void Sistema::agregarProductoComun(char codigoComun, string descripcion, float p
 
 void Sistema::darAltaProducto()
 {
-    cout << "Debug Sistema::darAltaProducto: Iniciando" << endl;
     try
     {
         if (productoComunTemp != nullptr && productoComunTemp->getCodigo() != '\0')
         {
-            cout << "Debug Sistema::darAltaProducto: Procesando producto común" << endl;
+
             // Crear y agregar producto común
             Comun *nuevoComun = new Comun(
                 productoComunTemp->getCodigo(),
@@ -319,31 +315,20 @@ void Sistema::darAltaProducto()
         }
         else if (menuTemp != nullptr && productosComunSeleccionados != nullptr)
         {
-            cout << "Debug Sistema::darAltaProducto: Iniciando alta de menú" << endl;
-            cout << "Debug Sistema::darAltaProducto: Verificando menuTemp" << endl;
-            cout << "Debug Sistema::darAltaProducto: Código del menú: " << menuTemp->getCodigo() << endl;
-            cout << "Debug Sistema::darAltaProducto: Descripción del menú: " << menuTemp->getdescripcion() << endl;
-            cout << "Debug Sistema::darAltaProducto: Nombre del menú: " << menuTemp->getNombre() << endl;
-
-            // 1. Calcular precio total del menú
             float precioTotal = 0.0;
-            cout << "Debug Sistema::darAltaProducto: Tamaño de productosComunSeleccionados: " << productosComunSeleccionados->getSize() << endl;
-            
+
             // Obtener los productos comunes que ya existen
             IIterator *it = productos->getIterator();
             if (it == nullptr)
             {
-                cout << "Debug Sistema::darAltaProducto: Iterator es null" << endl;
                 return;
             }
 
-            cout << "Debug Sistema::darAltaProducto: Calculando precio total" << endl;
             while (it->hasCurrent())
             {
                 Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
                 if (prod == nullptr)
                 {
-                    cout << "Debug Sistema::darAltaProducto: Producto es null" << endl;
                     it->next();
                     continue;
                 }
@@ -351,13 +336,11 @@ void Sistema::darAltaProducto()
                 Comun *comun = dynamic_cast<Comun *>(prod);
                 if (comun == nullptr)
                 {
-                    cout << "Debug Sistema::darAltaProducto: No es un producto común" << endl;
                     it->next();
                     continue;
                 }
 
                 char codigo = comun->getCodigo();
-                cout << "Debug Sistema::darAltaProducto: Verificando producto con código: " << codigo << endl;
 
                 // Crear una clave para buscar en productosComunSeleccionados
                 char codStr[2] = {codigo, '\0'};
@@ -365,14 +348,10 @@ void Sistema::darAltaProducto()
 
                 if (productosComunSeleccionados->member(key))
                 {
-                    cout << "Debug Sistema::darAltaProducto: Producto encontrado en selección" << endl;
                     Integer *cantidad = dynamic_cast<Integer *>(productosComunSeleccionados->find(key));
                     if (cantidad != nullptr)
                     {
-                        cout << "Debug Sistema::darAltaProducto: Cantidad seleccionada: " << cantidad->getValue() << endl;
-                        cout << "Debug Sistema::darAltaProducto: Precio del producto común: " << comun->getPrecio() << endl;
                         precioTotal += comun->getPrecio() * cantidad->getValue();
-                        cout << "Debug Sistema::darAltaProducto: Precio total acumulado: " << precioTotal << endl;
                     }
                 }
                 delete key;
@@ -380,17 +359,7 @@ void Sistema::darAltaProducto()
             }
             delete it;
 
-            cout << "Debug Sistema::darAltaProducto: Precio total final calculado: " << precioTotal << endl;
-
             // 2. Crear el menú
-            cout << "Debug Sistema::darAltaProducto: Intentando crear nuevo menú" << endl;
-            cout << "Debug Sistema::darAltaProducto: Parámetros para crear menú:" << endl;
-            cout << "  - Código: " << menuTemp->getCodigo() << endl;
-            cout << "  - Descripción: " << menuTemp->getdescripcion() << endl;
-            cout << "  - Precio: " << precioTotal << endl;
-            cout << "  - Nombre: " << menuTemp->getNombre() << endl;
-            cout << "  - Descuento: 0.10" << endl;
-
             Menu *nuevoMenu = new Menu(
                 menuTemp->getCodigo(),
                 menuTemp->getdescripcion(),
@@ -399,17 +368,14 @@ void Sistema::darAltaProducto()
                 0.10 // 10% de descuento
             );
 
-            cout << "Debug Sistema::darAltaProducto: Menú creado exitosamente" << endl;
-
             // 3. Agregar productos comunes al menú
-            cout << "Debug Sistema::darAltaProducto: Iniciando agregado de productos comunes al menú" << endl;
+
             it = productos->getIterator();
             while (it->hasCurrent())
             {
                 Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
                 if (prod == nullptr)
                 {
-                    cout << "Debug Sistema::darAltaProducto: Producto es null" << endl;
                     it->next();
                     continue;
                 }
@@ -417,13 +383,11 @@ void Sistema::darAltaProducto()
                 Comun *comun = dynamic_cast<Comun *>(prod);
                 if (comun == nullptr)
                 {
-                    cout << "Debug Sistema::darAltaProducto: No es un producto común" << endl;
                     it->next();
                     continue;
                 }
 
                 char codigo = comun->getCodigo();
-                cout << "Debug Sistema::darAltaProducto: Verificando producto con código: " << codigo << endl;
 
                 // Crear una clave para buscar en productosComunSeleccionados
                 char codStr[2] = {codigo, '\0'};
@@ -431,14 +395,10 @@ void Sistema::darAltaProducto()
 
                 if (productosComunSeleccionados->member(key))
                 {
-                    cout << "Debug Sistema::darAltaProducto: Producto encontrado en selección" << endl;
                     Integer *cantidad = dynamic_cast<Integer *>(productosComunSeleccionados->find(key));
                     if (cantidad != nullptr)
                     {
-                        cout << "Debug Sistema::darAltaProducto: Cantidad a agregar: " << cantidad->getValue() << endl;
-                        cout << "Debug Sistema::darAltaProducto: Llamando a darAltaMenu" << endl;
                         nuevoMenu->darAltaMenu(comun, cantidad->getValue());
-                        cout << "Debug Sistema::darAltaProducto: darAltaMenu completado" << endl;
                     }
                 }
                 delete key;
@@ -446,53 +406,39 @@ void Sistema::darAltaProducto()
             }
             delete it;
 
-            cout << "Debug Sistema::darAltaProducto: Productos agregados al menú exitosamente" << endl;
-
             // 4. Agregar el menú a la colección de productos
-            cout << "Debug Sistema::darAltaProducto: Intentando agregar menú a la colección de productos" << endl;
             char codStr[2] = {menuTemp->getCodigo(), '\0'};
             String *keyMenu = new String(codStr);
-            cout << "Debug Sistema::darAltaProducto: Verificando si el menú ya existe en productos" << endl;
-            if (productos->member(keyMenu)) {
-                cout << "Debug Sistema::darAltaProducto: ERROR - El menú ya existe en productos" << endl;
+            if (productos->member(keyMenu))
+            {
                 delete keyMenu;
                 throw runtime_error("El menú ya existe en la colección de productos");
             }
-            cout << "Debug Sistema::darAltaProducto: Agregando menú a productos" << endl;
             productos->add(keyMenu, nuevoMenu);
 
-            cout << "Debug Sistema::darAltaProducto: Menú agregado a productos exitosamente" << endl;
-
             // 5. Limpiar datos temporales
-            cout << "Debug Sistema::darAltaProducto: Iniciando limpieza de datos temporales" << endl;
+
             delete menuTemp;
             menuTemp = nullptr;
             delete productosComunSeleccionados;
             productosComunSeleccionados = nullptr;
-
-            cout << "Debug Sistema::darAltaProducto: Datos temporales limpiados exitosamente" << endl;
         }
         else
         {
-            cout << "Debug Sistema::darAltaProducto: ERROR - No hay datos temporales válidos" << endl;
-            cout << "Debug Sistema::darAltaProducto: menuTemp es " << (menuTemp == nullptr ? "null" : "no null") << endl;
-            cout << "Debug Sistema::darAltaProducto: productosComunSeleccionados es " << (productosComunSeleccionados == nullptr ? "null" : "no null") << endl;
             throw runtime_error("No hay datos temporales válidos para dar de alta");
         }
     }
     catch (const exception &e)
     {
-        cout << "Debug Sistema::darAltaProducto: Error capturado: " << e.what() << endl;
+
         // Limpiar en caso de error
         if (menuTemp != nullptr)
         {
-            cout << "Debug Sistema::darAltaProducto: Limpiando menuTemp en caso de error" << endl;
             delete menuTemp;
             menuTemp = nullptr;
         }
         if (productosComunSeleccionados != nullptr)
         {
-            cout << "Debug Sistema::darAltaProducto: Limpiando productosComunSeleccionados en caso de error" << endl;
             delete productosComunSeleccionados;
             productosComunSeleccionados = nullptr;
         }

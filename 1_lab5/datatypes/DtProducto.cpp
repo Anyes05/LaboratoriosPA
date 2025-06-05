@@ -1,19 +1,10 @@
 #include "DtProducto.h"
-#include <iostream>
 
-using namespace std;
-
-DtProducto::DtProducto(char codigo, string descripcion, float precio) {
-    cout << "Debug DtProducto::Constructor: Iniciando construcción" << endl;
-    cout << "Debug DtProducto::Constructor: Código: " << codigo << endl;
-    cout << "Debug DtProducto::Constructor: Descripción: " << descripcion << endl;
-    cout << "Debug DtProducto::Constructor: Precio: " << precio << endl;
-
+DtProducto::DtProducto(char codigo, string descripcion, float precio)
+{
     this->codigo = codigo;
     this->descripcion = descripcion;
     this->precio = precio;
-
-    cout << "Debug DtProducto::Constructor: Construcción completada" << endl;
 }
 
 DtProducto::DtProducto() {

@@ -8,7 +8,7 @@ void menuAdministrador(ISistema *sistema)
 {
     int opcion;
     do
-    { // CODIGO TEMPORAL DE PRUEBA
+    { 
         cout << "\n--- Administrador ---" << endl;
         cout << "1. Alta Producto" << endl;
         cout << "2. Alta Cliente" << endl;
@@ -94,79 +94,88 @@ void menuAdministrador(ISistema *sistema)
                 cout << "Ingrese la descripción del menú: ";
                 getline(cin, descripcionMenu);
 
-                // Se obtiene la colección de productos comunes disponibles para agregar al menú
-                IDictionary *comunesDisponibles = sistema->agregarMenu(codigoMenu, descripcionMenu);
-
-                // Mostrar productos comunes disponibles
-                cout << "Productos comunes disponibles para agregar al menú:" << endl;
-                IIterator *it = comunesDisponibles->getIterator();
-                while (it->hasCurrent())
+                try
                 {
-                    DtComun *dt = dynamic_cast<DtComun *>(it->getCurrent());
-                    if (dt)
+                    IDictionary *productosComunes = sistema->agregarMenu(codigoMenu, descripcionMenu);
+                    // Mostrar productos comunes disponibles
+                    cout << "Productos comunes disponibles para agregar al menú:" << endl;
+                    IIterator *it = productosComunes->getIterator();
+                    while (it->hasCurrent())
                     {
-                        cout << "Código: " << dt->getCodigo() << " | Descripción: " << dt->getdescripcion() << " | Precio: " << dt->getprecio() << endl;
-                    }
-                    it->next();
-                }
-                delete it;
-
-                // Selección de productos comunes para el menú
-                char agregarOtro;
-                do
-                {
-                    bool productoValido = false;
-                    while (!productoValido)
-                    {
-                        char codigoComun;
-                        int cantidad;
-                        cout << "Ingrese el código del producto común a agregar al menú: ";
-                        cin >> codigoComun;
-                        cin.ignore();
-                        cout << "Ingrese la cantidad de este producto en el menú: ";
-                        cin >> cantidad;
-                        cin.ignore();
-
-                        try
+                        DtComun *dt = dynamic_cast<DtComun *>(it->getCurrent());
+                        if (dt)
                         {
-                            sistema->seleccionarProductoComun(codigoComun, cantidad);
-                            productoValido = true; // Solo salgo si fue exitoso
+                            cout << "Código: " << dt->getCodigo() << " | Descripción: " << dt->getdescripcion() << " | Precio: " << dt->getprecio() << endl;
                         }
-                        catch (const std::exception &e)
+                        it->next();
+                    }
+                    delete it;
+
+                    // Selección de productos comunes para el menú
+                    char agregarOtro;
+                    do
+                    {
+                        bool productoValido = false;
+                        while (!productoValido)
                         {
-                            cout << "Error: " << e.what() << endl;
-                            cout << "¿Desea intentar con otro código? (S/N): ";
-                            char reintentar;
-                            cin >> reintentar;
+                            char codigoComun;
+                            int cantidad;
+                            cout << "Ingrese el código del producto común a agregar al menú: ";
+                            cin >> codigoComun;
                             cin.ignore();
-                            if (reintentar != 'S' && reintentar != 's')
+                            cout << "Ingrese la cantidad de este producto en el menú: ";
+                            cin >> cantidad;
+                            cin.ignore();
+
+                            try
                             {
-                                // El usuario no quiere intentar de nuevo, salgo del sub-ciclo
-                                break;
+                                sistema->seleccionarProductoComun(codigoComun, cantidad);
+                                productoValido = true; // Solo salgo si fue exitoso
+                            }
+                            catch (const std::exception &e)
+                            {
+                                cout << "Error: " << e.what() << endl;
+                                cout << "¿Desea intentar con otro código? (S/N): ";
+                                char reintentar;
+                                cin >> reintentar;
+                                cin.ignore();
+                                if (reintentar != 'S' && reintentar != 's')
+                                {
+                                    // El usuario no quiere intentar de nuevo, salgo del sub-ciclo
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    cout << "¿Desea agregar otro producto común al menú? (S/N): ";
-                    cin >> agregarOtro;
+                        cout << "¿Desea agregar otro producto común al menú? (S/N): ";
+                        cin >> agregarOtro;
+                        cin.ignore();
+                    } while (agregarOtro == 'S' || agregarOtro == 's');
+
+                    cout << "¿Desea confirmar el alta del menú? (S/N): ";
+                    char confirmar;
+                    cin >> confirmar;
                     cin.ignore();
-                } while (agregarOtro == 'S' || agregarOtro == 's');
 
-                cout << "¿Desea confirmar el alta del menú? (S/N): ";
-                char confirmar;
-                cin >> confirmar;
-                cin.ignore();
-
-                if (confirmar == 'S' || confirmar == 's')
-                {
-                    sistema->darAltaProducto();
-                    cout << "Menú dado de alta correctamente." << endl;
+                    if (confirmar == 'S' || confirmar == 's')
+                    {
+                        sistema->darAltaProducto();
+                        cout << "Menú dado de alta correctamente." << endl;
+                    }
+                    else
+                    {
+                        cout << "Alta de menú cancelada." << endl;
+                    }
+                    cin.get();
                 }
-                else
+                catch (const invalid_argument &e)
                 {
-                    cout << "Alta de menú cancelada." << endl;
+                    cout << "Error: " << e.what() << endl;
+                    cout << "Presione Enter para continuar...";
+                    cin.ignore();
+                    cin.get();
+                    return;
                 }
-                cin.get();
             }
             else
             {
