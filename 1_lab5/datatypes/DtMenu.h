@@ -3,7 +3,7 @@
 
 #include "DtProducto.h"
 
-class DtMenu : public DtProducto, public virtual ICollectible
+class DtMenu : public DtProducto
 {
 private:
     string nombre;
@@ -11,6 +11,7 @@ private:
 
 public:
     DtMenu(char, string, float, string, float);
+    DtMenu();
     ~DtMenu();
 
     string getNombre();
