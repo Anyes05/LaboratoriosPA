@@ -1,14 +1,28 @@
 #include "DtMenu.h"
+#include <iostream>
 
-DtMenu::DtMenu(char codigo, string descripcion, float precio, string nombre, float descuento) : DtProducto(codigo, descripcion, precio){
+using namespace std;
+
+DtMenu::DtMenu(char codigo, string descripcion, float precio, string nombre, float descuento) : DtProducto(codigo, descripcion, precio) {
+    cout << "Debug DtMenu::Constructor: Iniciando construcción" << endl;
+    cout << "Debug DtMenu::Constructor: Código: " << codigo << endl;
+    cout << "Debug DtMenu::Constructor: Descripción: " << descripcion << endl;
+    cout << "Debug DtMenu::Constructor: Precio: " << precio << endl;
+    cout << "Debug DtMenu::Constructor: Nombre: " << nombre << endl;
+    cout << "Debug DtMenu::Constructor: Descuento: " << descuento << endl;
+
     this->nombre = nombre;
-    this->descuentoMenu=descuento;
-}
-DtMenu::DtMenu() {
-    this->nombre = "";
-    this->descuentoMenu= 0.0;
+    this->descuentoMenu = descuento;
+    
+    cout << "Debug DtMenu::Constructor: Construcción completada" << endl;
 }
 
+DtMenu::DtMenu() : DtProducto('\0', "", 0.0) {
+    cout << "Debug DtMenu::Constructor: Iniciando construcción por defecto" << endl;
+    this->nombre = "";
+    this->descuentoMenu = 0.0;
+    cout << "Debug DtMenu::Constructor: Construcción por defecto completada" << endl;
+}
 
 DtMenu::~DtMenu(){}
 
