@@ -33,8 +33,8 @@ public:
     virtual ICollection* calcularAsignacion(int cantMesas, int cantMozos) = 0;
 
     virtual DtAsignacion ingresarIdMozo(int idMozo) = 0;
-    virtual ICollection *elegirMesas(int numero) = 0; // devuele una coleccion de DtMesas
-    // virtual void confirmarVentaEnMesa() = 0;
+    virtual void elegirMesas(int numero) = 0; // devuele una coleccion de DtMesas
+    virtual void confirmarVentaEnMesa() = 0;
 
     virtual void agregarEmpleado(string nombre, int idIngresado) = 0;
     virtual void listarMedioTransporte() = 0; // devuelve una coleccion de DtMedioTransporte

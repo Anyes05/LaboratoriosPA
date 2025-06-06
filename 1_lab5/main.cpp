@@ -369,8 +369,74 @@ void menuAdministrador(ISistema *sistema)
 
 void menuMozo(ISistema *sistema)
 {
-    cout << "Menú Mozo (a implementar)" << endl;
-}
+    int opcion;
+    do
+    {
+        cout << "\n--- Mozo ---" << endl;
+        cout << "1. Iniciar venta en mesa" << endl;
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        switch (opcion)
+        {
+            case 1:
+            {
+                    system("clear");
+                    cout << "INICIAR VENTA EN UNA MESA" << endl;
+                    cout << "Ingrese el identificador del mozoo: " << endl;
+                    int idMozo;
+                    cin >> idMozo;
+                    cin.ignore();
+                    cout << "Las mesas asignadas al mozo " << idMozo << " son: " << endl;
+                    try {
+                        DtAsignacion dtAsignacion = sistema->ingresarIdMozo(idMozo);
+                        cout << "ID Mozo: " << dtAsignacion.getidMozo() << endl;
+                        cout << "Mesas asignadas: ";
+                        int *mesas = dtAsignacion.getidMesas();
+                        for (int j = 0; j < dtAsignacion.getcantMesas(); j++)
+                        {
+                            cout << mesas[j] << " ";
+                        }
+                        cout << endl;
+                        cout << "Seleccione las mesas para la venta: " << endl;
+                        cout << "Ingrese el número de mesa: ";
+                        cout << " (0 para salir)" << endl;
+                        int numeroMesa;
+                        cin >> numeroMesa;
+                        cin.ignore();
+                        while (numeroMesa != 0) {
+                            try {
+                                sistema->elegirMesas(numeroMesa);
+                                cout << "Mesa " << numeroMesa << " seleccionada." << endl;
+                            } catch (const std::exception &e) {
+                                cout << "Error al seleccionar la mesa: " << e.what() << endl;
+                            }
+                            cout << "Ingrese el número de mesa (0 para salir): ";
+                            cin >> numeroMesa;
+                            cin.ignore();
+                        }
+                        system("clear");
+                        cout << "Desea iniciar la venta en las mesas seleccionadas? (S/N): ";
+                        char confirmar;
+                        cin >> confirmar;
+                        cin.ignore();
+                        if (confirmar == 'S' || confirmar == 's') {
+                            sistema->confirmarVentaEnMesa();
+                            cout << "Venta iniciada correctamente." << endl;
+                        } else {
+                            cout << "Venta cancelada." << endl;
+                        }
+                    } catch (const std::exception &e) {
+                        cout << "Error: " << e.what() << endl;
+                        break;
+                    }
+
+            }
+        }    
+    } while (opcion != 0);
+    cout << "Volviendo al menú principal..." << endl;
+} 
+
 void menuRepartidor(ISistema *sistema)
 {
     cout << "Menú Repartidor (a implementar)" << endl;
