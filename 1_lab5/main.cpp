@@ -255,7 +255,7 @@ void menuAdministrador(ISistema *sistema)
 
     if (sistema->existeEmpleado(idIngresado)) {
         cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
-        break; // No continúa con la alta
+        break; 
     }
 
     sistema->agregarEmpleado(nombre, idIngresado);
@@ -279,7 +279,7 @@ void menuAdministrador(ISistema *sistema)
     } while (!entradaValida);
 
     if (esRepartidor == 's' || esRepartidor == 'S') {
-        sistema->listarMedioTransporte(); // Muestra medios con índices
+        sistema->listarMedioTransporte(); 
 
         int opcion;
         entradaValida = false;
@@ -298,7 +298,7 @@ void menuAdministrador(ISistema *sistema)
 } while (!entradaValida);
 
 
-        sistema->elegirMedio(opcion); // Pasás la opción directamente
+        sistema->elegirMedio(opcion); 
     } else {
         sistema->elegirMedio(0); // Opción inválida, para que asigne Ninguno
     }

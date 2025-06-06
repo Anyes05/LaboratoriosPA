@@ -753,7 +753,7 @@ void Sistema::mostrarEmpleados()
          Empleado *emp = dynamic_cast<Empleado *>(itEmp->getCurrent());
          if (emp != nullptr)
          {
-             cout << "ID: " << emp->getIdEmpleado() << ", Nombre: " << emp->getNombre() << endl;
+             cout << "ID: " << emp->getIdEmpleado() << ", IDIng: "<<emp->getIdIngresado()<<  ", Nombre: " << emp->getNombre() << endl;
          }
          itEmp->next();
      }
@@ -767,7 +767,7 @@ void Sistema::mostrarEmpleados()
          Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
          if (mozo != nullptr)
          {
-             cout << "ID: " << mozo->getIdEmpleado() << ", Nombre: " << mozo->getNombre() << endl;
+             cout << "ID: " << mozo->getIdEmpleado() << ", IDIng: "<<mozo->getIdIngresado()<<  ", Nombre: " << mozo->getNombre() << endl;
          }
          itMozo->next();
      }
@@ -781,7 +781,7 @@ void Sistema::mostrarEmpleados()
          Repartidor *rep = dynamic_cast<Repartidor *>(itrep->getCurrent());
          if (rep != nullptr)
          {
-             cout << "ID: " << rep->getIdEmpleado() << ", Nombre: " << rep->getNombre() << ", Medio: " << rep->getTransporte() << endl;
+             cout << "ID: " << rep->getIdEmpleado() << ", IDIng: "<<rep->getIdIngresado()<< ", Nombre: " << rep->getNombre() << ", Medio: " << rep->getTransporte() << endl;
          }
          itrep->next();
      }
