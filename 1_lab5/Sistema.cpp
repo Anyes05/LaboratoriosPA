@@ -11,85 +11,27 @@ Sistema::Sistema()
     mesas = new OrderedDictionary();
     repartidores = new OrderedDictionary();
     empleados = new OrderedDictionary();
-    //medios = new List();
     clientes = new List();
 
     // Inicializar los punteros temporales
     productoComunTemp = nullptr;
     menuTemp = nullptr;
     productosComunSeleccionados = new OrderedDictionary();
-
     mesasElegidasParaVenta = nullptr;
     idMozoSeleccionado = 0;
-    
+    nomEmp = "";
+    medioSeleccionado = {};
+    ultimoIdEmpleado = 0;
+    medios[0] = {Bicicleta};
+    medios[1] = {Auto};
+    medios[2] = {Moto};
+    cantidadMedios = 3;
+    idE = 0;
+    clienteTemp = nullptr;
 }
 
 Sistema::~Sistema()
 {
-
-    // Limpiar menuTemp si existe
-    if (menuTemp != nullptr)
-    {
-        delete menuTemp;
-        menuTemp = nullptr;
-    }
-
-    // Limpiar productoComunTemp si existe
-    if (productoComunTemp != nullptr)
-    {
-        delete productoComunTemp;
-        productoComunTemp = nullptr;
-    }
-
-    // Limpiar productosComunSeleccionados si existe
-    if (productosComunSeleccionados != nullptr)
-    {
-        delete productosComunSeleccionados;
-        productosComunSeleccionados = nullptr;
-    }
-
-    // Limpiar otras colecciones
-    if (productos != nullptr)
-    {
-        delete productos;
-        productos = nullptr;
-    }
-
-    if (ventas != nullptr)
-    {
-        delete ventas;
-        ventas = nullptr;
-    }
-
-    if (mozos != nullptr)
-    {
-        delete mozos;
-        mozos = nullptr;
-    }
-
-    if (mesas != nullptr)
-    {
-        delete mesas;
-        mesas = nullptr;
-    }
-
-    if (repartidores != nullptr)
-    {
-        delete repartidores;
-        repartidores = nullptr;
-    }
-
-    if (empleados != nullptr)
-    {
-        delete empleados;
-        empleados = nullptr;
-    }
-
-    /*if (medios != nullptr)
-    {
-        delete medios;
-        medios = nullptr;
-    }*/
 }
 
 Sistema *Sistema::getInstance()
@@ -99,23 +41,7 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
-
-// Variables para recordar la selección
-Comun *productoComunSeleccionado = nullptr;
-IDictionary *productosSeleccionados = new OrderedDictionary(); // clave: código, valor: cantidad (Integer)
-int cantidadProductoComunSeleccionada = 0;
-Menu *menuRecordado = nullptr;
-IDictionary *productosComunSeleccionados = new OrderedDictionary();
-string nomEmp;
-Transporte medioSeleccionado;
-int ultimoIdEmpleado = 0;
-Transporte medios[3] = {Bicicleta, Auto, Moto};
-int cantidadMedios = 3;
-int idE = 0;
-Cliente *clienteTemp = nullptr;
-
-
-// Declaraciones vacías para que el linker no dé error
+/*----- ALTA PRODUCTO -----*/
 
 bool Sistema::existeProducto(char codigo)
 {
@@ -465,7 +391,230 @@ void Sistema::darAltaProducto()
     }
 }
 
-// ASIGNAR MESAS A MOZOS
+/*----- ALTA CLIENTE -----*/ 
+
+DtCliente Sistema::altaCliente(string telefono, string nombre, DtDireccion direccion)
+{
+    if (clienteTemp != nullptr)
+    {
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
+
+    clienteTemp = new DtCliente(telefono, nombre, direccion);
+    return *clienteTemp;  // Devolvemos una copia del DtCliente
+}
+
+void Sistema::confirmarAlta()
+{
+    if (clienteTemp != nullptr)
+    {
+        Cliente* cliente = new Cliente(clienteTemp->getTelefono(), clienteTemp->getNombre(), clienteTemp->getDireccion());
+        clientes->add(cliente);
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
+}
+
+void Sistema::cancelarAlta()
+{
+    if (clienteTemp != nullptr)
+    {
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
+}
+
+bool Sistema::existeCliente(string telefono)
+{
+    IIterator *it = clientes->getIterator();
+    while (it->hasCurrent())
+    {
+        Cliente *c = dynamic_cast<Cliente *>(it->getCurrent());
+        if (c != nullptr && c->getTelefono() == telefono)
+        {
+            delete it;
+            return true;
+        }
+        it->next();
+    }
+    delete it;
+    return false;
+}
+
+void Sistema::listarClientes()
+{
+    if (clientes == nullptr || clientes->isEmpty())
+    {
+        cout << "No hay clientes registrados" << endl;
+        return;
+    }
+
+    IIterator *it = clientes->getIterator();
+    cout << "\n Lista de Clientes:\n";
+
+    while (it->hasCurrent())
+    {
+        Cliente *c = dynamic_cast<Cliente *>(it->getCurrent());
+
+        if (c != nullptr)
+        {
+            cout << "- Nombre: " << c->getNombre() << endl;
+            cout << "  Teléfono: " << c->getTelefono() << endl;
+
+            DtDireccion dir = c->getDireccion();
+            cout << "  Dirección: " << dir.getnombreCalle() << " y " << dir.getcalleEsquina() << ", " << dir.getnumero() << endl;
+            cout << "-------------------------" << endl;
+        }
+        it->next();
+    }
+
+    delete it;
+}
+
+/*------ ALTA EMPLEADO ------*/
+
+string Sistema::transporteToString(Transporte t)
+{
+    switch (t)
+    {
+    case Transporte::Bicicleta:
+        return "Bicicleta";
+    case Transporte::Auto:
+        return "Auto";
+    case Transporte::Moto:
+        return "Moto";
+    case Transporte::Ninguno:
+        return "";
+    default:
+        return "Desconocido";
+    }
+}
+
+void Sistema::agregarEmpleado(string nombre, int idIngresado)
+{
+    nomEmp = nombre;
+    idE = idIngresado;
+}
+
+bool Sistema::existeEmpleado(int idIngresado)
+{
+    IIterator *it = empleados->getIterator();
+    while (it->hasCurrent())
+    {
+        ICollectible *current = it->getCurrent();
+        Empleado *emp = dynamic_cast<Empleado *>(current);
+        if (emp != nullptr)
+        {
+            if (emp->getIdIngresado() == idIngresado)
+            {
+                delete it;
+                return true; // Ya existe ese idIngresado
+            }
+        }
+        it->next();
+    }
+    delete it;
+    return false;
+}
+
+void Sistema::listarMedioTransporte()
+{
+    cout << "Seleccione un medio de transporte:" << endl;
+    for (int i = 0; i < cantidadMedios; i++)
+    {
+        cout << (i + 1) << ". " << transporteToString(medios[i]) << endl;
+    }
+}
+
+void Sistema::elegirMedio(int opcion)
+{
+    if (opcion < 1 || opcion > cantidadMedios)
+    {
+        cout << "Opción inválida. Seleccione un número válido." << endl;
+        medioSeleccionado = Transporte::Ninguno;
+    }
+    else
+    {
+        medioSeleccionado = medios[opcion - 1];
+        cout << "Medio seleccionado: " << transporteToString(medioSeleccionado) << endl;
+    }
+}
+
+// Creo que no iría ningún parámetro
+void Sistema::darAltaEmpleado()
+{
+    int idEmpleado = ++ultimoIdEmpleado; // Empieza desde 1
+
+    IKey *key = new Integer(idEmpleado);
+
+    Empleado *nuevoEmpleado;
+
+    if (medioSeleccionado != Transporte::Ninguno)
+    {
+        // Es repartidor
+        string medioStr = transporteToString(medioSeleccionado);
+        nuevoEmpleado = new Repartidor(nomEmp, idEmpleado, medioStr, idE);
+        repartidores->add(key, nuevoEmpleado);
+    }
+    else
+    {
+        // Es mozo
+        nuevoEmpleado = new Mozo(nomEmp, idEmpleado, 0, idE);
+        mozos->add(key, nuevoEmpleado);
+    }
+
+    // colección general
+    empleados->add(key, nuevoEmpleado);
+}
+
+void Sistema::mostrarEmpleados()
+{
+    cout << "\n--- Empleados registrados ---" << endl;
+
+    IIterator *itEmp = empleados->getIterator();
+    while (itEmp->hasCurrent())
+    {
+        Empleado *emp = dynamic_cast<Empleado *>(itEmp->getCurrent());
+        if (emp != nullptr)
+        {
+            cout << "ID: " << emp->getIdEmpleado() << ", IDIng: " << emp->getIdIngresado() << ", Nombre: " << emp->getNombre() << endl;
+        }
+        itEmp->next();
+    }
+    delete itEmp;
+
+    cout << "\n--- Mozos registrados ---" << endl;
+
+    IIterator *itMozo = mozos->getIterator();
+    while (itMozo->hasCurrent())
+    {
+        Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
+        if (mozo != nullptr)
+        {
+            cout << "ID: " << mozo->getIdEmpleado() << ", IDIng: " << mozo->getIdIngresado() << ", Nombre: " << mozo->getNombre() << endl;
+        }
+        itMozo->next();
+    }
+    delete itMozo;
+
+    cout << "\n--- Repartidores registrados ---" << endl;
+
+    IIterator *itrep = repartidores->getIterator();
+    while (itrep->hasCurrent())
+    {
+        Repartidor *rep = dynamic_cast<Repartidor *>(itrep->getCurrent());
+        if (rep != nullptr)
+        {
+            cout << "ID: " << rep->getIdEmpleado() << ", IDIng: " << rep->getIdIngresado() << ", Nombre: " << rep->getNombre() << ", Medio: " << rep->getTransporte() << endl;
+        }
+        itrep->next();
+    }
+    delete itrep;
+}
+
+
+/*----- ASIGNAR MESAS A MOZOS -----*/ 
 // si no hay ventas sin facturar, o sea que en los links de "actual" no hay venta?
 // la cantidad de mozos deberia de estar relacionada de alguna forma con la cantidad que estan dados de alta?
 ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
@@ -486,7 +635,7 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         throw std::runtime_error("No hay suficientes mozos para asignar las mesas.");
     }
 
-    ICollection *asignaciones = new List(); 
+    ICollection *asignaciones = new List();
     int mesaActual = 1;
 
     // tengo que crear la coleccion mesa e ir añadiando las mesas a cada mozo segun la cantidad de mesas que se me pasan en cantMesas
@@ -498,11 +647,12 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
     {
         ICollectible *current = it->getCurrent();
         Mozo *mozo = dynamic_cast<Mozo *>(current);
-        if (mozo == nullptr) {
-        cout << "Error: Un elemento en la colección de mozos no es Mozo." << endl;
-        it->next();
-        continue;
-    }
+        if (mozo == nullptr)
+        {
+            cout << "Error: Un elemento en la colección de mozos no es Mozo." << endl;
+            it->next();
+            continue;
+        }
         int cantidad = mesasPorMozo + (i < mesasExtra ? 1 : 0);
         int *mesasAsignadas = new int[cantidad];
 
@@ -510,18 +660,21 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         {
             mesasAsignadas[j] = mesaActual;
             Mesa *nuevaMesa = new Mesa(mesaActual);
-            //mozo->agregarMesa(nuevaMesa);
+            // mozo->agregarMesa(nuevaMesa);
 
             // tambien tengo que agregar la mesa a la coleccion global del sistema
             IKey *keyMesa = new Integer(mesaActual);
-            if (mesas->member(keyMesa)) {
-            cout << "Advertencia: Ya existe una mesa con número " << mesaActual << ". No se agregará de nuevo." << endl;
-            delete keyMesa;
-            delete nuevaMesa;
-            } else {
-            mesas->add(keyMesa, nuevaMesa);
-            mozo->agregarMesa(nuevaMesa);
-        }
+            if (mesas->member(keyMesa))
+            {
+                cout << "Advertencia: Ya existe una mesa con número " << mesaActual << ". No se agregará de nuevo." << endl;
+                delete keyMesa;
+                delete nuevaMesa;
+            }
+            else
+            {
+                mesas->add(keyMesa, nuevaMesa);
+                mozo->agregarMesa(nuevaMesa);
+            }
             mesaActual++;
         }
 
@@ -533,6 +686,111 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
     delete it;
     return asignaciones; // devuelve un arreglo de punteros a DtAsignacion
 }
+
+/*----- INICIAR VENTA EN MESA -----*/ 
+
+DtAsignacion Sistema::ingresarIdMozo(int idMozo)
+{
+    IIterator *it = mozos->getIterator();
+    while (it->hasCurrent())
+    {
+        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
+        if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
+        {
+            delete it;
+            int *mesasAsignadas = mozo->getMesasId();
+            idMozoSeleccionado = idMozo;                                                             // obtiene las mesas asignadas al mozo
+            return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
+        }
+        it->next();
+    }
+    if (it != nullptr)
+    {
+        delete it;
+        throw std::runtime_error("No existe un mozo con el ID especificado.");
+    }
+    return DtAsignacion();
+}
+
+void Sistema::elegirMesas(int numero)
+{
+    if (mesas == nullptr || mesas->isEmpty())
+    {
+        throw std::runtime_error("No hay mesas disponibles.");
+    }
+    Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(numero)));
+    if (mesaSeleccionada == nullptr)
+    {
+        throw std::runtime_error("No existe una mesa con el número especificado.");
+    }
+    if (mesaSeleccionada->getLocal() != nullptr)
+    {
+        throw std::runtime_error("La mesa ya está ocupada por una venta activa.");
+    }
+    if (mesasElegidasParaVenta == nullptr)
+    {
+        mesasElegidasParaVenta = new List(); // Inicializar la colección si es nula
+    }
+    if (mesasElegidasParaVenta->member(mesaSeleccionada))
+    {
+        throw std::runtime_error("La mesa ya ha sido elegida para la venta.");
+    }
+    mesasElegidasParaVenta->add(mesaSeleccionada); // Agregar la mesa a la colección de mesas elegidas
+}
+
+void Sistema::confirmarVentaEnMesa()
+{
+    if (mesasElegidasParaVenta == nullptr || mesasElegidasParaVenta->isEmpty())
+    {
+        throw std::runtime_error("No hay mesas elegidas para la venta.");
+    }
+    Local *venta = new Local(0, 0, 0); // Crear una nueva venta, sin valores iniciales
+    venta->setActiva(true);
+    venta->setNumero(ventas->getSize() + 1); // Asignar un número de venta basado en el tamaño actual de ventas
+    venta->setMesas(mesasElegidasParaVenta); // Asignar las mesas elegidas a la venta
+
+    IIterator *it = mesasElegidasParaVenta->getIterator(); // Asignar a cada mesa la venta actual
+    while (it->hasCurrent())
+    {
+        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
+        if (mesa != nullptr)
+        {
+            mesa->setLocal(venta);
+        }
+        it->next();
+    }
+    venta->setMozo(dynamic_cast<Mozo *>(mozos->find(new Integer(idMozoSeleccionado)))); // Asignar el mozo seleccionado a la venta
+    ventas->add(new Integer(venta->getNumero()), venta);                                // Agregar la venta a la colección de ventas
+    mesasElegidasParaVenta = nullptr;                                                   // Limpiar la colección de mesas elegidas
+    idMozoSeleccionado = 0;                                                             // Reiniciar el ID del mozo seleccionado
+}
+
+/*----- VENTA A DOMICILIO -----*/
+
+bool Sistema::ventaDomicilio(char telefono) {
+    throw runtime_error("Funcionalidad no implementada");
+}
+
+IDictionary* Sistema::listarProductos() {
+    throw runtime_error("Funcionalidad no implementada");
+}
+
+void Sistema::agregarProductoPedido(char codigo, int cantidad) {
+    throw runtime_error("Funcionalidad no implementada");
+}
+
+ICollection* Sistema::listarRepartidores() {
+    throw runtime_error("Funcionalidad no implementada");
+}
+
+void Sistema::asignarRepartidorDomicilio(int idRepartidor) {
+    throw runtime_error("Funcionalidad no implementada");
+}
+
+DtFacturaDomicilio Sistema::confirmarPedido() {
+    throw runtime_error("Funcionalidad no implementada");
+}
+
 
 // ICollectible *Sistema::listarParaAgregar(int idMesa)
 // {
@@ -585,288 +843,4 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 // void Sistema::darBajaProducto()
 // {
 // }
-
-// INICIAR VENTA EN MESA
-
-DtAsignacion Sistema::ingresarIdMozo(int idMozo)
-{
-    /*IIterator *it = mozos->getIterator();
-    while (it->hasCurrent())
-    {
-        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
-        if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
-        {
-            delete it;
-            int *mesasAsignadas = mozo->getMesasId();
-            idMozoSeleccionado = idMozo;                                                             // obtiene las mesas asignadas al mozo
-            return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
-        }
-        it->next();
-    }
-    if (it != nullptr)
-    {
-        delete it;
-        throw std::runtime_error("No existe un mozo con el ID especificado.");
-    }*/
-   return DtAsignacion();
-}
-
-void Sistema::elegirMesas(int numero)
-{
-    if (mesas == nullptr || mesas->isEmpty())
-    {
-        throw std::runtime_error("No hay mesas disponibles.");
-    }
-    Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(numero)));
-    if (mesaSeleccionada == nullptr)
-    {
-        throw std::runtime_error("No existe una mesa con el número especificado.");
-    }
-    if (mesaSeleccionada->getLocal() != nullptr)
-    {
-        throw std::runtime_error("La mesa ya está ocupada por una venta activa.");
-    }
-    if (mesasElegidasParaVenta == nullptr)
-    {
-        mesasElegidasParaVenta = new List(); // Inicializar la colección si es nula
-    }
-    if (mesasElegidasParaVenta->member(mesaSeleccionada))
-    {
-        throw std::runtime_error("La mesa ya ha sido elegida para la venta.");
-    }
-    mesasElegidasParaVenta->add(mesaSeleccionada); // Agregar la mesa a la colección de mesas elegidas
-}
-
-void Sistema::confirmarVentaEnMesa()
-{
-    if (mesasElegidasParaVenta == nullptr || mesasElegidasParaVenta->isEmpty())
-    {
-        throw std::runtime_error("No hay mesas elegidas para la venta.");
-    }
-    Local *venta = new Local(0, 0, 0); // Crear una nueva venta, sin valores iniciales
-    venta->setActiva(true);
-    venta->setNumero(ventas->getSize() + 1); // Asignar un número de venta basado en el tamaño actual de ventas
-    venta->setMesas(mesasElegidasParaVenta); // Asignar las mesas elegidas a la venta
-
-    IIterator *it = mesasElegidasParaVenta->getIterator(); // Asignar a cada mesa la venta actual
-    while (it->hasCurrent())
-    {
-        Mesa *mesa = dynamic_cast<Mesa *>(it->getCurrent());
-        if (mesa != nullptr)
-        {
-            mesa->setLocal(venta);
-        }
-        it->next();
-    }
-    venta->setMozo(dynamic_cast<Mozo *>(mozos->find(new Integer(idMozoSeleccionado)))); // Asignar el mozo seleccionado a la venta
-    ventas->add(new Integer(venta->getNumero()), venta); // Agregar la venta a la colección de ventas
-    mesasElegidasParaVenta = nullptr; // Limpiar la colección de mesas elegidas
-    idMozoSeleccionado = 0; // Reiniciar el ID del mozo seleccionado
-}
-
-
-string transporteToString(Transporte t)
-{
-     switch (t)
-    {
-     case Transporte::Bicicleta:
-         return "Bicicleta";
-     case Transporte::Auto:
-         return "Auto";
-     case Transporte::Moto:
-         return "Moto";
-     case Transporte::Ninguno:
-         return "";
-     default:
-     return "Desconocido";
-     }
-}
-/*------ ALTA EMPLEADO ------*/
-void Sistema::agregarEmpleado(string nombre, int idIngresado)
-{
-    nomEmp = nombre;
-    idE = idIngresado;
-}
-
-bool Sistema::existeEmpleado(int idIngresado)
-{
-    IIterator* it = empleados->getIterator();
-    while (it->hasCurrent())
-    {
-        ICollectible* current = it->getCurrent();
-        Empleado* emp = dynamic_cast<Empleado*>(current);
-        if (emp != nullptr)
-        {
-            if (emp->getIdIngresado() == idIngresado)
-            {
-                delete it;
-                return true; // Ya existe ese idIngresado
-            }
-        }
-        it->next();
-    }
-    delete it;
-    return false;
-}
-
-void Sistema::listarMedioTransporte() {
-    cout << "Seleccione un medio de transporte:" << endl;
-    for (int i = 0; i < cantidadMedios; i++) {
-        cout << (i + 1) << ". " << transporteToString(medios[i]) << endl;
-    }
-}
-
-void Sistema::elegirMedio(int opcion) {
-    if (opcion < 1 || opcion > cantidadMedios) {
-        cout << "Opción inválida. Seleccione un número válido." << endl;
-        medioSeleccionado = Transporte::Ninguno;
-    } else {
-        medioSeleccionado = medios[opcion - 1];
-        cout << "Medio seleccionado: " << transporteToString(medioSeleccionado) << endl;
-    }
-    
-}
-
-
-
-// Creo que no iría ningún parámetro
-void Sistema::darAltaEmpleado()
-{
-      int idEmpleado = ++ultimoIdEmpleado; // Empieza desde 1
-
-      IKey *key = new Integer(idEmpleado);
-
-      Empleado *nuevoEmpleado;
-
-     if (medioSeleccionado != Transporte::Ninguno)
-     {
-         // Es repartidor
-         string medioStr = transporteToString(medioSeleccionado);
-         nuevoEmpleado = new Repartidor(nomEmp, idEmpleado, medioStr, idE);
-         repartidores->add(key, nuevoEmpleado);
-     }
-     else
-     {
-         // Es mozo
-         nuevoEmpleado = new Mozo(nomEmp, idEmpleado, 0, idE);
-         mozos->add(key, nuevoEmpleado);
-     }
-
-
-     // colección general
-     empleados->add(key, nuevoEmpleado);
-}
-
-void Sistema::mostrarEmpleados()
-{
-     cout << "\n--- Empleados registrados ---" << endl;
-
-     IIterator *itEmp = empleados->getIterator();
-     while (itEmp->hasCurrent())
-     {
-         Empleado *emp = dynamic_cast<Empleado *>(itEmp->getCurrent());
-         if (emp != nullptr)
-         {
-             cout << "ID: " << emp->getIdEmpleado() << ", IDIng: "<<emp->getIdIngresado()<<  ", Nombre: " << emp->getNombre() << endl;
-         }
-         itEmp->next();
-     }
-     delete itEmp;
-
-     cout << "\n--- Mozos registrados ---" << endl;
-
-     IIterator *itMozo = mozos->getIterator();
-     while (itMozo->hasCurrent())
-     {
-         Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
-         if (mozo != nullptr)
-         {
-             cout << "ID: " << mozo->getIdEmpleado() << ", IDIng: "<<mozo->getIdIngresado()<<  ", Nombre: " << mozo->getNombre() << endl;
-         }
-         itMozo->next();
-     }
-     delete itMozo;
-
-     cout << "\n--- Repartidores registrados ---" << endl;
-
-     IIterator *itrep = repartidores->getIterator();
-     while (itrep->hasCurrent())
-     {
-         Repartidor *rep = dynamic_cast<Repartidor *>(itrep->getCurrent());
-         if (rep != nullptr)
-         {
-             cout << "ID: " << rep->getIdEmpleado() << ", IDIng: "<<rep->getIdIngresado()<< ", Nombre: " << rep->getNombre() << ", Medio: " << rep->getTransporte() << endl;
-         }
-         itrep->next();
-     }
-     delete itrep;
-}
-
-// ALTA CLIENTE
-DtCliente Sistema::altaCliente(string telefono, string nombre, DtDireccion direccion){
-    if(clienteTemp != nullptr){
-        delete clienteTemp;
-        clienteTemp = nullptr;
-    }
-
-    clienteTemp = new Cliente(telefono, nombre, direccion);
-
-    return DtCliente(telefono, nombre, direccion);
-}
-
-void Sistema::confirmarAlta(){
-    if(clienteTemp != nullptr){
-        clientes->add(clienteTemp);
-        clienteTemp = nullptr;
-    }
-}
-
-
-void Sistema::cancelarAlta(){
-    if(clienteTemp != nullptr){
-        delete clienteTemp;
-        clienteTemp = nullptr;
-    }
-}
-
-bool Sistema::existeCliente(string telefono){
-    IIterator* it = clientes->getIterator();
-    while(it->hasCurrent()){
-        Cliente* c = dynamic_cast<Cliente*>(it->getCurrent());
-        if(c != nullptr && c->getTelefono() == telefono){
-            delete it;
-            return true;
-        }
-        it->next();
-    }
-    delete it;
-    return false;
-}
-
-
-void Sistema::listarClientes(){
-    if(clientes == nullptr || clientes->isEmpty()){
-        cout<<"No hay clientes registrados"<<endl;
-        return;
-    }
-
-    IIterator* it = clientes->getIterator();
-    cout<<"\n Lista de Clientes:\n";
-
-    while(it->hasCurrent()){
-        Cliente* c = dynamic_cast<Cliente*>(it->getCurrent());
-
-        if(c != nullptr){
-            cout<<"- Nombre: " <<c->getNombre()<<endl;
-            cout<<"  Teléfono: "<<c->getTelefono()<<endl;
-
-            DtDireccion dir = c->getDireccion();
-            cout<<"  Dirección: " << dir.getnombreCalle()<< " y "<<dir.getcalleEsquina()<<", " <<dir.getnumero()<<endl;
-            cout << "-------------------------"<<endl;
-        }
-        it->next();
-    }
-
-    delete it;
-}
 

@@ -1,8 +1,8 @@
-
 #ifndef SISTEMA_H
 #define SISTEMA_H
-#include <set>
+
 #include "ISistema.h"
+
 #include "Venta.h"
 #include "Mozo.h"
 #include "Mesa.h"
@@ -11,13 +11,9 @@
 #include "Local.h"
 #include "Repartidor.h"
 #include "Cliente.h"
-#include "datatypes/DtAsignacion.h"
-#include "datatypes/DtMedioTransporte.h"
-#include "ICollection/Integer.h"
-#include "datatypes/Transporte.h"
+
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
-#include "datatypes/DtCliente.h"
 
 class Sistema : public ISistema
 {
@@ -30,17 +26,20 @@ private:
     IDictionary *empleados;
     IDictionary *mozos;
     IDictionary *mesas;
-    
+    ICollection *clientes;
 
     ICollection *mesasElegidasParaVenta;
     int idMozoSeleccionado;
-
-
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
-
-    ICollection *clientes;
+    string nomEmp;
+    Transporte medioSeleccionado;
+    int ultimoIdEmpleado;
+    Transporte medios[3];
+    int cantidadMedios;
+    int idE;
+    DtCliente *clienteTemp;
 
 public:
     ~Sistema();
@@ -53,13 +52,12 @@ public:
     void agregarProductoComun(char codigoComun, string descripcion, float precio);
     void darAltaProducto();
 
-    /*------ ASIGNAR MESAS A MOZOS ------*/
-    ICollection *calcularAsignacion(int cantMesas, int cantMozos);
-
-    /*------ INICIAR VENTA EN MESA ------*/
-    DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
-    void elegirMesas(int numero);    // devuele una coleccion de DtMesas
-    void confirmarVentaEnMesa();
+    /*----- ALTA CLIENTE -----*/
+    DtCliente altaCliente(string, string, DtDireccion);
+    void confirmarAlta();
+    void cancelarAlta();
+    bool existeCliente(string);
+    void listarClientes();
 
     /*------ ALTA EMPLEADO ------*/
     void agregarEmpleado(string nombre, int idIngresado);
@@ -68,15 +66,23 @@ public:
     void darAltaEmpleado();
     void mostrarEmpleados();
     bool existeEmpleado(int idEmpleado);
+    string transporteToString(Transporte t);
 
-    /*----- ALTA CLIENTE -----*/
-    DtCliente altaCliente(string, string, DtDireccion);
-    void confirmarAlta();
-    void cancelarAlta();
-    bool existeCliente(string);
-    void listarClientes();
+    /*------ ASIGNAR MESAS A MOZOS ------*/
+    ICollection *calcularAsignacion(int cantMesas, int cantMozos);
 
+    /*------ INICIAR VENTA EN MESA ------*/
+    DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
+    void elegirMesas(int numero);            // devuele una coleccion de DtMesas
+    void confirmarVentaEnMesa();
 
+    /*------ VENTA A DOMICILIO ------*/
+    bool ventaDomicilio(char telefono); // Retorna true si el cliente existe
+    IDictionary *listarProductos();     // retorna una coleccion de DtProducto
+    void agregarProductoPedido(char codigo, int cantidad);
+    ICollection *listarRepartidores(); // Retruna una coleccion de Dtrepartidor
+    void asignarRepartidorDomicilio(int idRepartidor);
+    DtFacturaDomicilio confirmarPedido();
 
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);

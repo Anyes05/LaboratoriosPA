@@ -190,121 +190,139 @@ void menuAdministrador(ISistema *sistema)
 
             system("clear");
 
-            cout<<"ALTA CLIENTE"<<endl;
-            cout<<"Ingrese telefono: ";
-            cin>>telefono;
-            cout<<"\nIngrese nombre: ";
-            cin>>nombre;
-            cout<<"\nIngrese calle: ";
-            cin>>calle;
-            cout<<"\nIngrese calleEsquina: ";
-            cin>>calleEsquina;
-            cout<<"\nIngrese nro de puerta: ";
-            cin>>nroPuerta;
-            
+            cout << "ALTA CLIENTE" << endl;
+            cout << "Ingrese telefono: ";
+            cin >> telefono;
+            cout << "\nIngrese nombre: ";
+            cin >> nombre;
+            cout << "\nIngrese calle: ";
+            cin >> calle;
+            cout << "\nIngrese calleEsquina: ";
+            cin >> calleEsquina;
+            cout << "\nIngrese nro de puerta: ";
+            cin >> nroPuerta;
+
             DtDireccion direccion(calle, nroPuerta, calleEsquina);
 
             DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
 
-            cout<<"Cliente:"<<endl;
-            cout<<"Nombre: "<<dt.getNombre()<<endl;
-            cout<<"Telefono: "<<dt.getTelefono()<<endl;
-            cout<<"Dirección: "<<direccion.getnombreCalle()<<" y "<<direccion.getcalleEsquina()<<", "<<direccion.getnumero()<<endl;
-            cout<<endl;
+            cout << "Cliente:" << endl;
+            cout << "Nombre: " << dt.getNombre() << endl;
+            cout << "Telefono: " << dt.getTelefono() << endl;
+            cout << "Dirección: " << direccion.getnombreCalle() << " y " << direccion.getcalleEsquina() << ", " << direccion.getnumero() << endl;
+            cout << endl;
 
             char opt;
-            cout<<"\n¿Desea confirmar? (s/n): ";
-            cin>>opt;
+            cout << "\n¿Desea confirmar? (s/n): ";
+            cin >> opt;
 
-            if(opt == 's' || opt == 'S'){
-                if(sistema->existeCliente(telefono)){
-                    cout << "Ya existe un cliente con ese telefono"<<endl;
+            if (opt == 's' || opt == 'S')
+            {
+                if (sistema->existeCliente(telefono))
+                {
+                    cout << "Ya existe un cliente con ese telefono" << endl;
                     sistema->cancelarAlta();
                 }
-                else{
+                else
+                {
                     sistema->confirmarAlta();
                     sistema->listarClientes();
                 }
             }
-            else{
+            else
+            {
                 sistema->cancelarAlta();
             }
         }
         break;
 
         case 3:
-{
-    cout << "--- Alta Empleado ---" << endl;
+        {
+            cout << "--- Alta Empleado ---" << endl;
 
-    string nombre;
-    int idIngresado;
-    cout << "Nombre del empleado: ";
-    cin.ignore();
-    getline(cin, nombre);
+            string nombre;
+            int idIngresado;
+            cout << "Nombre del empleado: ";
+            cin.ignore();
+            getline(cin, nombre);
 
-    cout << "Identificador del empleado (entero): ";
-    cin >> idIngresado;
+            cout << "Identificador del empleado (entero): ";
+            cin >> idIngresado;
 
-    if (sistema->existeEmpleado(idIngresado)) {
-        cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
-        break; 
-    }
+            if (sistema->existeEmpleado(idIngresado))
+            {
+                cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
+                break;
+            }
 
-    sistema->agregarEmpleado(nombre, idIngresado);
+            sistema->agregarEmpleado(nombre, idIngresado);
 
-    char esRepartidor;
-    bool entradaValida = false;
+            char esRepartidor;
+            bool entradaValida = false;
 
-    do {
-        cout << "¿El empleado es repartidor? (s/n): ";
-        cin >> esRepartidor;
+            do
+            {
+                cout << "¿El empleado es repartidor? (s/n): ";
+                cin >> esRepartidor;
 
-        // Limpiar caracteres sobrantes del buffer (por si el usuario mete "sss" o "sn\n")
-        cin.ignore(1000, '\n');
+                // Limpiar caracteres sobrantes del buffer (por si el usuario mete "sss" o "sn\n")
+                cin.ignore(1000, '\n');
 
-        if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N') {
-        entradaValida = true;
-        } else {
-        cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N')
+                {
+                    entradaValida = true;
+                }
+                else
+                {
+                    cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                }
+
+            } while (!entradaValida);
+
+            if (esRepartidor == 's' || esRepartidor == 'S')
+            {
+                sistema->listarMedioTransporte();
+
+                int opcion;
+                entradaValida = false;
+                do
+                {
+                    cout << "Opción: ";
+                    cin >> opcion;
+
+                    if (cin.fail() || opcion < 1 || opcion > 3)
+                    {
+                        cin.clear();            // limpia el error de entrada
+                        cin.ignore(1000, '\n'); // descarta caracteres sobrantes
+                        cout << "Entrada inválida. Ingrese un número del 1 al 3." << endl;
+                    }
+                    else
+                    {
+                        entradaValida = true;
+                    }
+
+                } while (!entradaValida);
+
+                sistema->elegirMedio(opcion);
+            }
+            else
+            {
+                sistema->elegirMedio(0); // Opción inválida, para que asigne Ninguno
+            }
+
+            try
+            {
+                sistema->darAltaEmpleado();
+                cout << "Empleado dado de alta con éxito." << endl;
+                sistema->mostrarEmpleados(); // Solo para testeo
+            }
+            catch (exception &e)
+            {
+                cout << "Error al dar de alta al empleado: " << e.what() << endl;
+            }
+
+            break;
         }
-
-    } while (!entradaValida);
-
-    if (esRepartidor == 's' || esRepartidor == 'S') {
-        sistema->listarMedioTransporte(); 
-
-        int opcion;
-        entradaValida = false;
-        do {
-    cout << "Opción: ";
-    cin >> opcion;
-
-    if (cin.fail() || opcion < 1 || opcion > 3) {
-        cin.clear(); // limpia el error de entrada
-        cin.ignore(1000, '\n'); // descarta caracteres sobrantes
-        cout << "Entrada inválida. Ingrese un número del 1 al 3." << endl;
-    } else {
-        entradaValida = true;
-    }
-
-} while (!entradaValida);
-
-
-        sistema->elegirMedio(opcion); 
-    } else {
-        sistema->elegirMedio(0); // Opción inválida, para que asigne Ninguno
-    }
-
-    try {
-        sistema->darAltaEmpleado();
-        cout << "Empleado dado de alta con éxito." << endl;
-        sistema->mostrarEmpleados(); // Solo para testeo
-    } catch (exception &e) {
-        cout << "Error al dar de alta al empleado: " << e.what() << endl;
-    }
-
-    break;
-}
         case 4:
         {
             system("clear");
@@ -319,29 +337,30 @@ void menuAdministrador(ISistema *sistema)
             cin.ignore();
             cout << endl;
 
-            try {
-            ICollection *asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
-            IIterator *it = asignaciones->getIterator();
-            while (it->hasCurrent())
+            try
             {
-                DtAsignacion *dtAsignacion = dynamic_cast<DtAsignacion *>(it->getCurrent());
-                if (dtAsignacion)
+                ICollection *asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
+                IIterator *it = asignaciones->getIterator();
+                while (it->hasCurrent())
                 {
-                    cout << "Mozo ID: " << dtAsignacion->getidMozo() << endl;
-                    cout << "Mesas asignadas: ";
-                    int *mesas = dtAsignacion->getidMesas();
-                    for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
+                    DtAsignacion *dtAsignacion = dynamic_cast<DtAsignacion *>(it->getCurrent());
+                    if (dtAsignacion)
                     {
-                        cout << mesas[j] << " - ";
+                        cout << "Mozo ID: " << dtAsignacion->getidMozo() << endl;
+                        cout << "Mesas asignadas: ";
+                        int *mesas = dtAsignacion->getidMesas();
+                        for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
+                        {
+                            cout << mesas[j] << " - ";
+                        }
+                        cout << endl;
+                        cout << "----------------------" << endl;
                     }
-                    cout << endl;
-                    cout << "----------------------" << endl;
+                    delete dtAsignacion;
+                    it->next();
                 }
-                delete dtAsignacion;
-                it->next();
-            }
-            delete it;
-            delete asignaciones;
+                delete it;
+                delete asignaciones;
             }
             catch (const std::exception &e)
             {
@@ -372,63 +391,72 @@ void menuMozo(ISistema *sistema)
 
         switch (opcion)
         {
-            case 1:
+        case 1:
+        {
+            system("clear");
+            cout << "INICIAR VENTA EN UNA MESA" << endl;
+            cout << "Ingrese el identificador del mozoo: " << endl;
+            int idMozo;
+            cin >> idMozo;
+            cin.ignore();
+            cout << "Las mesas asignadas al mozo " << idMozo << " son: " << endl;
+            try
             {
-                    system("clear");
-                    cout << "INICIAR VENTA EN UNA MESA" << endl;
-                    cout << "Ingrese el identificador del mozoo: " << endl;
-                    int idMozo;
-                    cin >> idMozo;
-                    cin.ignore();
-                    cout << "Las mesas asignadas al mozo " << idMozo << " son: " << endl;
-                    try {
-                        DtAsignacion dtAsignacion = sistema->ingresarIdMozo(idMozo);
-                        cout << "ID Mozo: " << dtAsignacion.getidMozo() << endl;
-                        cout << "Mesas asignadas: ";
-                        int *mesas = dtAsignacion.getidMesas();
-                        for (int j = 0; j < dtAsignacion.getcantMesas(); j++)
-                        {
-                            cout << mesas[j] << " ";
-                        }
-                        cout << endl;
-                        cout << "Seleccione las mesas para la venta: " << endl;
-                        cout << "Ingrese el número de mesa: ";
-                        cout << " (0 para salir)" << endl;
-                        int numeroMesa;
-                        cin >> numeroMesa;
-                        cin.ignore();
-                        while (numeroMesa != 0) {
-                            try {
-                                sistema->elegirMesas(numeroMesa);
-                                cout << "Mesa " << numeroMesa << " seleccionada." << endl;
-                            } catch (const std::exception &e) {
-                                cout << "Error al seleccionar la mesa: " << e.what() << endl;
-                            }
-                            cout << "Ingrese el número de mesa (0 para salir): ";
-                            cin >> numeroMesa;
-                            cin.ignore();
-                        }
-                        system("clear");
-                        cout << "Desea iniciar la venta en las mesas seleccionadas? (S/N): ";
-                        char confirmar;
-                        cin >> confirmar;
-                        cin.ignore();
-                        if (confirmar == 'S' || confirmar == 's') {
-                            sistema->confirmarVentaEnMesa();
-                            cout << "Venta iniciada correctamente." << endl;
-                        } else {
-                            cout << "Venta cancelada." << endl;
-                        }
-                    } catch (const std::exception &e) {
-                        cout << "Error: " << e.what() << endl;
-                        break;
+                DtAsignacion dtAsignacion = sistema->ingresarIdMozo(idMozo);
+                cout << "ID Mozo: " << dtAsignacion.getidMozo() << endl;
+                cout << "Mesas asignadas: ";
+                int *mesas = dtAsignacion.getidMesas();
+                for (int j = 0; j < dtAsignacion.getcantMesas(); j++)
+                {
+                    cout << mesas[j] << " ";
+                }
+                cout << endl;
+                cout << "Seleccione las mesas para la venta: " << endl;
+                cout << "Ingrese el número de mesa: ";
+                cout << " (0 para salir)" << endl;
+                int numeroMesa;
+                cin >> numeroMesa;
+                cin.ignore();
+                while (numeroMesa != 0)
+                {
+                    try
+                    {
+                        sistema->elegirMesas(numeroMesa);
+                        cout << "Mesa " << numeroMesa << " seleccionada." << endl;
                     }
-
+                    catch (const std::exception &e)
+                    {
+                        cout << "Error al seleccionar la mesa: " << e.what() << endl;
+                    }
+                    cout << "Ingrese el número de mesa (0 para salir): ";
+                    cin >> numeroMesa;
+                    cin.ignore();
+                }
+                system("clear");
+                cout << "Desea iniciar la venta en las mesas seleccionadas? (S/N): ";
+                char confirmar;
+                cin >> confirmar;
+                cin.ignore();
+                if (confirmar == 'S' || confirmar == 's')
+                {
+                    sistema->confirmarVentaEnMesa();
+                    cout << "Venta iniciada correctamente." << endl;
+                }
+                else
+                {
+                    cout << "Venta cancelada." << endl;
+                }
             }
-        }    
+            catch (const std::exception &e)
+            {
+                cout << "Error: " << e.what() << endl;
+                break;
+            }
+        }
+        }
     } while (opcion != 0);
     cout << "Volviendo al menú principal..." << endl;
-} 
+}
 
 void menuRepartidor(ISistema *sistema)
 {
@@ -511,12 +539,10 @@ void cargarDatosPrueba(ISistema *sistema)
 
         // Mozo 1
         sistema->agregarEmpleado("Juan Pérez", 100);
-        sistema->elegirMedio(0); // Asignar como mozo (medio = Ninguno)
         sistema->darAltaEmpleado();
 
         // Mozo 2
         sistema->agregarEmpleado("Ana López", 101);
-        sistema->elegirMedio(0);
         sistema->darAltaEmpleado();
 
         // Repartidor 1
@@ -534,12 +560,46 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->elegirMedio(2); // Auto
         sistema->darAltaEmpleado();
 
-
         cout << "Datos de prueba cargados exitosamente!" << endl;
     }
     catch (const exception &e)
     {
         cout << "Error al cargar datos de prueba: " << e.what() << endl;
+    }
+}
+
+void precargarMesas(ISistema *sistema)
+{
+    cout << "Precargando mesas..." << endl;
+    try
+    {
+        // Crear 10 mesas y asignarlas a los mozos existentes
+        ICollection *asignaciones = sistema->calcularAsignacion(10, 2); // 10 mesas para 3 mozos
+        IIterator *it = asignaciones->getIterator();
+        while (it->hasCurrent())
+        {
+            DtAsignacion *dtAsignacion = dynamic_cast<DtAsignacion *>(it->getCurrent());
+            if (dtAsignacion)
+            {
+                cout << "Mozo ID: " << dtAsignacion->getidMozo() << endl;
+                cout << "Mesas asignadas: ";
+                int *mesas = dtAsignacion->getidMesas();
+                for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
+                {
+                    cout << mesas[j] << " ";
+                }
+                cout << endl;
+            }
+            delete dtAsignacion;
+            it->next();
+        }
+        delete it;
+        delete asignaciones;
+        cout << "Mesas precargadas exitosamente!" << endl;
+    }
+    catch (const exception &e)
+    {
+        cout << "Error al precargar mesas: " << e.what() << endl;
     }
 }
 
@@ -563,7 +623,8 @@ int main()
             cout << "3. Repartidor" << endl;
             cout << "4. Cliente" << endl;
             cout << "5. Cargar datos de prueba" << endl;
-            cout << "6. Salir" << endl;
+            cout << "6. Precargar mesas" << endl;
+            cout << "0. Salir" << endl;
             cout << "Seleccione una opción: ";
             cin >> opcion;
 
@@ -585,19 +646,20 @@ int main()
                 cargarDatosPrueba(sistema);
                 break;
             case 6:
+                precargarMesas(sistema);
+                break;
+            case 7:
                 cout << "Saliendo..." << endl;
                 break;
             default:
                 cout << "Opción inválida." << endl;
             }
-        } while (opcion != 6);
+        } while (opcion != 0);
     }
     catch (const exception &e)
     {
         cout << "Error: " << e.what() << endl;
         return 1;
     }
-    return 0;
-
     return 0;
 }
