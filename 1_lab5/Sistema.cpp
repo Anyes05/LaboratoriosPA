@@ -12,6 +12,7 @@ Sistema::Sistema()
     repartidores = new OrderedDictionary();
     empleados = new OrderedDictionary();
     //medios = new List();
+    clientes = new List();
 
     // Inicializar los punteros temporales
     productoComunTemp = nullptr;
@@ -111,6 +112,7 @@ int ultimoIdEmpleado = 0;
 Transporte medios[3] = {Bicicleta, Auto, Moto};
 int cantidadMedios = 3;
 int idE = 0;
+Cliente *clienteTemp = nullptr;
 
 
 // Declaraciones vacías para que el linker no dé error
@@ -789,51 +791,70 @@ void Sistema::mostrarEmpleados()
 }
 
 // ALTA CLIENTE
-DtCliente Sistema::altaCliente(char telefono, string nombre, DtDireccion direccion)
-{
-    // if (clienteTemp != nullptr)
-    // {
-    //     delete clienteTemp;
-    //     clienteTemp = nullptr;
-    // }
+DtCliente Sistema::altaCliente(string telefono, string nombre, DtDireccion direccion){
+    if(clienteTemp != nullptr){
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
 
-    // clienteTemp = new Cliente(telefono, nombre, direccion);
+    clienteTemp = new Cliente(telefono, nombre, direccion);
 
-     return DtCliente(telefono, nombre, direccion);
+    return DtCliente(telefono, nombre, direccion);
 }
 
-void Sistema::confirmarAlta()
-{
-    //?
-    // IKey *keyCliente = new String(clienteTemp->getTelefono());
-    // clientes->add(keyCliente, clienteTemp);
-
-    // clienteTemp = nullptr;
+void Sistema::confirmarAlta(){
+    if(clienteTemp != nullptr){
+        clientes->add(clienteTemp);
+        clienteTemp = nullptr;
+    }
 }
 
-void Sistema::cancelarAlta()
-{
-    // if (clienteTemp != nullptr)
-    // {
-    //     delete clienteTemp;
-    //     clienteTemp = nullptr;
-    // }
+
+void Sistema::cancelarAlta(){
+    if(clienteTemp != nullptr){
+        delete clienteTemp;
+        clienteTemp = nullptr;
+    }
 }
 
-bool Sistema::existeCliente(char telefono)
-{
-    // IIterator *it = clientes->getIterator();
-    // while (it->hasCurrent())
-    // {
-    //     Cliente *c = dynamic_cast<Cliente *>(it->getCurrent());
-    //     if (c != nullptr && c->getTelefono() == telefono)
-    //     {
-    //         delete it;
-    //         return true;
-    //     }
-    //     it->next();
-    // }
-    // delete it;
+bool Sistema::existeCliente(string telefono){
+    IIterator* it = clientes->getIterator();
+    while(it->hasCurrent()){
+        Cliente* c = dynamic_cast<Cliente*>(it->getCurrent());
+        if(c != nullptr && c->getTelefono() == telefono){
+            delete it;
+            return true;
+        }
+        it->next();
+    }
+    delete it;
     return false;
-
 }
+
+
+void Sistema::listarClientes(){
+    if(clientes == nullptr || clientes->isEmpty()){
+        cout<<"No hay clientes registrados"<<endl;
+        return;
+    }
+
+    IIterator* it = clientes->getIterator();
+    cout<<"\n Lista de Clientes:\n";
+
+    while(it->hasCurrent()){
+        Cliente* c = dynamic_cast<Cliente*>(it->getCurrent());
+
+        if(c != nullptr){
+            cout<<"- Nombre: " <<c->getNombre()<<endl;
+            cout<<"  Teléfono: "<<c->getTelefono()<<endl;
+
+            DtDireccion dir = c->getDireccion();
+            cout<<"  Dirección: " << dir.getnombreCalle()<< " y "<<dir.getcalleEsquina()<<", " <<dir.getnumero()<<endl;
+            cout << "-------------------------"<<endl;
+        }
+        it->next();
+    }
+
+    delete it;
+}
+

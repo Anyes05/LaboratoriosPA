@@ -10,12 +10,14 @@
 #include "Menu.h"
 #include "Local.h"
 #include "Repartidor.h"
+#include "Cliente.h"
 #include "datatypes/DtAsignacion.h"
 #include "datatypes/DtMedioTransporte.h"
 #include "ICollection/Integer.h"
 #include "datatypes/Transporte.h"
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
+#include "datatypes/DtCliente.h"
 
 class Sistema : public ISistema
 {
@@ -38,6 +40,7 @@ private:
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
 
+    ICollection *clientes;
 
 public:
     ~Sistema();
@@ -67,10 +70,13 @@ public:
     bool existeEmpleado(int idEmpleado);
 
     /*----- ALTA CLIENTE -----*/
-    DtCliente altaCliente(char, string, DtDireccion);
+    DtCliente altaCliente(string, string, DtDireccion);
     void confirmarAlta();
     void cancelarAlta();
-    bool existeCliente(char);
+    bool existeCliente(string);
+    void listarClientes();
+
+
 
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);
