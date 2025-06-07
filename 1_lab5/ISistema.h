@@ -43,10 +43,11 @@ public:
     virtual void mostrarEmpleados() = 0;
     virtual bool existeEmpleado(int idEmpleado) = 0;
 
-    virtual DtCliente altaCliente(char, string, DtDireccion) = 0;
+    virtual DtCliente altaCliente(string, string, DtDireccion) = 0;
     virtual void confirmarAlta() = 0;
     virtual void cancelarAlta() = 0;
-    virtual bool existeCliente(char) = 0;
+    virtual bool existeCliente(string) = 0;
+    virtual void listarClientes() = 0;
 
     // virtual ICollectible *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;

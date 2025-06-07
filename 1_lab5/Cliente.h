@@ -9,19 +9,19 @@ using namespace std;
 class Cliente : public ICollectible // una coleccion de clientes. 
 {
 protected:
-    char telefono;
+    string telefono;
     string nombre;
     DtDireccion direccion;
 public:
-    Cliente(char, string, DtDireccion); // constructor
-    ~Cliente(); // destructor
+    Cliente(string, string, DtDireccion); // constructor
+    virtual ~Cliente(); // destructor
     
     // Getters y setters
     string getNombre();
-    char getTelefono();
+    string getTelefono();
     DtDireccion getDireccion();
     void setNombre(string); 
-    void setTelefono(char);
+    void setTelefono(string);
     void setDireccion(DtDireccion);
 };
 
