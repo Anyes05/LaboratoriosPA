@@ -2,8 +2,12 @@
 #include "ICollection/interfaces/OrderedKey.h"
 #include "ICollection/interfaces/IKey.h"
 #include "ICollection/Integer.h"
+#include "ICollection/interfaces/IDictionary.h"
+#include "ICollection/collections/OrderedDictionary.h"
 
-Mozo::Mozo(string nombre, int idEmpleado, int cantMesas, int idIngresado) : Empleado(nombre, idEmpleado, idIngresado), cantMesas(cantMesas) {}
+Mozo::Mozo(string nombre, int idEmpleado, int cantMesas, int idIngresado) : Empleado(nombre, idEmpleado, idIngresado), cantMesas(cantMesas) {
+    misMesas = new OrderedDictionary(); // Inicializa el diccionario de mesas
+}
 
 Mozo::~Mozo() {}
 

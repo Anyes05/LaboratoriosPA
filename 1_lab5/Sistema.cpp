@@ -479,12 +479,12 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
     { // chequeo si hay mozos en la coleccion. o podria utilizar el metodo isEmpty() de IDictionary
         throw std::runtime_error("La colección de mozos no está inicializada.");
     }
-    if (mozos->getSize() <= cantMozos)
+    if (mozos->getSize() < cantMozos)
     { // chequeo si hay suficientes mozos. No podria pasar por parametro una cantMozos mayor a los que estan dados de alta en la coleccion mozos
         throw std::runtime_error("No hay suficientes mozos para asignar las mesas.");
     }
 
-    ICollection *asignaciones = new List(); // creo un arreglo de punteros a DtAsignacion, que sera lo que devuelva al final de la funcion
+    ICollection *asignaciones = new List(); 
     int mesaActual = 1;
 
     // tengo que crear la coleccion mesa e ir añadiando las mesas a cada mozo segun la cantidad de mesas que se me pasan en cantMesas
@@ -494,7 +494,13 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 
     while (it->hasCurrent() && i < cantMozos)
     {
-        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent());
+        ICollectible *current = it->getCurrent();
+        Mozo *mozo = dynamic_cast<Mozo *>(current);
+        if (mozo == nullptr) {
+        cout << "Error: Un elemento en la colección de mozos no es Mozo." << endl;
+        it->next();
+        continue;
+    }
         int cantidad = mesasPorMozo + (i < mesasExtra ? 1 : 0);
         int *mesasAsignadas = new int[cantidad];
 
@@ -502,12 +508,18 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         {
             mesasAsignadas[j] = mesaActual;
             Mesa *nuevaMesa = new Mesa(mesaActual);
-            mozo->agregarMesa(nuevaMesa);
+            //mozo->agregarMesa(nuevaMesa);
 
             // tambien tengo que agregar la mesa a la coleccion global del sistema
             IKey *keyMesa = new Integer(mesaActual);
-            /*this-> ?*/ mesas->add(keyMesa, nuevaMesa); // agrego la mesa a la coleccion de mesas del sistema
-
+            if (mesas->member(keyMesa)) {
+            cout << "Advertencia: Ya existe una mesa con número " << mesaActual << ". No se agregará de nuevo." << endl;
+            delete keyMesa;
+            delete nuevaMesa;
+            } else {
+            mesas->add(keyMesa, nuevaMesa);
+            mozo->agregarMesa(nuevaMesa);
+        }
             mesaActual++;
         }
 
