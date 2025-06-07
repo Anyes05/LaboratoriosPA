@@ -317,7 +317,8 @@ void menuAdministrador(ISistema *sistema)
             int cantMozos;
             cin >> cantMozos;
             cin.ignore();
-            
+            cout << endl;
+
             try {
             ICollection *asignaciones = sistema->calcularAsignacion(cantMesas, cantMozos);
             IIterator *it = asignaciones->getIterator();
@@ -331,9 +332,10 @@ void menuAdministrador(ISistema *sistema)
                     int *mesas = dtAsignacion->getidMesas();
                     for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
                     {
-                        cout << mesas[j] << " ";
+                        cout << mesas[j] << " - ";
                     }
                     cout << endl;
+                    cout << "----------------------" << endl;
                 }
                 delete dtAsignacion;
                 it->next();
