@@ -791,7 +791,7 @@ DtFacturaDomicilio Sistema::confirmarPedido() {
 }
 
 /*----- AGREGAR PRODUCTO A UNA VENTA -----*/
-IDictionary *Sistema::listarParaAgregar(int idMesa)
+ICollection *Sistema::listarParaAgregar(int idMesa)
 {
     if (mesas == nullptr || mesas->isEmpty())
     {
@@ -809,7 +809,24 @@ IDictionary *Sistema::listarParaAgregar(int idMesa)
         throw runtime_error("La mesa no tiene una venta activa.");
     }
     ventaTemp = dynamic_cast<Venta *>(mesaSeleccionada->getLocal());
-    return productos; // Devolver una colección de productos disponibles para agregar
+
+    ICollection *productosDisponibles = new List();
+    IIterator *itDtVenta = ventaTemp->getProductos()->getIterator();
+    for (int i = 0; i < ventaTemp->getProductos()->getSize(); i++)
+    {
+        DtProducto *dtProducto = dynamic_cast<DtProducto *>(itDtVenta->getCurrent());
+        if (dtProducto != nullptr)
+        {
+            productosDisponibles->add(dtProducto);
+        }
+        itDtVenta->next();
+    }   
+    if (productosDisponibles->isEmpty())
+    {
+        delete productosDisponibles;
+        throw runtime_error("No hay productos disponibles para agregar a la venta.");
+    }
+    return productosDisponibles; // Retorna una colección de DtProducto disponibles para agregar a la venta
 }
 
 void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
@@ -879,9 +896,7 @@ void Sistema::confirmarAgregarProducto()
     else
     {
         ventaTemp->getPedido()->add(key, pedidoTemp); // Agregar el pedido temporal a la colección de pedidos de la venta
-    }
-
-        
+    } 
 }
 
 // void Sistema::ingresarMesa(int idMesa)

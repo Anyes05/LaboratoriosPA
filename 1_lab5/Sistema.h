@@ -88,7 +88,8 @@ public:
     void asignarRepartidorDomicilio(int idRepartidor);
     DtFacturaDomicilio confirmarPedido();
 
-    IDictionary *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
+    /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
+    ICollection *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     void seleccionarProductoAgregar(char codigo, int cantidad);
     void confirmarAgregarProducto();
     // void ingresarMesa(int idMesa);
