@@ -121,6 +121,13 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     menuTemp = nullptr;
   }
 
+  // Limpiar y reinstanciar la colección de productos comunes seleccionados
+  if (productosComunSeleccionados != nullptr)
+  {
+      delete productosComunSeleccionados;
+  }
+  productosComunSeleccionados = new OrderedDictionary();
+
   // Guardar los datos en el datatypes
   string nombreMenu = "Menu ";
   nombreMenu += codigoMenu;
@@ -302,7 +309,6 @@ void Sistema::darAltaProducto()
             precioTotal += comun->getPrecio() * cantidad->getValue();
           }
         }
-        delete key;
         it->next();
       }
       delete it;
@@ -348,7 +354,6 @@ void Sistema::darAltaProducto()
             nuevoMenu->darAltaMenu(comun, cantidad->getValue());
           }
         }
-        delete key;
         it->next();
       }
       delete it;
@@ -367,8 +372,7 @@ void Sistema::darAltaProducto()
 
       delete menuTemp;
       menuTemp = nullptr;
-      delete productosComunSeleccionados;
-      productosComunSeleccionados = nullptr;
+      // delete productosComunSeleccionados; // REMOVED: Managed by agregarMenu()
     }
     else
     {
@@ -547,12 +551,9 @@ void Sistema::elegirMedio(int opcion)
   }
 }
 
-// Creo que no iría ningún parámetro
 void Sistema::darAltaEmpleado()
 {
-  int idEmpleado = ++ultimoIdEmpleado; // Empieza desde 1
-
-  IKey *key = new Integer(idEmpleado);
+  IKey *key = new Integer(idE);
 
   Empleado *nuevoEmpleado;
 
@@ -560,18 +561,18 @@ void Sistema::darAltaEmpleado()
   {
     // Es repartidor
     string medioStr = transporteToString(medioSeleccionado);
-    nuevoEmpleado = new Repartidor(nomEmp, idEmpleado, medioStr, idE);
+    nuevoEmpleado = new Repartidor(nomEmp, idE, medioStr, idE);
     repartidores->add(key, nuevoEmpleado);
   }
   else
   {
     // Es mozo
-    nuevoEmpleado = new Mozo(nomEmp, idEmpleado, 0, idE);
+    nuevoEmpleado = new Mozo(nomEmp, idE, 0, idE);
     mozos->add(key, nuevoEmpleado);
   }
 
   // colección general
-  empleados->add(key, nuevoEmpleado);
+  empleados->add(new Integer(idE), nuevoEmpleado);
 }
 
 void Sistema::mostrarEmpleados()
@@ -915,36 +916,33 @@ DtFacturaDomicilio Sistema::confirmarPedido()
   // Primera pasada: calcular subtotal y verificar tipos de productos
   while (it->hasCurrent())
   {
-    ICollectible *current = it->getCurrent();
-    if (current != nullptr)
+    OrderedDictionaryEntry *entry = dynamic_cast<OrderedDictionaryEntry *>(it->getCurrent());
+    if (entry != nullptr)
     {
-      // Obtener la clave (código del producto)
-      String *key = dynamic_cast<String *>(current);
-      if (key != nullptr)
+      // Obtener la clave (código del producto) y la cantidad
+      String *key = dynamic_cast<String *>(entry->getKey());
+      Integer *cantidad = dynamic_cast<Integer *>(entry->getVal());
+
+      if (key != nullptr && cantidad != nullptr)
       {
         // Buscar el producto en la colección de productos
         Producto *prod = dynamic_cast<Producto *>(productos->find(key));
         if (prod != nullptr)
         {
-          // Buscar la cantidad en el diccionario de productos en pedido
-          Integer *cantidad = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
-          if (cantidad != nullptr)
-          {
-            subTotal += prod->getPrecio() * cantidad->getValue();
+          subTotal += prod->getPrecio() * cantidad->getValue();
 
-            // Verificar si es menú o común
-            Menu *menu = dynamic_cast<Menu *>(prod);
-            if (menu != nullptr)
-            {
-              hayMenu = true;
+          // Verificar si es menú o común
+          Menu *menu = dynamic_cast<Menu *>(prod);
+          if (menu != nullptr)
+          {
+            hayMenu = true;
+            todosSonComunes = false;
+          }
+          else
+          {
+            Comun *comun = dynamic_cast<Comun *>(prod);
+            if (comun == nullptr)
               todosSonComunes = false;
-            }
-            else
-            {
-              Comun *comun = dynamic_cast<Comun *>(prod);
-              if (comun == nullptr)
-                todosSonComunes = false;
-            }
           }
         }
       }
@@ -973,21 +971,18 @@ DtFacturaDomicilio Sistema::confirmarPedido()
   it = productosEnPedidoDomicilio->getIterator();
   while (it->hasCurrent())
   {
-    ICollectible *current = it->getCurrent();
-    if (current != nullptr)
+    OrderedDictionaryEntry *entry = dynamic_cast<OrderedDictionaryEntry *>(it->getCurrent());
+    if (entry != nullptr)
     {
-      String *key = dynamic_cast<String *>(current);
-      if (key != nullptr)
+      String *key = dynamic_cast<String *>(entry->getKey());
+      Integer *cantidad = dynamic_cast<Integer *>(entry->getVal());
+      if (key != nullptr && cantidad != nullptr)
       {
         Producto *prod = dynamic_cast<Producto *>(productos->find(key));
         if (prod != nullptr)
         {
-          Integer *cantidad = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
-          if (cantidad != nullptr)
-          {
-            Pedido *pedido = new Pedido(prod, cantidad->getValue());
-            nuevaVenta->agregarPedido(pedido);
-          }
+          Pedido *pedido = new Pedido(prod, cantidad->getValue());
+          nuevaVenta->agregarPedido(pedido);
         }
       }
     }
@@ -1034,30 +1029,12 @@ DtFacturaDomicilio Sistema::confirmarPedido()
   DtFacturaDomicilio factura = nuevaVenta->generarFacturaDomicilio();
 
   // 9. Limpiar los datos temporales del pedido
-  // Como IDictionary no tiene clear(), vamos a eliminar todos los elementos uno por uno
-  it = productosEnPedidoDomicilio->getIterator();
-  List *keysToRemove = new List();
-  while (it->hasCurrent())
+  if (productosEnPedidoDomicilio != nullptr)
   {
-    ICollectible *current = it->getCurrent();
-    if (current != nullptr)
-      keysToRemove->add(current);
-    it->next();
+      delete productosEnPedidoDomicilio; // Eliminar el diccionario actual, liberando su memoria
+      productosEnPedidoDomicilio = new OrderedDictionary(); // Crear una nueva instancia vacía
   }
-  delete it;
-
-  // Eliminar todas las claves
-  IIterator *itRemove = keysToRemove->getIterator();
-  while (itRemove->hasCurrent())
-  {
-    ICollectible *keyToRemove = itRemove->getCurrent();
-    if (keyToRemove != nullptr)
-      productosEnPedidoDomicilio->remove(dynamic_cast<IKey *>(keyToRemove));
-    itRemove->next();
-  }
-  delete itRemove;
-  delete keysToRemove;
-
+  
   idRepartidorSeleccionado = 0;
   if (clienteTemp != nullptr)
   {
