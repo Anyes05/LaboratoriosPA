@@ -57,9 +57,6 @@ IDictionary* Menu::getProductosComunes() {
     return comunes;
 }
 
-
-
-
 IDictionary *Menu::getComun_Menu()
 {
     return this->comun_menu;

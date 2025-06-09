@@ -12,16 +12,21 @@ using namespace std;
 class Domicilio : public Venta // una coleccion de ventas a domicilio
 {
 public:
-  Domicilio(int numero, float subTotal, float descuento, Cliente *cliente, Repartidor *repartidor); // constructor, agregar "DtCliente cliente"
-                                     // cuando se implemente
-  virtual ~Domicilio();              // destructor
+  Domicilio(int numero, float subTotal, float descuento, Cliente *cliente, Repartidor *repartidor); // constructor
+  ~Domicilio();
+  void setRepartidor(Repartidor *repartidor);
+  DtRepartidor *getRepartidor();
+  void setCliente(Cliente *cliente);
+  DtCliente *getCliente();
+  
+  void agregarPedido(Pedido* pedido);
+  DtFacturaDomicilio generarFacturaDomicilio(); // Debe existir
 private:
   Cliente *cliente;
   Repartidor *repartidor;
-  void setRepartidor(Repartidor *repartidor);
-  Repartidor *getRepartidor();
+  std::vector<Pedido*> pedidos; // o ICollection* pedidos si usas tu propia colección
 
-  DtFacturaDomicilio generarFacturaDomicilio(); // Debe existir
+
 };
 
 #endif

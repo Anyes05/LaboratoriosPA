@@ -1,9 +1,8 @@
 #include "Pedido.h"
 
-Pedido::Pedido(int cantProductos) : cantProductos(cantProductos), producto(nullptr) {}
-Pedido::~Pedido() {
-    // ?? delete producto;  Liberar memoria del producto si fue asignado
-}
+Pedido::Pedido(Producto* producto, int cantidad) : producto(producto), cantProductos(cantidad) {}
+
+Pedido::~Pedido() {}
 
 int Pedido::getCantProductos() {
     return cantProductos;

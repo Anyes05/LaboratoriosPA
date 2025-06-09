@@ -12,7 +12,7 @@ private:
     int cantProductos;
     Producto* producto; // puntero a un producto, ya que un pedido puede tener un solo producto
 public:
-    Pedido(int); //constructor
+    Pedido(Producto*, int); //constructor
     ~Pedido(); //destructor
     //getterts y setters
     int getCantProductos();
