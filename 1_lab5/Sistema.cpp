@@ -718,14 +718,14 @@ DtAsignacion Sistema::ingresarIdMozo(int idMozo)
   while (it->hasCurrent())
   {
     Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a
-                           // otro tipo de empleado
+                                                         // otro tipo de empleado
     if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
     {
       delete it;
       int *mesasAsignadas = mozo->getMesasId();
-      idMozoSeleccionado = idMozo; // obtiene las mesas asignadas al mozo
-      return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas,mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo,
-                                  // las mesas asignadas y la cantidad de mesas
+      idMozoSeleccionado = idMozo;                                                             // obtiene las mesas asignadas al mozo
+      return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo,
+                                                                                               // las mesas asignadas y la cantidad de mesas
     }
     it->next();
   }
@@ -906,29 +906,96 @@ DtFacturaDomicilio Sistema::confirmarPedido()
     throw runtime_error("No se ha asignado un repartidor para el pedido a domicilio.");
   }
 
-  // 1. Crear una nueva Venta de tipo Domicilio
-  Domicilio *nuevaVenta = new Domicilio(ventas->getSize() + 1, 0, 0, nullptr, nullptr); // Ajustar subtotal y descuento si corresponde
-  nuevaVenta->setActiva(true);
-
-  // 2. Asignar los productos y sus cantidades
+  // 1. Calcular subtotal y verificar si hay menús
   IIterator *it = productosEnPedidoDomicilio->getIterator();
-  float totalVenta = 0.0;
+  float subTotal = 0.0;
+  bool hayMenu = false;
+  bool todosSonComunes = true;
+
+  // Primera pasada: calcular subtotal y verificar tipos de productos
   while (it->hasCurrent())
   {
-    String *key = dynamic_cast<String *>(it->getCurrentKey());
-    Integer *cantidad = dynamic_cast<Integer *>(it->getCurrent());
-    Producto *prod = dynamic_cast<Producto *>(productos->find(key));
-    if (prod != nullptr && cantidad != nullptr)
+    ICollectible *current = it->getCurrent();
+    if (current != nullptr)
     {
-      Pedido* pedido = new Pedido(prod, cantidad->getValue());
-      nuevaVenta->agregarPedido(pedido);
-      totalVenta += prod->getPrecio() * cantidad->getValue();
+      // Obtener la clave (código del producto)
+      String *key = dynamic_cast<String *>(current);
+      if (key != nullptr)
+      {
+        // Buscar el producto en la colección de productos
+        Producto *prod = dynamic_cast<Producto *>(productos->find(key));
+        if (prod != nullptr)
+        {
+          // Buscar la cantidad en el diccionario de productos en pedido
+          Integer *cantidad = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
+          if (cantidad != nullptr)
+          {
+            subTotal += prod->getPrecio() * cantidad->getValue();
+
+            // Verificar si es menú o común
+            Menu *menu = dynamic_cast<Menu *>(prod);
+            if (menu != nullptr)
+            {
+              hayMenu = true;
+              todosSonComunes = false;
+            }
+            else
+            {
+              Comun *comun = dynamic_cast<Comun *>(prod);
+              if (comun == nullptr)
+                todosSonComunes = false;
+            }
+          }
+        }
+      }
     }
     it->next();
   }
   delete it;
 
-  // 3. Asignar el Repartidor seleccionado
+  // 2. Calcular descuento según las reglas
+  float descuento = 0.0;
+  if (todosSonComunes && !hayMenu)
+  {
+    // Si todos los productos son comunes y no hay menús, aplicar descuento del IVA (22%)
+    descuento = subTotal * 0.22;
+  }
+  // Si hay menús, no se aplica descuento (descuento = 0.0)
+
+  // 3. Calcular total
+  float total = subTotal - descuento;
+
+  // 4. Crear una nueva Venta de tipo Domicilio
+  Domicilio *nuevaVenta = new Domicilio(ventas->getSize() + 1, subTotal, descuento, nullptr, nullptr);
+  nuevaVenta->setActiva(true);
+
+  // 5. Asignar los productos y sus cantidades
+  it = productosEnPedidoDomicilio->getIterator();
+  while (it->hasCurrent())
+  {
+    ICollectible *current = it->getCurrent();
+    if (current != nullptr)
+    {
+      String *key = dynamic_cast<String *>(current);
+      if (key != nullptr)
+      {
+        Producto *prod = dynamic_cast<Producto *>(productos->find(key));
+        if (prod != nullptr)
+        {
+          Integer *cantidad = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
+          if (cantidad != nullptr)
+          {
+            Pedido *pedido = new Pedido(prod, cantidad->getValue());
+            nuevaVenta->agregarPedido(pedido);
+          }
+        }
+      }
+    }
+    it->next();
+  }
+  delete it;
+
+  // 6. Asignar el Repartidor seleccionado
   Integer *keyRepartidor = new Integer(idRepartidorSeleccionado);
   Repartidor *repartidorAsignado = dynamic_cast<Repartidor *>(repartidores->find(keyRepartidor));
   if (repartidorAsignado == nullptr)
@@ -939,15 +1006,12 @@ DtFacturaDomicilio Sistema::confirmarPedido()
   nuevaVenta->setRepartidor(repartidorAsignado);
   delete keyRepartidor;
 
-  // Asignar el cliente actual a la venta
-  // Como la función ventaDomicilio solo verifica si existe, necesitaría guardar el clienteTemp de alguna manera
-  // Para simplificar, asumiré que clienteTemp se llenó correctamente en ventaDomicilio o en Alta Cliente
+  // 7. Asignar el cliente actual a la venta
+  // Buscar el cliente por teléfono en la colección de clientes del sistema
+  Cliente *clienteReal = nullptr;
   if (clienteTemp != nullptr)
   {
-    // Necesito encontrar el objeto Cliente real, no el DtCliente temporal
-    // Buscar el cliente por teléfono en la colección de clientes del sistema
     IIterator *itC = clientes->getIterator();
-    Cliente *clienteReal = nullptr;
     while (itC->hasCurrent())
     {
       Cliente *c = dynamic_cast<Cliente *>(itC->getCurrent());
@@ -961,22 +1025,39 @@ DtFacturaDomicilio Sistema::confirmarPedido()
     delete itC;
 
     if (clienteReal != nullptr)
-    {
       nuevaVenta->setCliente(clienteReal);
-    }
     else
-    {
-      // Esto no debería pasar si el flujo del caso de uso es correcto y el cliente ya fue dado de alta o existe
-      // Pero para robustez, podríamos lanzar una excepción o registrar un error
       cout << "Advertencia: Cliente real no encontrado para DtCliente temporal." << endl;
-    }
   }
 
-  // 4. Generar un DtFacturaDomicilio
+  // 8. Generar un DtFacturaDomicilio
   DtFacturaDomicilio factura = nuevaVenta->generarFacturaDomicilio();
 
-  // 5. Limpiar los datos temporales del pedido
-  productosEnPedidoDomicilio->clear();
+  // 9. Limpiar los datos temporales del pedido
+  // Como IDictionary no tiene clear(), vamos a eliminar todos los elementos uno por uno
+  it = productosEnPedidoDomicilio->getIterator();
+  List *keysToRemove = new List();
+  while (it->hasCurrent())
+  {
+    ICollectible *current = it->getCurrent();
+    if (current != nullptr)
+      keysToRemove->add(current);
+    it->next();
+  }
+  delete it;
+
+  // Eliminar todas las claves
+  IIterator *itRemove = keysToRemove->getIterator();
+  while (itRemove->hasCurrent())
+  {
+    ICollectible *keyToRemove = itRemove->getCurrent();
+    if (keyToRemove != nullptr)
+      productosEnPedidoDomicilio->remove(dynamic_cast<IKey *>(keyToRemove));
+    itRemove->next();
+  }
+  delete itRemove;
+  delete keysToRemove;
+
   idRepartidorSeleccionado = 0;
   if (clienteTemp != nullptr)
   {
@@ -984,7 +1065,7 @@ DtFacturaDomicilio Sistema::confirmarPedido()
     clienteTemp = nullptr;
   }
 
-  // 6. Almacenar la venta en la colección de ventas del sistema
+  // 10. Almacenar la venta en la colección de ventas del sistema
   ventas->add(new Integer(nuevaVenta->getNumero()), nuevaVenta);
 
   return factura;

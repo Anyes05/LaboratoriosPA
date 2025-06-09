@@ -12,12 +12,13 @@
 #include "Repartidor.h"
 #include "Venta.h"
 #include "Domicilio.h"
-#include "Factura.h" 
+#include "Factura.h"
 
 #include "datatypes/DtComun.h"
 #include "datatypes/DtMenu.h"
 
-class Sistema : public ISistema {
+class Sistema : public ISistema
+{
 private:
   Sistema();
   static Sistema *instance;
@@ -52,8 +53,7 @@ public:
   bool existeProducto(
       char codigo); // retorna true si existe un producto con es codigo
   IDictionary *
-  agregarMenu(char codigoMenu,
-              string descripcion); // devuele una coleccion de DtComun
+  agregarMenu(char codigoMenu, string descripcion); // devuele una coleccion de DtComun
   void seleccionarProductoComun(char codigoComun, int cantProducto);
   void agregarProductoComun(char codigoComun, string descripcion, float precio);
   void darAltaProducto();

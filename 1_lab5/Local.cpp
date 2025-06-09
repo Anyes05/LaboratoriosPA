@@ -1,5 +1,4 @@
 #include "Local.h"
-#include <iostream>
 using namespace std;
 
 Local::Local(int numero, float subTotal, float descuento) : Venta(numero, subTotal, descuento) {
@@ -30,6 +29,11 @@ Mozo *Local::getMozo() {
 
 void Local::setMozo(Mozo *mozo) {
     this->mozo = mozo;
+}
+
+void Local::agregarPedido(Pedido *pedido) {
+    // Llamar al método de la clase padre (Venta)
+    Venta::agregarPedido(pedido);
 }
 
 

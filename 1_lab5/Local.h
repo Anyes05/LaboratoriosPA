@@ -17,6 +17,8 @@ public:
     void agregarMesa(ICollectible *mesa); // agrega una mesa a la coleccion de mesas del local
     Mozo * getMozo();
     void setMozo(Mozo *mozo);
+
+    void agregarPedido(Pedido *pedido);
 private:
     ICollection * mesas;
     Mozo * mozo;

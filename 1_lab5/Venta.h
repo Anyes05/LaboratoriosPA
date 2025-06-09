@@ -3,11 +3,13 @@
 
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
-#include "Factura.h" 
-#include "ICollection/collections/ListNode.h" 
+#include "ICollection/collections/List.h" 
 #include "ICollection/interfaces/IDictionary.h"
 #include "ICollection/interfaces/OrderedKey.h" 
 
+#include "Factura.h"
+#include "Pedido.h"
+#include "datatypes/DtVenta.h"
 
 using namespace std;
 
@@ -44,7 +46,7 @@ public:
     void eliminarMenu(); // donde esta esto en el diagrama de comunicacion? creo que no está o no le corresponde a venta 
     ListNode productosVenta();  
     void eliminarProductoVenta();
-    void agregarPedido(Pedido* pedido);
+    virtual void agregarPedido(Pedido *pedido);
         
 };
 

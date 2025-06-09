@@ -1,12 +1,9 @@
 #include "Venta.h"
-#include <iostream>
-using namespace std;
 
-Venta::Venta(int numero, float subTotal, float descuento)
-    : numero(numero), subTotal(subTotal), descuento(descuento), activa(false), factura(nullptr)
+Venta::Venta(int numero, float subTotal, float descuento): numero(numero), subTotal(subTotal), descuento(descuento), activa(false), factura(nullptr)
 {
     productos = new OrderedDictionary();
-    pedidos = new List(); // Inicializar la colección de pedidos
+    pedido = new List(); // Inicializar la colección de pedidos
     this->total = subTotal*0.22 - descuento;
 }
 
@@ -73,7 +70,9 @@ void Venta::setActiva(bool activa) {
 }
 
 void Venta::agregarPedido(Pedido* pedido) {
-    pedidos->add(pedido);
+    if (pedido != nullptr && this->pedido != nullptr) {
+        this->pedido->add(pedido);
+    }
 }
 
 /*
