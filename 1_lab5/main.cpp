@@ -265,7 +265,7 @@ void menuAdministrador(ISistema *sistema)
                 cout << "¿El empleado es repartidor? (s/n): ";
                 cin >> esRepartidor;
 
-                // Limpiar caracteres sobrantes del buffer (por si el usuario mete "sss" o "sn\n")
+                // Limpiar caracteres sobrantes del buffer (por si el usuario ingresa "sss" o "sn\n")
                 cin.ignore(1000, '\n');
 
                 if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N')
@@ -279,8 +279,8 @@ void menuAdministrador(ISistema *sistema)
 
             } while (!entradaValida);
 
-            if (esRepartidor == 's' || esRepartidor == 'S')
-            {
+            if (esRepartidor == 's' || esRepartidor == 'S'){
+                cout << "Seleccione un medio de transporte:" << endl;
                 sistema->listarMedioTransporte();
 
                 int opcion;
@@ -290,24 +290,33 @@ void menuAdministrador(ISistema *sistema)
                     cout << "Opción: ";
                     cin >> opcion;
 
-                    if (cin.fail() || opcion < 1 || opcion > 3)
+                    if (cin.fail())
                     {
-                        cin.clear();            // limpia el error de entrada
-                        cin.ignore(1000, '\n'); // descarta caracteres sobrantes
-                        cout << "Entrada inválida. Ingrese un número del 1 al 3." << endl;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Entrada inválida. Debe ser un número." << endl;
+                        continue;
                     }
-                    else
+
+                    try
                     {
+                        sistema->elegirMedio(opcion);
                         entradaValida = true;
+                    }
+                    catch (const invalid_argument &e)
+                    {
+                        cout << "Error: " << e.what() << endl;
                     }
 
                 } while (!entradaValida);
-
-                sistema->elegirMedio(opcion);
             }
             else
             {
-                sistema->elegirMedio(0); // Opción inválida, para que asigne Ninguno
+                try
+                {
+                    sistema->elegirMedio(0); 
+                }
+                catch (...) {} 
             }
 
             try

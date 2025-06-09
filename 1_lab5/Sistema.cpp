@@ -520,7 +520,6 @@ bool Sistema::existeEmpleado(int idIngresado)
 
 void Sistema::listarMedioTransporte()
 {
-    cout << "Seleccione un medio de transporte:" << endl;
     for (int i = 0; i < cantidadMedios; i++)
     {
         cout << (i + 1) << ". " << transporteToString(medios[i]) << endl;
@@ -531,8 +530,8 @@ void Sistema::elegirMedio(int opcion)
 {
     if (opcion < 1 || opcion > cantidadMedios)
     {
-        cout << "Opción inválida. Seleccione un número válido." << endl;
         medioSeleccionado = Transporte::Ninguno;
+        throw std::invalid_argument("Opción inválida. Seleccione un número válido.");    
     }
     else
     {
@@ -566,6 +565,7 @@ void Sistema::darAltaEmpleado()
 
     // colección general
     empleados->add(key, nuevoEmpleado);
+    medioSeleccionado = Transporte::Ninguno;
 }
 
 void Sistema::mostrarEmpleados()
