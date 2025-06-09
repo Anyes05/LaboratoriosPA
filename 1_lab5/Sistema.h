@@ -11,6 +11,7 @@
 #include "Local.h"
 #include "Repartidor.h"
 #include "Cliente.h"
+#include "Pedido.h"
 
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
@@ -28,8 +29,11 @@ private:
     IDictionary *mesas;
     ICollection *clientes;
 
-    ICollection *mesasElegidasParaVenta;
-    int idMozoSeleccionado;
+    ICollection *mesasElegidasParaVenta; // Coleccion de mesas elegidas temporalmente, son seleccionadas por el mozo para iniciar una venta
+    int idMozoSeleccionado; // ID del mozo seleccionado para iniciar una venta
+    Venta *ventaTemp; // Venta seleccionada temporalmente para agregar productos
+    Pedido *pedidoTemp; // Pedido seleccionado temporalmente para agregar productos
+    bool estaEnPedido; // Indica si el producto está en el pedido
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
@@ -84,9 +88,9 @@ public:
     void asignarRepartidorDomicilio(int idRepartidor);
     DtFacturaDomicilio confirmarPedido();
 
-    // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
-    // void seleccionarProductoAgregar(char codigo, int cantidad);
-    // void confirmarAgregarProducto();
+    IDictionary *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
+    void seleccionarProductoAgregar(char codigo, int cantidad);
+    void confirmarAgregarProducto();
     // void ingresarMesa(int idMesa);
     // ICollectible *productosVenta(); // devuele una coleccion de DtProducto
     // void seleccionarProductoQuitar(char codigo, int cant);

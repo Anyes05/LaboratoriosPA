@@ -36,6 +36,10 @@ IDictionary* Venta::getProductos() {
     return productos;
 }
 
+IDictionary* Venta::getPedido() {
+    return pedidos;
+}
+
 void Venta::setNumero(int numero) {
     this->numero = numero;
 }
@@ -71,6 +75,7 @@ void Venta::setActiva(bool activa) {
         activa = false; 
     }
 }
+
 
 
 /*

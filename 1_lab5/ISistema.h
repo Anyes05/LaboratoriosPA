@@ -62,9 +62,9 @@ public:
     virtual void asignarRepartidorDomicilio(int idRepartidor) = 0;
     virtual DtFacturaDomicilio confirmarPedido() = 0;
 
-    // virtual ICollectible *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
-    // virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;
-    // virtual void confirmarAgregarProducto() = 0;
+    virtual IDictionary *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
+    virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;
+    virtual void confirmarAgregarProducto() = 0;
     // virtual void ingresarMesa(int idMesa) = 0;
     // virtual ICollectible *productosVenta() = 0;                    // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoQuitar(char codigo, int cant) = 0;

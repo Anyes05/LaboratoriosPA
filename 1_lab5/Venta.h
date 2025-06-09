@@ -21,7 +21,7 @@ private:
     bool activa; // indica si la venta está activa o no
     Factura* factura;
     IDictionary * productos; // lista de productos 
-    ICollection * pedido;
+    IDictionary * pedidos; // lista de pedidos asociados a la venta
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor
@@ -33,6 +33,7 @@ public:
     bool getActiva();
     Factura* getFactura(); 
     IDictionary * getProductos();
+    IDictionary * getPedido();
     void setNumero(int numero);
     void setSubTotal(float subTotal);
     void setDescuento(float descuento);

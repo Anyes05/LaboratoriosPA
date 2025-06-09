@@ -790,18 +790,99 @@ DtFacturaDomicilio Sistema::confirmarPedido() {
     throw runtime_error("Funcionalidad no implementada");
 }
 
+/*----- AGREGAR PRODUCTO A UNA VENTA -----*/
+IDictionary *Sistema::listarParaAgregar(int idMesa)
+{
+    if (mesas == nullptr || mesas->isEmpty())
+    {
+        throw runtime_error("No hay mesas disponibles.");
+    }
 
-// ICollectible *Sistema::listarParaAgregar(int idMesa)
-// {
-// }
+    Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(idMesa)));
+    if (mesaSeleccionada == nullptr)
+    {
+        throw runtime_error("No existe una mesa con el número especificado.");
+    }
 
-// void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
-// {
-// }
+    if (mesaSeleccionada->getLocal() == nullptr || mesaSeleccionada->getLocal()->getActiva() == false)
+    {
+        throw runtime_error("La mesa no tiene una venta activa.");
+    }
+    ventaTemp = dynamic_cast<Venta *>(mesaSeleccionada->getLocal());
+    return productos; // Devolver una colección de productos disponibles para agregar
+}
 
-// void Sistema::confirmarAgregarProducto()
-// {
-// }
+void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
+{
+    if (productos == nullptr || productos->isEmpty())
+    {
+        throw runtime_error("No hay productos disponibles para agregar.");
+    }
+
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+    if (!productos->member(key))
+    {
+        delete key;
+        throw runtime_error("No existe un producto con el código especificado.");
+    }
+
+    Producto *producto = dynamic_cast<Producto *>(productos->find(key));
+    if (producto == nullptr)
+    {
+        delete key;
+        throw runtime_error("El producto encontrado no es válido.");
+    }
+    if (cantidad <= 0)
+    {
+        delete key;
+        throw runtime_error("La cantidad debe ser mayor a cero.");
+    }
+    if (ventaTemp == nullptr)
+    {
+        delete key;
+        throw runtime_error("No hay una venta activa para agregar el producto.");
+    }
+    if (ventaTemp->getProductos() == nullptr)
+    {
+        ventaTemp->setProductos(new OrderedDictionary()); // Inicializar la colección de productos si es nula
+    }
+    if (ventaTemp->getProductos()->find(key) == nullptr)
+        estaEnPedido = false; // Verificar si el producto ya está en el pedido
+    else
+        estaEnPedido = true; // El producto ya está en el pedido
+    pedidoTemp = new Pedido(cantidad); // Crear un nuevo pedido temporal con la cantidad especificada
+    pedidoTemp->setProducto(producto); // Asignar el producto al pedido temporal
+}
+
+void Sistema::confirmarAgregarProducto()
+{
+    if (pedidoTemp == nullptr || ventaTemp == nullptr)
+    {
+        throw runtime_error("No hay un pedido o venta activa para confirmar.");
+    }
+    char codStr[2] = {pedidoTemp->getProducto()->getCodigo(), '\0'};
+    IKey *key = new String(codStr);
+    if (estaEnPedido)
+    {
+        // Si ya está en el pedido, actualizar la cantidad
+        Pedido *pedidoExistente = dynamic_cast<Pedido *>(ventaTemp->getProductos()->find(key));
+        if (pedidoExistente != nullptr)
+        {
+            pedidoExistente->setCantProductos(pedidoExistente->getCantProductos() + pedidoTemp->getCantProductos());
+        }
+        else
+        {
+            throw runtime_error("El producto no se encontró en el pedido existente.");
+        }
+    }
+    else
+    {
+        ventaTemp->getPedido()->add(key, pedidoTemp); // Agregar el pedido temporal a la colección de pedidos de la venta
+    }
+
+        
+}
 
 // void Sistema::ingresarMesa(int idMesa)
 // {
