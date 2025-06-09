@@ -536,7 +536,6 @@ void Sistema::elegirMedio(int opcion)
     else
     {
         medioSeleccionado = medios[opcion - 1];
-        cout << "Medio seleccionado: " << transporteToString(medioSeleccionado) << endl;
     }
 }
 
