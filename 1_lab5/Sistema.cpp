@@ -1051,7 +1051,7 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
                 ) {
                     int numeroVenta = venta->getNumero();
                         float descuento = venta->getDescuento();
-                        bool facturada = venta->getActiva(); // O algún método que indique si está facturada
+                        bool facturada = venta->getActiva();
                         float total = venta->getTotal();
 
                         DtVenta dtVenta(numeroVenta, descuento, facturada, total);
@@ -1060,6 +1060,7 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
                  }
             }
         }
+        it->next();
     }
 }
 
