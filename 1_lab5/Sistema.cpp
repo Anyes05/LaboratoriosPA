@@ -900,7 +900,9 @@ void Sistema::confirmarAgregarProducto()
     else
     {
         ventaTemp->getPedido()->add(key, pedidoTemp); // Agregar el pedido temporal a la colección de pedidos de la venta
-    } 
+    }
+    pedidoTemp = nullptr; // Limpiar el pedido temporal después de agregarlo
+    delete key; // Liberar memoria de la clave utilizada
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
