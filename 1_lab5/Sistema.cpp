@@ -28,6 +28,10 @@ Sistema::Sistema()
     cantidadMedios = 3;
     idE = 0;
     clienteTemp = nullptr;
+    mesaSeleccionada = nullptr;
+    productoAQuitar = nullptr;
+    cantidadAQuitar = 0;
+    ventaTemp = nullptr;
 }
 
 Sistema::~Sistema()
@@ -899,21 +903,112 @@ void Sistema::confirmarAgregarProducto()
     } 
 }
 
-// void Sistema::ingresarMesa(int idMesa)
-// {
-// }
+/* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
 
-// ICollectible *Sistema::productosVenta()
-// {
-// }
+void Sistema::ingresarMesa(int idMesa)
+{
+    if (mesas->isEmpty())
+    {
+        throw runtime_error("No hay mesas en la colección.");
+    }
+    mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(idMesa))); // el find me trae un objeto
 
-// void Sistema::seleccionarProductoQuitar(char codigo, int cant)
-// {
-// }
+    if (mesaSeleccionada == nullptr)
+    {
+        throw runtime_error("No existe una mesa con el número especificado.");
+    }
+}
 
-// void Sistema::quitarProductoVenta()
-// {
-// }
+ ICollection *Sistema::productosVenta() // me devuelve un set de DtProducto
+ {
+    if (mesaSeleccionada->getLocal() == nullptr || mesaSeleccionada->getLocal()->getActiva() == false)
+    {
+        throw runtime_error("La mesa seleccionada no tiene una venta activa.");
+    }
+
+    ventaTemp = dynamic_cast<Local *>(mesaSeleccionada->getLocal());
+    if (ventaTemp == nullptr)
+    {
+        throw runtime_error("La venta activa no es válida.");
+    }
+
+    ICollection *productos = new List();
+    IIterator *it = ventaTemp->getProductos()->getIterator();
+    while (it->hasCurrent())
+    {
+        DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+        if (dtProducto != nullptr)
+        {
+            productos->add(dtProducto);
+        }
+        it->next();
+    }
+    delete it;
+
+    if (productos->isEmpty())
+    {
+        delete productos;
+        throw runtime_error("No hay productos en la venta.");
+    }
+    
+    return productos; // Retorna una colección de DtProducto de la venta
+    
+ }
+
+void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el codigo del producto que quiero eliminar y la cantidad del mismo
+{
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+    
+    productoAQuitar = dynamic_cast<Producto *> (productos->find(key)); // Buscar el producto en la colección de productos
+    if (productoAQuitar == nullptr)
+    {
+        delete key;
+        throw runtime_error("No existe un producto con el código especificado.");
+    }
+    if (cant <= 0)
+    {
+        delete key;
+        throw runtime_error("La cantidad a quitar debe ser mayor a cero.");
+    }
+    cantidadAQuitar = cant; // Asignar la cantidad a quitar
+}
+
+ void Sistema::quitarProductoVenta()
+ {
+    if (productoAQuitar == nullptr || mesaSeleccionada == nullptr)
+    {
+        throw runtime_error("No hay un producto o mesa seleccionada para quitar.");
+    }
+
+    IIterator *it = ventaTemp->getProductos()->getIterator();
+    bool encontrado = false;
+
+    while (it->hasCurrent())
+    {
+        Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
+        if (pedido != nullptr && pedido->getProducto() == productoAQuitar)
+        {
+            encontrado = true;
+            int res = pedido->restarProductos(cantidadAQuitar); // Restar la cantidad del pedido
+            if (res <= 0) {
+                // Si la cantidad restante es 0 o negativa, eliminar el pedido de la venta
+                char codStr[2] = {productoAQuitar->getCodigo(), '\0'};
+                IKey *key = new String(codStr);
+                ventaTemp->getProductos()->remove(key);
+                delete pedido; // Liberar memoria del pedido eliminado
+                delete key;
+            } 
+            break; // Salir del bucle una vez encontrado y procesado
+        }
+        it->next();
+    }
+    delete it;
+    if (!encontrado)
+    {
+        throw runtime_error("El producto seleccionado no se encuentra en la venta.");
+    }
+ }
 
 // void Sistema::finalizarVenta(int nroMesa)
 // {

@@ -66,10 +66,12 @@ public:
     virtual ICollection *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
     virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;
     virtual void confirmarAgregarProducto() = 0;
-    // virtual void ingresarMesa(int idMesa) = 0;
-    // virtual ICollectible *productosVenta() = 0;                    // devuele una coleccion de DtProducto
-    // virtual void seleccionarProductoQuitar(char codigo, int cant) = 0;
-    // virtual void quitarProductoVenta() = 0;
+
+    /*------- QUITAR PRODUCTO A UNA VENTA -------*/
+    virtual void ingresarMesa(int idMesa) = 0;
+    virtual ICollection*productosVenta() = 0;                    // devuele una coleccion de DtProducto
+    virtual void seleccionarProductoQuitar(char codigo, int cant) = 0;
+    virtual void quitarProductoVenta() = 0;
     // virtual void finalizarVenta(int nroMesa) = 0;
     // virtual void aplicarDescuento(int descuento) = 0;
     // virtual DtFactura generarFactura(DtVenta venta) = 0;
