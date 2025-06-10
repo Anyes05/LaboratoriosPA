@@ -86,6 +86,7 @@ public:
 
     /*------ VENTAS DE UN MOZO ------*/
     void listarMozos();
+    DtVenta mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
     
 
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto

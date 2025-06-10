@@ -64,6 +64,7 @@ public:
 
     /*------ VENTAS DE UN MOZO ------*/
     virtual void listarMozos() = 0;
+    virtual DtVenta mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2) = 0;
 
     // virtual ICollectible *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;

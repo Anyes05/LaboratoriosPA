@@ -809,6 +809,10 @@ IIterator *itMozo = mozos->getIterator();
     }
     delete itMozo;
 }
+
+DtVenta Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
+
+}
     
 
 
