@@ -62,6 +62,9 @@ public:
     virtual void asignarRepartidorDomicilio(int idRepartidor) = 0;
     virtual DtFacturaDomicilio confirmarPedido() = 0;
 
+    /*------ VENTAS DE UN MOZO ------*/
+    virtual void listarMozos() = 0;
+
     // virtual ICollectible *listarParaAgregar(int idMesa) = 0;                       // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoAgregar(char codigo, int cantidad) = 0;
     // virtual void confirmarAgregarProducto() = 0;

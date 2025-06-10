@@ -84,6 +84,10 @@ public:
     void asignarRepartidorDomicilio(int idRepartidor);
     DtFacturaDomicilio confirmarPedido();
 
+    /*------ VENTAS DE UN MOZO ------*/
+    void listarMozos();
+    
+
     // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     // void seleccionarProductoAgregar(char codigo, int cantidad);
     // void confirmarAgregarProducto();

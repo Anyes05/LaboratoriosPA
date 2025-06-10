@@ -791,6 +791,27 @@ DtFacturaDomicilio Sistema::confirmarPedido() {
 }
 
 
+
+  /*------ VENTAS DE UN MOZO ------*/
+
+
+void Sistema::listarMozos(){
+
+IIterator *itMozo = mozos->getIterator();
+    while (itMozo->hasCurrent())
+    {
+        Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
+        if (mozo != nullptr)
+        {
+            cout << "ID: " << mozo->getIdEmpleado() << ", Nombre: " << mozo->getNombre() << endl;
+        }
+        itMozo->next();
+    }
+    delete itMozo;
+}
+    
+
+
 // ICollectible *Sistema::listarParaAgregar(int idMesa)
 // {
 // }
