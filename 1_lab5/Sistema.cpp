@@ -765,7 +765,7 @@ void Sistema::confirmarVentaEnMesa()
     venta->setMozo(dynamic_cast<Mozo *>(mozos->find(new Integer(idMozoSeleccionado)))); // Asignar el mozo seleccionado a la venta
     ventas->add(new Integer(venta->getNumero()), venta);                                // Agregar la venta a la colección de ventas
     mesasElegidasParaVenta = nullptr;                                                   // Limpiar la colección de mesas elegidas
-    idMozoSeleccionado = 0;                                                             // Reiniciar el ID del mozo seleccionado
+    idMozoSeleccionado = 0;                                                            // Reiniciar el ID del mozo seleccionado
 }
 
 /*----- VENTA A DOMICILIO -----*/
@@ -903,6 +903,7 @@ void Sistema::confirmarAgregarProducto()
     }
     pedidoTemp = nullptr; // Limpiar el pedido temporal después de agregarlo
     delete key; // Liberar memoria de la clave utilizada
+    ventaTemp = nullptr; // Limpiar la venta temporal después de agregar el producto
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
@@ -989,7 +990,7 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     while (it->hasCurrent())
     {
         Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
-        if (pedido != nullptr && pedido->getProducto() == productoAQuitar)
+        if (pedido != nullptr && pedido->getProducto()->getCodigo() == productoAQuitar->getCodigo())
         {
             encontrado = true;
             int res = pedido->restarProductos(cantidadAQuitar); // Restar la cantidad del pedido
@@ -1010,6 +1011,8 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     {
         throw runtime_error("El producto seleccionado no se encuentra en la venta.");
     }
+
+    ventaTemp = nullptr;
  }
 
 // void Sistema::finalizarVenta(int nroMesa)
