@@ -830,6 +830,7 @@ ICollection *Sistema::listarParaAgregar(int idMesa)
         delete productosDisponibles;
         throw runtime_error("No hay productos disponibles para agregar a la venta.");
     }
+    delete itDtVenta; // Liberar el iterador después de usarlo
     return productosDisponibles; // Retorna una colección de DtProducto disponibles para agregar a la venta
 }
 
@@ -874,6 +875,7 @@ void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
         estaEnPedido = true; // El producto ya está en el pedido
     pedidoTemp = new Pedido(cantidad); // Crear un nuevo pedido temporal con la cantidad especificada
     pedidoTemp->setProducto(producto); // Asignar el producto al pedido temporal
+    delete key;
 }
 
 void Sistema::confirmarAgregarProducto()
