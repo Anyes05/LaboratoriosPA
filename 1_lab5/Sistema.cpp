@@ -903,6 +903,7 @@ void Sistema::confirmarAgregarProducto()
     }
     pedidoTemp = nullptr; // Limpiar el pedido temporal después de agregarlo
     delete key; // Liberar memoria de la clave utilizada
+    ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio())); // Actualizar el subtotal de la venta
     ventaTemp = nullptr; // Limpiar la venta temporal después de agregar el producto
 }
 
