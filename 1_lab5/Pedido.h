@@ -21,7 +21,7 @@ public:
     void setProducto(Producto*);
     //metodos adicionales
     bool estaEnPedido(Producto*); // creo que es el objeto, y no el Dt como tenemos en el dcd
-    int restarProductos();
+    int restarProductos(int);
 };
 
 #endif

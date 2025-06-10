@@ -11,6 +11,7 @@
 #include "Local.h"
 #include "Repartidor.h"
 #include "Cliente.h"
+#include "Pedido.h"
 
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
@@ -28,8 +29,11 @@ private:
     IDictionary *mesas;
     ICollection *clientes;
 
-    ICollection *mesasElegidasParaVenta;
-    int idMozoSeleccionado;
+    ICollection *mesasElegidasParaVenta; // Coleccion de mesas elegidas temporalmente, son seleccionadas por el mozo para iniciar una venta
+    int idMozoSeleccionado; // ID del mozo seleccionado para iniciar una venta
+    Venta *ventaTemp; // Venta seleccionada temporalmente para agregar productos
+    Pedido *pedidoTemp; // Pedido seleccionado temporalmente para agregar productos
+    bool estaEnPedido; // Indica si el producto está en el pedido
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
@@ -40,6 +44,9 @@ private:
     int cantidadMedios;
     int idE;
     DtCliente *clienteTemp;
+    Mesa *mesaSeleccionada;
+    Producto * productoAQuitar;
+    int cantidadAQuitar;
 
 public:
     ~Sistema();
@@ -86,16 +93,19 @@ public:
 
     /*------ VENTAS DE UN MOZO ------*/
     void listarMozos();
-    DtVenta mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
+    void mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
     
+    /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
+    ICollection *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
+    void seleccionarProductoAgregar(char codigo, int cantidad);
+    void confirmarAgregarProducto();
 
-    // ICollectible *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
-    // void seleccionarProductoAgregar(char codigo, int cantidad);
-    // void confirmarAgregarProducto();
-    // void ingresarMesa(int idMesa);
-    // ICollectible *productosVenta(); // devuele una coleccion de DtProducto
-    // void seleccionarProductoQuitar(char codigo, int cant);
-    // void quitarProductoVenta();
+    /*------ QUITAR PRODUCTO A UNA VENTA -------*/
+    void ingresarMesa(int idMesa);
+    ICollection *productosVenta(); // devuele una coleccion de DtProducto
+    void seleccionarProductoQuitar(char codigo, int cant);
+    void quitarProductoVenta();
+
     // void finalizarVenta(int nroMesa);
     // void aplicarDescuento(int descuento);
     // DtFactura generarFactura(DtVenta venta);

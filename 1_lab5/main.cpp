@@ -395,7 +395,7 @@ void menuMozo(ISistema *sistema)
     {
         cout << "\n--- Mozo ---" << endl;
         cout << "1. Iniciar venta en mesa" << endl;
-        cout << "Seleccione una opción: ";
+        cout << "2. Agregar producto a una venta" << endl;
         cin >> opcion;
 
         switch (opcion)
@@ -404,7 +404,7 @@ void menuMozo(ISistema *sistema)
         {
             system("clear");
             cout << "INICIAR VENTA EN UNA MESA" << endl;
-            cout << "Ingrese el identificador del mozoo: " << endl;
+            cout << "Ingrese el identificador del mozo: " << endl;
             int idMozo;
             cin >> idMozo;
             cin.ignore();
@@ -462,7 +462,60 @@ void menuMozo(ISistema *sistema)
                 break;
             }
         }
+        case 2:
+        {
+            system("clear");
+            cout << "AGREGAR PRODUCTO A UNA VENTA" << endl;
+            cout << "Ingrese el número de mesa: ";
+            int idMesa;
+            cin >> idMesa;
+            cin.ignore();
+
+            try
+            {
+                ICollection *productos = sistema->listarParaAgregar(idMesa);
+                IIterator *it = productos->getIterator();
+                while (it->hasCurrent())
+                {
+                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+                    if (dtProducto)
+                    {
+                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
+                    }
+                    it->next();
+                }
+                delete it;
+
+                char agregarOtro;
+                do
+                {
+                    char codigoProducto;
+                    int cantidad;
+                    cout << "Ingrese el código del producto a agregar: ";
+                    cin >> codigoProducto;
+                    cin.ignore();
+                    cout << "Ingrese la cantidad: ";
+                    cin >> cantidad;
+                    cin.ignore();
+
+                    sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
+
+                    cout << "¿Desea agregar otro producto? (S/N): ";
+                    cin >> agregarOtro;
+                    cin.ignore();
+                } while (agregarOtro == 'S' || agregarOtro == 's');
+
+                sistema->confirmarAgregarProducto();
+                cout << "Productos agregados a la venta correctamente." << endl;
+
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error al agregar producto: " << e.what() << endl;
+                break;
+            }
         }
+    }
     } while (opcion != 0);
     cout << "Volviendo al menú principal..." << endl;
 }
