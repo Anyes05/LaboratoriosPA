@@ -44,6 +44,9 @@ private:
     int cantidadMedios;
     int idE;
     DtCliente *clienteTemp;
+    Mesa *mesaSeleccionada;
+    Producto * productoAQuitar;
+    int cantidadAQuitar;
 
 public:
     ~Sistema();
@@ -92,10 +95,12 @@ public:
     ICollection *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     void seleccionarProductoAgregar(char codigo, int cantidad);
     void confirmarAgregarProducto();
-    // void ingresarMesa(int idMesa);
-    // ICollectible *productosVenta(); // devuele una coleccion de DtProducto
-    // void seleccionarProductoQuitar(char codigo, int cant);
-    // void quitarProductoVenta();
+
+    /*------ QUITAR PRODUCTO A UNA VENTA -------*/
+    void ingresarMesa(int idMesa);
+    ICollection *productosVenta(); // devuele una coleccion de DtProducto
+    void seleccionarProductoQuitar(char codigo, int cant);
+    void quitarProductoVenta();
     // void finalizarVenta(int nroMesa);
     // void aplicarDescuento(int descuento);
     // DtFactura generarFactura(DtVenta venta);
