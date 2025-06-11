@@ -832,9 +832,7 @@ ICollection *Sistema::listarParaAgregar(int idMesa)
 void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
 {
     if (productos == nullptr || productos->isEmpty())
-    {
         throw runtime_error("No hay productos disponibles para agregar.");
-    }
 
     char codStr[2] = {codigo, '\0'};
     IKey *key = new String(codStr);
@@ -862,23 +860,22 @@ void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
     }
     if (ventaTemp->getProductos() == nullptr)
     {
-        ventaTemp->setProductos(new OrderedDictionary()); // Inicializar la colección de productos si es nula
+        ventaTemp->setProductos(new OrderedDictionary());
     }
     if (ventaTemp->getProductos()->find(key) == nullptr)
-        estaEnPedido = false; // Verificar si el producto ya está en el pedido
+        estaEnPedido = false;
     else
-        estaEnPedido = true; // El producto ya está en el pedido
-    pedidoTemp = new Pedido(cantidad); // Crear un nuevo pedido temporal con la cantidad especificada
-    pedidoTemp->setProducto(producto); // Asignar el producto al pedido temporal
-    delete key;
+        estaEnPedido = true;
+    pedidoTemp = new Pedido(cantidad);
+    pedidoTemp->setProducto(producto);
+    delete key; // Solo aquí, porque no la agregaste al diccionario
 }
 
 void Sistema::confirmarAgregarProducto()
 {
     if (pedidoTemp == nullptr || ventaTemp == nullptr)
-    {
         throw runtime_error("No hay un pedido o venta activa para confirmar.");
-    }
+
     char codStr[2] = {pedidoTemp->getProducto()->getCodigo(), '\0'};
     IKey *key = new String(codStr);
     if (estaEnPedido)
@@ -890,17 +887,18 @@ void Sistema::confirmarAgregarProducto()
         }
         else
         {
+            delete key; // Solo aquí, porque no la agregaste
             throw runtime_error("El producto no se encontró en el pedido existente.");
         }
+        delete key; // Solo aquí, porque no la agregaste
     }
     else
     {
-        ventaTemp->getProductos()->add(key, pedidoTemp); // <--- Cambiado aquí
+        ventaTemp->getProductos()->add(key, pedidoTemp); // NO borrar key aquí
+        // El diccionario se encarga de liberar la clave cuando remueve el elemento
     }
     ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio()));
     pedidoTemp = nullptr;
-    delete key;
-    ventaTemp = nullptr;
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/

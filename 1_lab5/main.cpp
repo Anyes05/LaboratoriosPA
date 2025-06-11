@@ -525,7 +525,6 @@ void menuMozo(ISistema *sistema)
                     cin.ignore();
                 } while (agregarOtro == 'S' || agregarOtro == 's');
                 cout << "Productos agregados a la venta correctamente." << endl;
-
             }
             catch (const std::exception &e)
             {
