@@ -396,6 +396,7 @@ void menuMozo(ISistema *sistema)
         cout << "\n--- Mozo ---" << endl;
         cout << "1. Iniciar venta en mesa" << endl;
         cout << "2. Agregar producto a una venta" << endl;
+        cout << "3. Quitar producto a una venta" << endl;
         cin >> opcion;
 
         switch (opcion)
@@ -515,9 +516,85 @@ void menuMozo(ISistema *sistema)
                 break;
             }
         }
-    }
+        case 3:
+        {
+            system ("clear");
+            cout << "QUITAR PRODUCTO DE UNA VENTA" << endl;
+            cout << "Ingrese el número de una de las mesas involucradas en la venta: ";
+            int idMesa;
+            cin >> idMesa;
+            cin.ignore();
+            if (idMesa <= 0)
+            {
+                cout << "Número de mesa inválido. Debe ser un número positivo." << endl;
+                break;
+            }
+            try
+            {
+                sistema->ingresarMesa(idMesa);
+                ICollection *productos = sistema->productosVenta();
+                IIterator *it = productos->getIterator();
+                while (it->hasCurrent())
+                {
+                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+                    if (dtProducto)
+                    {
+                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
+                    }
+                    it->next();
+                }
+                delete it;
+
+                char quitarOtro;
+                do 
+                {
+                    char codigoProducto;
+                    int cantidad;
+                    cout << "Ingrese el código del producto a quitar: ";
+                    cin >> codigoProducto;
+                    cin.ignore();
+                    cout << "Ingrese la cantidad a quitar: ";
+                    cin >> cantidad;
+                    cin.ignore();
+
+                    try
+                    {
+                        sistema->seleccionarProductoQuitar(codigoProducto, cantidad);
+                        cout << "Desea confirmar la disminución del producto? (S/N): ";
+                        char confirmar;
+                        cin >> confirmar;
+                        cin.ignore();
+                        if (confirmar == 'S' || confirmar == 's')
+                        {
+                            sistema->quitarProductoVenta();
+                            cout << "Producto quitado de la venta correctamente." << endl;
+                        }
+                        else
+                        {
+                            cout << "Operación cancelada." << endl;
+                        }
+                        
+                    }
+                    catch (const std::exception &e)
+                    {
+                        cout << "Error al quitar producto: " << e.what() << endl;
+                    }
+
+                    cout << "¿Desea quitar otro producto? (S/N): ";
+                    cin >> quitarOtro;
+                    cin.ignore();
+                } while (quitarOtro == 'S' || quitarOtro == 's');
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error al quitar producto: " << e.what() << endl;
+            }
+            break;
+        }
+        default:
+            cout << "Opción inválida." << endl;
+        }
     } while (opcion != 0);
-    cout << "Volviendo al menú principal..." << endl;
 }
 
 void menuRepartidor(ISistema *sistema)
