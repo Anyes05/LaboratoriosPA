@@ -79,7 +79,7 @@ public:
     ICollection *calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
-    DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
+    DtAsignacion* ingresarIdMozo(int idMozo); // devuele un DtAsignacion
     void elegirMesas(int numero);            // devuele una coleccion de DtMesas
     void confirmarVentaEnMesa();
 

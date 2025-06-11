@@ -663,7 +663,7 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         {
             mesasAsignadas[j] = mesaActual;
             Mesa *nuevaMesa = new Mesa(mesaActual);
-            // mozo->agregarMesa(nuevaMesa);
+            mozo->agregarMesa(nuevaMesa);
 
             // tambien tengo que agregar la mesa a la coleccion global del sistema
             IKey *keyMesa = new Integer(mesaActual);
@@ -692,27 +692,24 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 
 /*----- INICIAR VENTA EN MESA -----*/ 
 
-DtAsignacion Sistema::ingresarIdMozo(int idMozo)
+DtAsignacion* Sistema::ingresarIdMozo(int idMozo)
 {
     IIterator *it = mozos->getIterator();
     while (it->hasCurrent())
     {
-        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
+        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent());
         if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
         {
-            delete it;
             int *mesasAsignadas = mozo->getMesasId();
-            idMozoSeleccionado = idMozo;                                                             // obtiene las mesas asignadas al mozo
-            return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
+            idMozoSeleccionado = idMozo;
+            DtAsignacion* result = new DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false);
+            delete it;
+            return result;
         }
         it->next();
     }
-    if (it != nullptr)
-    {
-        delete it;
-        throw std::runtime_error("No existe un mozo con el ID especificado.");
-    }
-    return DtAsignacion();
+    delete it;
+    throw std::runtime_error("No existe un mozo con el ID especificado.");
 }
 
 void Sistema::elegirMesas(int numero)
@@ -798,40 +795,38 @@ DtFacturaDomicilio Sistema::confirmarPedido() {
 ICollection *Sistema::listarParaAgregar(int idMesa)
 {
     if (mesas == nullptr || mesas->isEmpty())
-    {
         throw runtime_error("No hay mesas disponibles.");
-    }
 
     Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(idMesa)));
     if (mesaSeleccionada == nullptr)
-    {
         throw runtime_error("No existe una mesa con el número especificado.");
-    }
 
     if (mesaSeleccionada->getLocal() == nullptr || mesaSeleccionada->getLocal()->getActiva() == false)
-    {
         throw runtime_error("La mesa no tiene una venta activa.");
-    }
+
     ventaTemp = dynamic_cast<Venta *>(mesaSeleccionada->getLocal());
 
+    // Lo correcto: listar TODOS los productos del sistema
     ICollection *productosDisponibles = new List();
-    IIterator *itDtVenta = ventaTemp->getProductos()->getIterator();
-    for (int i = 0; i < ventaTemp->getProductos()->getSize(); i++)
+    IIterator *it = productos->getIterator();
+    while (it->hasCurrent())
     {
-        DtProducto *dtProducto = dynamic_cast<DtProducto *>(itDtVenta->getCurrent());
-        if (dtProducto != nullptr)
+        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+        if (prod != nullptr)
         {
+            DtProducto *dtProducto = prod->getDT(); // getDT debe devolver un puntero NUEVO
             productosDisponibles->add(dtProducto);
         }
-        itDtVenta->next();
-    }   
+        it->next();
+    }
+    delete it;
+
     if (productosDisponibles->isEmpty())
     {
         delete productosDisponibles;
         throw runtime_error("No hay productos disponibles para agregar a la venta.");
     }
-    delete itDtVenta; // Liberar el iterador después de usarlo
-    return productosDisponibles; // Retorna una colección de DtProducto disponibles para agregar a la venta
+    return productosDisponibles;
 }
 
 void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)

@@ -412,11 +412,15 @@ void menuMozo(ISistema *sistema)
             cout << "Las mesas asignadas al mozo " << idMozo << " son: " << endl;
             try
             {
-                DtAsignacion dtAsignacion = sistema->ingresarIdMozo(idMozo);
-                cout << "ID Mozo: " << dtAsignacion.getidMozo() << endl;
+                DtAsignacion *dtAsignacion = sistema->ingresarIdMozo(idMozo);
+                int *mesas = dtAsignacion->getidMesas();
+                if (mesas == nullptr || dtAsignacion->getcantMesas() == 0)
+                {
+                    cout << "No hay mesas asignadas al mozo." << endl;
+                    break;
+                }
                 cout << "Mesas asignadas: ";
-                int *mesas = dtAsignacion.getidMesas();
-                for (int j = 0; j < dtAsignacion.getcantMesas(); j++)
+                for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
                 {
                     cout << mesas[j] << " ";
                 }
@@ -451,10 +455,12 @@ void menuMozo(ISistema *sistema)
                 {
                     sistema->confirmarVentaEnMesa();
                     cout << "Venta iniciada correctamente." << endl;
+                    break;
                 }
                 else
                 {
                     cout << "Venta cancelada." << endl;
+                    break;
                 }
             }
             catch (const std::exception &e)
@@ -462,6 +468,7 @@ void menuMozo(ISistema *sistema)
                 cout << "Error: " << e.what() << endl;
                 break;
             }
+            break;
         }
         case 2:
         {
@@ -500,7 +507,19 @@ void menuMozo(ISistema *sistema)
                     cin.ignore();
 
                     sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
-
+                    cout << "Desea confirmar la adición del producto? (S/N): ";
+                    char confirmar;
+                    cin >> confirmar;
+                    cin.ignore();
+                    if (confirmar == 'S' || confirmar == 's')
+                    {
+                        sistema->confirmarAgregarProducto();
+                        cout << "Producto agregado a la venta correctamente." << endl;
+                    }
+                    else
+                    {
+                        cout << "Operación cancelada." << endl;
+                    }
                     cout << "¿Desea agregar otro producto? (S/N): ";
                     cin >> agregarOtro;
                     cin.ignore();
