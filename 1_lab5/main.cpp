@@ -524,8 +524,6 @@ void menuMozo(ISistema *sistema)
                     cin >> agregarOtro;
                     cin.ignore();
                 } while (agregarOtro == 'S' || agregarOtro == 's');
-
-                sistema->confirmarAgregarProducto();
                 cout << "Productos agregados a la venta correctamente." << endl;
 
             }
@@ -534,6 +532,7 @@ void menuMozo(ISistema *sistema)
                 cout << "Error al agregar producto: " << e.what() << endl;
                 break;
             }
+            break;
         }
         case 3:
         {

@@ -663,7 +663,7 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         {
             mesasAsignadas[j] = mesaActual;
             Mesa *nuevaMesa = new Mesa(mesaActual);
-            mozo->agregarMesa(nuevaMesa);
+            //mozo->agregarMesa(nuevaMesa);
 
             // tambien tengo que agregar la mesa a la coleccion global del sistema
             IKey *keyMesa = new Integer(mesaActual);
@@ -883,7 +883,6 @@ void Sistema::confirmarAgregarProducto()
     IKey *key = new String(codStr);
     if (estaEnPedido)
     {
-        // Si ya está en el pedido, actualizar la cantidad
         Pedido *pedidoExistente = dynamic_cast<Pedido *>(ventaTemp->getProductos()->find(key));
         if (pedidoExistente != nullptr)
         {
@@ -896,12 +895,12 @@ void Sistema::confirmarAgregarProducto()
     }
     else
     {
-        ventaTemp->getPedido()->add(key, pedidoTemp); // Agregar el pedido temporal a la colección de pedidos de la venta
+        ventaTemp->getProductos()->add(key, pedidoTemp); // <--- Cambiado aquí
     }
-    pedidoTemp = nullptr; // Limpiar el pedido temporal después de agregarlo
-    delete key; // Liberar memoria de la clave utilizada
-    ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio())); // Actualizar el subtotal de la venta
-    ventaTemp = nullptr; // Limpiar la venta temporal después de agregar el producto
+    ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio()));
+    pedidoTemp = nullptr;
+    delete key;
+    ventaTemp = nullptr;
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
