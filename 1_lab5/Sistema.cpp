@@ -1053,27 +1053,6 @@ IIterator *itMozo = mozos->getIterator();
     delete itMozo;
 }
 
-DtFactura generarFactura(DtVenta venta) {
-    // Fecha ficticia para la factura
-    DtFecha fecha(1, 6, 2025);
-
-    // Crear una colección de productos
-    ICollection* productos = new List();  // Suponiendo que usás List como implementación de ICollection
-
-    // Crear productos ficticios con char como código
-    DtProducto* prod1 = new DtProducto('A', "Pizza", 300);
-    DtProducto* prod2 = new DtProducto('B', "Cerveza", 150);
-
-    productos->add(prod1);
-    productos->add(prod2);
-
-    // Subtotal y descuento
-    float subTotal = prod1->getprecio() + prod2->getprecio();  // Simplificado
-    float descuento = venta.getDescuento();
-
-    // Crear y retornar la factura
-    return DtFactura(venta.getidVenta(), fecha, productos, descuento, subTotal);
-}
 
 
 void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
