@@ -934,11 +934,15 @@ void Sistema::ingresarMesa(int idMesa)
     IIterator *it = ventaTemp->getProductos()->getIterator();
     while (it->hasCurrent())
     {
-        DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
-        if (dtProducto != nullptr)
+        Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
+        if (pedido != nullptr)
         {
-            productos->add(dtProducto);
+            Producto *producto = pedido->getProducto();
+            // Si es un pedido, obtenemos el DtProducto del producto asociado
+            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio());
+            productos->add(dtProducto); // Agregar el DtProducto a la colección
         }
+        
         it->next();
     }
     delete it;
@@ -952,6 +956,23 @@ void Sistema::ingresarMesa(int idMesa)
     return productos; // Retorna una colección de DtProducto de la venta
     
  }
+
+ICollection* Sistema::pedidosVentaActual(){  // Funcion auxiliar(? En si no es necesaria, solo la agregue porque me permite visualizar mejor en el menu 
+    if (!ventaTemp)
+        throw runtime_error("No hay venta activa.");
+
+    IDictionary* dict = ventaTemp->getProductos();
+    ICollection* pedidos = new List();
+    IIterator* it = dict->getIterator();
+    while (it->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedido)
+            pedidos->add(pedido);
+        it->next();
+    }
+    delete it;
+    return pedidos;
+}
 
 void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el codigo del producto que quiero eliminar y la cantidad del mismo
 {
@@ -1007,7 +1028,6 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
         throw runtime_error("El producto seleccionado no se encuentra en la venta.");
     }
 
-    ventaTemp = nullptr;
  }
 
 // void Sistema::finalizarVenta(int nroMesa)

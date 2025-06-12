@@ -101,6 +101,7 @@ public:
     ICollection *productosVenta(); // devuele una coleccion de DtProducto
     void seleccionarProductoQuitar(char codigo, int cant);
     void quitarProductoVenta();
+    ICollection *pedidosVentaActual(); // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     // void finalizarVenta(int nroMesa);
     // void aplicarDescuento(int descuento);
     // DtFactura generarFactura(DtVenta venta);
