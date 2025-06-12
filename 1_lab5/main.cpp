@@ -507,7 +507,7 @@ void menuMozo(ISistema *sistema)
                     cout << "Ingrese la cantidad: ";
                     cin >> cantidad;
                     cin.ignore();
-
+                    
                     sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
                     cout << "Desea confirmar la adición del producto? (S/N): ";
                     char confirmar;
