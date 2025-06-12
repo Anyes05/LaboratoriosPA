@@ -1055,7 +1055,7 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
                         float total = venta->getTotal();
 
                         DtVenta dtVenta(numeroVenta, descuento, facturada, total);
-                        // DtFactura dtF = generarFactura(dtVenta);
+                        
                     }
                  }
             }
