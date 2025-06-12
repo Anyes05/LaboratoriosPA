@@ -8,6 +8,8 @@ Venta::Venta(int numero, float subTotal, float descuento) {
     this->descuento = descuento;
     this->total = 0;
     this->factura = nullptr; 
+    productos = new OrderedDictionary();
+    pedido = new List(); // Inicializar la colección de pedidos
 }
 
 Venta::~Venta() {}
@@ -34,10 +36,6 @@ Factura* Venta::getFactura() {
 
 IDictionary* Venta::getProductos() {
     return productos;
-}
-
-IDictionary* Venta::getPedido() {
-    return pedidos;
 }
 
 void Venta::setNumero(int numero) {
@@ -76,6 +74,11 @@ void Venta::setActiva(bool activa) {
     }
 }
 
+void Venta::agregarPedido(Pedido* pedido) {
+    if (pedido != nullptr && this->pedido != nullptr) {
+        this->pedido->add(pedido);
+    }
+}
 
 
 /*
