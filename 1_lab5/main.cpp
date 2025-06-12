@@ -397,6 +397,8 @@ void menuMozo(ISistema *sistema)
         cout << "1. Iniciar venta en mesa" << endl;
         cout << "2. Agregar producto a una venta" << endl;
         cout << "3. Quitar producto a una venta" << endl;
+        cout << "0. Volver" << endl;
+        cout << "Seleccione una opción: ";
         cin >> opcion;
 
         switch (opcion)
@@ -556,7 +558,7 @@ void menuMozo(ISistema *sistema)
                     DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
                     if (dtProducto)
                     {
-                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
+                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() <<  endl;
                     }
                     it->next();
                 }
@@ -585,6 +587,30 @@ void menuMozo(ISistema *sistema)
                         {
                             sistema->quitarProductoVenta();
                             cout << "Producto quitado de la venta correctamente." << endl;
+                            // Me muestra los productos actuales en la venta, lo dejo, no? Esta mas visual asi <- <- <-
+                            try {
+                                ICollection *productosActuales = sistema->pedidosVentaActual();
+                                IIterator *it2 = productosActuales->getIterator();
+                                cout << "Productos actuales en la venta:" << endl;
+                                while (it2->hasCurrent())
+                                {
+                                    // Aquí accedemos al Pedido para mostrar la cantidad
+                                    Pedido *pedido = dynamic_cast<Pedido *>(it2->getCurrent());
+                                    if (pedido)
+                                    {
+                                        Producto *prod = pedido->getProducto();
+                                        cout << "Código: " << prod->getCodigo()
+                                            << " | Descripción: " << prod->getDescripcion()
+                                            << " | Cantidad: " << pedido->getCantProductos()
+                                            << endl;
+                                    }
+                                    it2->next();
+                                }
+                                delete it2;
+                                // delete productosActuales; // Si tu ICollection necesita borrado manual
+                            } catch (const std::exception &e) {
+                                cout << "Error al mostrar productos actuales: " << e.what() << endl;
+                            }
                         }
                         else
                         {
@@ -608,6 +634,9 @@ void menuMozo(ISistema *sistema)
             }
             break;
         }
+        case 4:
+            cout << "Volviendo al menú principal..." << endl;
+            break;
         default:
             cout << "Opción inválida." << endl;
         }
