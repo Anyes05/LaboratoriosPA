@@ -51,6 +51,7 @@ private:
 public:
     ~Sistema();
     static Sistema *getInstance();
+    //char normalizarProducto(char codigo); // Normaliza el código del producto, si es un número lo convierte a char
 
     /*------ ALTA PRODCUTO -----*/
     bool existeProducto(char codigo);                              // retorna true si existe un producto con es codigo
@@ -79,7 +80,7 @@ public:
     ICollection *calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
-    DtAsignacion ingresarIdMozo(int idMozo); // devuele un DtAsignacion
+    DtAsignacion* ingresarIdMozo(int idMozo); // devuele un DtAsignacion
     void elegirMesas(int numero);            // devuele una coleccion de DtMesas
     void confirmarVentaEnMesa();
 
@@ -106,6 +107,7 @@ public:
     void seleccionarProductoQuitar(char codigo, int cant);
     void quitarProductoVenta();
 
+    ICollection *pedidosVentaActual(); // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     // void finalizarVenta(int nroMesa);
     // void aplicarDescuento(int descuento);
     // DtFactura generarFactura(DtVenta venta);

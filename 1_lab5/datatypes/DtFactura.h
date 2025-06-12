@@ -7,8 +7,8 @@ using namespace std;
 
 #include "DtFecha.h"
 #include "DtProducto.h"
-#include "ICollection/interfaces/ICollectible.h"
-#include "ICollection/interfaces/ICollection.h"
+#include "../ICollection/interfaces/ICollectible.h"
+#include "../ICollection/interfaces/ICollection.h"
 
 
 //#include "DtFecha.h"

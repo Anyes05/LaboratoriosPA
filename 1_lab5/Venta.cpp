@@ -6,7 +6,7 @@ Venta::Venta(int numero, float subTotal, float descuento) {
     this->numero = numero;
     this->subTotal = subTotal;
     this->descuento = descuento;
-    this->total = subTotal*0.22 - descuento;
+    this->total = 0;
     this->factura = nullptr; 
 }
 

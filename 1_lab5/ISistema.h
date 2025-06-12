@@ -22,6 +22,7 @@ class ISistema
 {
 public:
     virtual ~ISistema();
+    //virtual char normalizarCodigo(char codigo) = 0; // Normaliza el código del producto, si es un número lo convierte a char
 
     /*----- ALTA PRODUCTO -----*/
     virtual bool existeProducto(char codigo) = 0;
@@ -50,7 +51,7 @@ public:
     virtual ICollection *calcularAsignacion(int cantMesas, int cantMozos) = 0;
 
     /*------ INICIAR VENTA EN MESA ------*/
-    virtual DtAsignacion ingresarIdMozo(int idMozo) = 0;
+    virtual DtAsignacion* ingresarIdMozo(int idMozo) = 0;
     virtual void elegirMesas(int numero) = 0; // devuele una coleccion de DtMesas
     virtual void confirmarVentaEnMesa() = 0;
 
@@ -77,6 +78,7 @@ public:
     virtual void seleccionarProductoQuitar(char codigo, int cant) = 0;
     virtual void quitarProductoVenta() = 0;
 
+    virtual ICollection* pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     // virtual void finalizarVenta(int nroMesa) = 0;
     // virtual void aplicarDescuento(int descuento) = 0;
     // virtual DtFactura generarFactura(DtVenta venta) = 0;

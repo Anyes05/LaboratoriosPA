@@ -21,6 +21,7 @@ void Mozo::setCantMesas(int cantMesas) {
 void Mozo::agregarMesa(Mesa* mesa) {
     IKey* k = new Integer(mesa->getNumeroMesa());
     this->misMesas->add(k, mesa); // Agrega la mesa al diccionario usando su número como clave
+    this->cantMesas++; // Incrementa la cantidad de mesas del mozo
 }
 
 void Mozo::eliminarMesa(Mesa* mesa) {

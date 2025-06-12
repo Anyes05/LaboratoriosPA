@@ -26,8 +26,9 @@ bool Pedido::estaEnPedido(Producto* producto) {
 }
 
 int Pedido::restarProductos(int cantAQuitar) {
-setCantProductos(cantProductos - cantAQuitar);
+    setCantProductos(cantProductos - cantAQuitar);
     if (cantProductos < 0) {
         cantProductos = 0; // Evitar que la cantidad de productos sea negativa
     }    
+    return getCantProductos();
 }

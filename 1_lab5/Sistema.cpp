@@ -45,6 +45,10 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
+/*char normalizarCodigo(char codigo) {
+    return std::toupper(static_cast<unsigned char>(codigo));
+}
+*/
 /*----- ALTA PRODUCTO -----*/
 
 bool Sistema::existeProducto(char codigo)
@@ -663,7 +667,7 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         {
             mesasAsignadas[j] = mesaActual;
             Mesa *nuevaMesa = new Mesa(mesaActual);
-            // mozo->agregarMesa(nuevaMesa);
+            //mozo->agregarMesa(nuevaMesa);
 
             // tambien tengo que agregar la mesa a la coleccion global del sistema
             IKey *keyMesa = new Integer(mesaActual);
@@ -692,27 +696,24 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
 
 /*----- INICIAR VENTA EN MESA -----*/ 
 
-DtAsignacion Sistema::ingresarIdMozo(int idMozo)
+DtAsignacion* Sistema::ingresarIdMozo(int idMozo)
 {
     IIterator *it = mozos->getIterator();
     while (it->hasCurrent())
     {
-        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent()); // chequeo de que mozo sea un puntero a Mozo y no a otro tipo de empleado
+        Mozo *mozo = dynamic_cast<Mozo *>(it->getCurrent());
         if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
         {
-            delete it;
             int *mesasAsignadas = mozo->getMesasId();
-            idMozoSeleccionado = idMozo;                                                             // obtiene las mesas asignadas al mozo
-            return DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false); // retorno dtasignacion con el id del mozo, las mesas asignadas y la cantidad de mesas
+            idMozoSeleccionado = idMozo;
+            DtAsignacion* result = new DtAsignacion(mozo->getIdEmpleado(), mesasAsignadas, mozo->getCantMesas(), false);
+            delete it;
+            return result;
         }
         it->next();
     }
-    if (it != nullptr)
-    {
-        delete it;
-        throw std::runtime_error("No existe un mozo con el ID especificado.");
-    }
-    return DtAsignacion();
+    delete it;
+    throw std::runtime_error("No existe un mozo con el ID especificado.");
 }
 
 void Sistema::elegirMesas(int numero)
@@ -765,7 +766,7 @@ void Sistema::confirmarVentaEnMesa()
     venta->setMozo(dynamic_cast<Mozo *>(mozos->find(new Integer(idMozoSeleccionado)))); // Asignar el mozo seleccionado a la venta
     ventas->add(new Integer(venta->getNumero()), venta);                                // Agregar la venta a la colección de ventas
     mesasElegidasParaVenta = nullptr;                                                   // Limpiar la colección de mesas elegidas
-    idMozoSeleccionado = 0;                                                             // Reiniciar el ID del mozo seleccionado
+    idMozoSeleccionado = 0;                                                            // Reiniciar el ID del mozo seleccionado
 }
 
 /*----- VENTA A DOMICILIO -----*/
@@ -798,48 +799,45 @@ DtFacturaDomicilio Sistema::confirmarPedido() {
 ICollection *Sistema::listarParaAgregar(int idMesa)
 {
     if (mesas == nullptr || mesas->isEmpty())
-    {
         throw runtime_error("No hay mesas disponibles.");
-    }
 
     Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(idMesa)));
     if (mesaSeleccionada == nullptr)
-    {
         throw runtime_error("No existe una mesa con el número especificado.");
-    }
 
 
     if (mesaSeleccionada->getLocal() == nullptr || mesaSeleccionada->getLocal()->getActiva() == false)
-    {
         throw runtime_error("La mesa no tiene una venta activa.");
-    }
+
     ventaTemp = dynamic_cast<Venta *>(mesaSeleccionada->getLocal());
 
+    // Lo correcto: listar TODOS los productos del sistema
     ICollection *productosDisponibles = new List();
-    IIterator *itDtVenta = ventaTemp->getProductos()->getIterator();
-    for (int i = 0; i < ventaTemp->getProductos()->getSize(); i++)
+    IIterator *it = productos->getIterator();
+    while (it->hasCurrent())
     {
-        DtProducto *dtProducto = dynamic_cast<DtProducto *>(itDtVenta->getCurrent());
-        if (dtProducto != nullptr)
+        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+        if (prod != nullptr)
         {
+            DtProducto *dtProducto = prod->getDT(); // getDT debe devolver un puntero NUEVO
             productosDisponibles->add(dtProducto);
         }
-        itDtVenta->next();
-    }   
+        it->next();
+    }
+    delete it;
+
     if (productosDisponibles->isEmpty())
     {
         delete productosDisponibles;
         throw runtime_error("No hay productos disponibles para agregar a la venta.");
     }
-    return productosDisponibles; // Retorna una colección de DtProducto disponibles para agregar a la venta
+    return productosDisponibles;
 }
 
 void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
 {
     if (productos == nullptr || productos->isEmpty())
-    {
         throw runtime_error("No hay productos disponibles para agregar.");
-    }
 
     char codStr[2] = {codigo, '\0'};
     IKey *key = new String(codStr);
@@ -867,27 +865,26 @@ void Sistema::seleccionarProductoAgregar(char codigo, int cantidad)
     }
     if (ventaTemp->getProductos() == nullptr)
     {
-        ventaTemp->setProductos(new OrderedDictionary()); // Inicializar la colección de productos si es nula
+        ventaTemp->setProductos(new OrderedDictionary());
     }
     if (ventaTemp->getProductos()->find(key) == nullptr)
-        estaEnPedido = false; // Verificar si el producto ya está en el pedido
+        estaEnPedido = false;
     else
-        estaEnPedido = true; // El producto ya está en el pedido
-    pedidoTemp = new Pedido(cantidad); // Crear un nuevo pedido temporal con la cantidad especificada
-    pedidoTemp->setProducto(producto); // Asignar el producto al pedido temporal
+        estaEnPedido = true;
+    pedidoTemp = new Pedido(cantidad);
+    pedidoTemp->setProducto(producto);
+    delete key; // Solo aquí, porque no la agregaste al diccionario
 }
 
 void Sistema::confirmarAgregarProducto()
 {
     if (pedidoTemp == nullptr || ventaTemp == nullptr)
-    {
         throw runtime_error("No hay un pedido o venta activa para confirmar.");
-    }
+
     char codStr[2] = {pedidoTemp->getProducto()->getCodigo(), '\0'};
     IKey *key = new String(codStr);
     if (estaEnPedido)
     {
-        // Si ya está en el pedido, actualizar la cantidad
         Pedido *pedidoExistente = dynamic_cast<Pedido *>(ventaTemp->getProductos()->find(key));
         if (pedidoExistente != nullptr)
         {
@@ -895,13 +892,18 @@ void Sistema::confirmarAgregarProducto()
         }
         else
         {
+            delete key; // Solo aquí, porque no la agregaste
             throw runtime_error("El producto no se encontró en el pedido existente.");
         }
+        delete key; // Solo aquí, porque no la agregaste
     }
     else
     {
-        ventaTemp->getPedido()->add(key, pedidoTemp); // Agregar el pedido temporal a la colección de pedidos de la venta
-    } 
+        ventaTemp->getProductos()->add(key, pedidoTemp); // NO borrar key aquí
+        // El diccionario se encarga de liberar la clave cuando remueve el elemento
+    }
+    ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio()));
+    pedidoTemp = nullptr;
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
@@ -937,11 +939,15 @@ void Sistema::ingresarMesa(int idMesa)
     IIterator *it = ventaTemp->getProductos()->getIterator();
     while (it->hasCurrent())
     {
-        DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
-        if (dtProducto != nullptr)
+        Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
+        if (pedido != nullptr)
         {
-            productos->add(dtProducto);
+            Producto *producto = pedido->getProducto();
+            // Si es un pedido, obtenemos el DtProducto del producto asociado
+            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio());
+            productos->add(dtProducto); // Agregar el DtProducto a la colección
         }
+        
         it->next();
     }
     delete it;
@@ -955,6 +961,23 @@ void Sistema::ingresarMesa(int idMesa)
     return productos; // Retorna una colección de DtProducto de la venta
     
  }
+
+ICollection* Sistema::pedidosVentaActual(){  // Funcion auxiliar(? En si no es necesaria, solo la agregue porque me permite visualizar mejor en el menu 
+    if (!ventaTemp)
+        throw runtime_error("No hay venta activa.");
+
+    IDictionary* dict = ventaTemp->getProductos();
+    ICollection* pedidos = new List();
+    IIterator* it = dict->getIterator();
+    while (it->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedido)
+            pedidos->add(pedido);
+        it->next();
+    }
+    delete it;
+    return pedidos;
+}
 
 void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el codigo del producto que quiero eliminar y la cantidad del mismo
 {
@@ -988,7 +1011,7 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     while (it->hasCurrent())
     {
         Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
-        if (pedido != nullptr && pedido->getProducto() == productoAQuitar)
+        if (pedido != nullptr && pedido->getProducto()->getCodigo() == productoAQuitar->getCodigo())
         {
             encontrado = true;
             int res = pedido->restarProductos(cantidadAQuitar); // Restar la cantidad del pedido
@@ -1009,6 +1032,7 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     {
         throw runtime_error("El producto seleccionado no se encuentra en la venta.");
     }
+
  }
 
  /*------ VENTAS DE UN MOZO ------*/
@@ -1028,6 +1052,29 @@ IIterator *itMozo = mozos->getIterator();
     }
     delete itMozo;
 }
+
+DtFactura generarFactura(DtVenta venta) {
+    // Fecha ficticia para la factura
+    DtFecha fecha(1, 6, 2025);
+
+    // Crear una colección de productos
+    ICollection* productos = new List();  // Suponiendo que usás List como implementación de ICollection
+
+    // Crear productos ficticios con char como código
+    DtProducto* prod1 = new DtProducto('A', "Pizza", 300);
+    DtProducto* prod2 = new DtProducto('B', "Cerveza", 150);
+
+    productos->add(prod1);
+    productos->add(prod2);
+
+    // Subtotal y descuento
+    float subTotal = prod1->getprecio() + prod2->getprecio();  // Simplificado
+    float descuento = venta.getDescuento();
+
+    // Crear y retornar la factura
+    return DtFactura(venta.getidVenta(), fecha, productos, descuento, subTotal);
+}
+
 
 void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
     IIterator* it = ventas->getIterator();
@@ -1055,7 +1102,30 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
                         float total = venta->getTotal();
 
                         DtVenta dtVenta(numeroVenta, descuento, facturada, total);
-                        
+                         DtFactura dtF = generarFactura(dtVenta);
+
+                         cout << "Factura N°: " << dtF.getCodigoVenta() << "\n";
+                        cout << "Fecha: " << dtF.getFecha().getDia() << "/"
+                             << dtF.getFecha().getMes() << "/"
+                             << dtF.getFecha().getAnio() << "\n";
+
+                        cout << "Productos:\n";
+                        IIterator* itProd = dtF.getProductos()->getIterator();
+                        while (itProd->hasCurrent()) {
+                            DtProducto* p = dynamic_cast<DtProducto*>(itProd->getCurrent());
+                            if (p != nullptr) {
+                                cout << "- " << p->getdescripcion() <<
+                                     " ($" << p->getprecio() << " c/u)\n";
+                            }
+                            itProd->next();
+                        }
+                        delete itProd;
+
+                        cout << "Subtotal: $" << dtF.getSubtotal() << "\n";
+                        cout << "Descuento: " << dtF.getDescuento() << "%\n";
+                        cout << "Monto con descuento: $" << dtF.getMontoConDescuento() << "\n";
+                        cout << "Total con IVA: $" << dtF.getTotalConIVA() << "\n";
+                        cout << "-----------------------------\n";
                     }
                  }
             }
@@ -1063,6 +1133,8 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
         it->next();
     }
 }
+
+
 
 // void Sistema::finalizarVenta(int nroMesa)
 // {

@@ -396,6 +396,10 @@ void menuMozo(ISistema *sistema)
         cout << "\n--- Mozo ---" << endl;
         cout << "1. Iniciar venta en mesa" << endl;
         cout << "2. Agregar producto a una venta" << endl;
+        cout << "3. Quitar producto a una venta" << endl;
+        cout << "4. mostrar ventas" << endl;
+        cout << "0. Volver" << endl;
+        cout << "Seleccione una opción: ";
         cin >> opcion;
 
         switch (opcion)
@@ -411,11 +415,15 @@ void menuMozo(ISistema *sistema)
             cout << "Las mesas asignadas al mozo " << idMozo << " son: " << endl;
             try
             {
-                DtAsignacion dtAsignacion = sistema->ingresarIdMozo(idMozo);
-                cout << "ID Mozo: " << dtAsignacion.getidMozo() << endl;
+                DtAsignacion *dtAsignacion = sistema->ingresarIdMozo(idMozo);
+                int *mesas = dtAsignacion->getidMesas();
+                if (mesas == nullptr || dtAsignacion->getcantMesas() == 0)
+                {
+                    cout << "No hay mesas asignadas al mozo." << endl;
+                    break;
+                }
                 cout << "Mesas asignadas: ";
-                int *mesas = dtAsignacion.getidMesas();
-                for (int j = 0; j < dtAsignacion.getcantMesas(); j++)
+                for (int j = 0; j < dtAsignacion->getcantMesas(); j++)
                 {
                     cout << mesas[j] << " ";
                 }
@@ -450,10 +458,12 @@ void menuMozo(ISistema *sistema)
                 {
                     sistema->confirmarVentaEnMesa();
                     cout << "Venta iniciada correctamente." << endl;
+                    break;
                 }
                 else
                 {
                     cout << "Venta cancelada." << endl;
+                    break;
                 }
             }
             catch (const std::exception &e)
@@ -461,6 +471,7 @@ void menuMozo(ISistema *sistema)
                 cout << "Error: " << e.what() << endl;
                 break;
             }
+            break;
         }
         case 2:
         {
@@ -497,27 +508,172 @@ void menuMozo(ISistema *sistema)
                     cout << "Ingrese la cantidad: ";
                     cin >> cantidad;
                     cin.ignore();
-
+                    
                     sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
-
+                    cout << "Desea confirmar la adición del producto? (S/N): ";
+                    char confirmar;
+                    cin >> confirmar;
+                    cin.ignore();
+                    if (confirmar == 'S' || confirmar == 's')
+                    {
+                        sistema->confirmarAgregarProducto();
+                        cout << "Producto agregado a la venta correctamente." << endl;
+                    }
+                    else
+                    {
+                        cout << "Operación cancelada." << endl;
+                    }
                     cout << "¿Desea agregar otro producto? (S/N): ";
                     cin >> agregarOtro;
                     cin.ignore();
                 } while (agregarOtro == 'S' || agregarOtro == 's');
-
-                sistema->confirmarAgregarProducto();
                 cout << "Productos agregados a la venta correctamente." << endl;
-
             }
             catch (const std::exception &e)
             {
                 cout << "Error al agregar producto: " << e.what() << endl;
                 break;
             }
+            break;
         }
+        case 3:
+        {
+            system ("clear");
+            cout << "QUITAR PRODUCTO DE UNA VENTA" << endl;
+            cout << "Ingrese el número de una de las mesas involucradas en la venta: ";
+            int idMesa;
+            cin >> idMesa;
+            cin.ignore();
+            if (idMesa <= 0)
+            {
+                cout << "Número de mesa inválido. Debe ser un número positivo." << endl;
+                break;
+            }
+            try
+            {
+                sistema->ingresarMesa(idMesa);
+                ICollection *productos = sistema->productosVenta();
+                IIterator *it = productos->getIterator();
+                while (it->hasCurrent())
+                {
+                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+                    if (dtProducto)
+                    {
+                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() <<  endl;
+                    }
+                    it->next();
+                }
+                delete it;
+
+                char quitarOtro;
+                do 
+                {
+                    char codigoProducto;
+                    int cantidad;
+                    cout << "Ingrese el código del producto a quitar: ";
+                    cin >> codigoProducto;
+                    cin.ignore();
+                    cout << "Ingrese la cantidad a quitar: ";
+                    cin >> cantidad;
+                    cin.ignore();
+
+                    try
+                    {
+                        sistema->seleccionarProductoQuitar(codigoProducto, cantidad);
+                        cout << "Desea confirmar la disminución del producto? (S/N): ";
+                        char confirmar;
+                        cin >> confirmar;
+                        cin.ignore();
+                        if (confirmar == 'S' || confirmar == 's')
+                        {
+                            sistema->quitarProductoVenta();
+                            cout << "Producto quitado de la venta correctamente." << endl;
+                            // Me muestra los productos actuales en la venta, lo dejo, no? Esta mas visual asi <- <- <-
+                            try {
+                                ICollection *productosActuales = sistema->pedidosVentaActual();
+                                IIterator *it2 = productosActuales->getIterator();
+                                cout << "Productos actuales en la venta:" << endl;
+                                while (it2->hasCurrent())
+                                {
+                                    // Aquí accedemos al Pedido para mostrar la cantidad
+                                    Pedido *pedido = dynamic_cast<Pedido *>(it2->getCurrent());
+                                    if (pedido)
+                                    {
+                                        Producto *prod = pedido->getProducto();
+                                        cout << "Código: " << prod->getCodigo()
+                                            << " | Descripción: " << prod->getDescripcion()
+                                            << " | Cantidad: " << pedido->getCantProductos()
+                                            << endl;
+                                    }
+                                    it2->next();
+                                }
+                                delete it2;
+                                // delete productosActuales; // Si tu ICollection necesita borrado manual
+                            } catch (const std::exception &e) {
+                                cout << "Error al mostrar productos actuales: " << e.what() << endl;
+                            }
+                        }
+                        else
+                        {
+                            cout << "Operación cancelada." << endl;
+                        }
+                        
+                    }
+                    catch (const std::exception &e)
+                    {
+                        cout << "Error al quitar producto: " << e.what() << endl;
+                    }
+
+                    cout << "¿Desea quitar otro producto? (S/N): ";
+                    cin >> quitarOtro;
+                    cin.ignore();
+                } while (quitarOtro == 'S' || quitarOtro == 's');
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error al quitar producto: " << e.what() << endl;
+            }
+            break;
+        }
+        case 4:
+        {
+        system("clear");
+    cout << "--- MOSTRAR VENTAS DE UN MOZO ---" << endl;
+    int idMozo;
+    cout << "Ingrese el ID del mozo: ";
+    cin >> idMozo;
+    cin.ignore();
+
+    int dia1, mes1, anio1, dia2, mes2, anio2;
+
+    cout << "Ingrese la fecha de inicio (DD MM AAAA): ";
+    cin >> dia1 >> mes1 >> anio1;
+    cin.ignore();
+
+    cout << "Ingrese la fecha de fin (DD MM AAAA): ";
+    cin >> dia2 >> mes2 >> anio2;
+    cin.ignore();
+
+    DtFecha fechaInicio(dia1, mes1, anio1);
+    DtFecha fechaFin(dia2, mes2, anio2);
+
+    try
+    {
+        sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
     }
+    catch (const std::exception &e)
+    {
+        cout << "Error al mostrar ventas: " << e.what() << endl;
+    }
+    break;
+}
+        case 0:
+            cout << "Volviendo al menú principal..." << endl;
+            break;
+        default:
+            cout << "Opción inválida." << endl;
+        }
     } while (opcion != 0);
-    cout << "Volviendo al menú principal..." << endl;
 }
 
 void menuRepartidor(ISistema *sistema)
@@ -665,6 +821,51 @@ void precargarMesas(ISistema *sistema)
     }
 }
 
+void precargarVentas(ISistema* sistema) {
+    cout << "Precargando ventas locales..." << endl;
+
+    try {
+        // Asignamos mesas al mozo con ID 100 (Juan Pérez)
+        DtAsignacion* asignacion = sistema->ingresarIdMozo(100);
+        int* mesas = asignacion->getidMesas();
+        int mesaAsignada = mesas[0]; // Usamos una sola mesa para ejemplo
+
+        sistema->elegirMesas(mesaAsignada);
+        sistema->confirmarVentaEnMesa();
+
+        // Agregamos productos a la venta en mesa
+        sistema->seleccionarProductoAgregar('A', 2); // Agua Mineral x2
+        sistema->seleccionarProductoAgregar('H', 1); // Bife de Chorizo x1
+        sistema->confirmarAgregarProducto();
+
+        // Segunda venta en otra mesa
+        sistema->ingresarIdMozo(100);
+        sistema->elegirMesas(mesas[1]);
+        sistema->confirmarVentaEnMesa();
+
+        sistema->seleccionarProductoAgregar('B', 1); // Coca Cola x1
+        sistema->seleccionarProductoAgregar('I', 1); // Pasta Carbonara x1
+        sistema->confirmarAgregarProducto();
+
+        // Tercera venta
+        sistema->ingresarIdMozo(100);
+        sistema->elegirMesas(mesas[2]);
+        sistema->confirmarVentaEnMesa();
+
+        sistema->seleccionarProductoAgregar('D', 1); // Vino Tinto x1
+        sistema->seleccionarProductoAgregar('N', 1); // Tiramisú x1
+        sistema->confirmarAgregarProducto();
+
+        delete asignacion;
+
+        cout << "Ventas precargadas exitosamente!" << endl;
+
+    } catch (const exception& e) {
+        cout << "Error al precargar ventas: " << e.what() << endl;
+    }
+}
+
+
 int main()
 {
     try
@@ -686,6 +887,7 @@ int main()
             cout << "4. Cliente" << endl;
             cout << "5. Cargar datos de prueba" << endl;
             cout << "6. Precargar mesas" << endl;
+            cout << "6. Precargar ventas" << endl;
             cout << "0. Salir" << endl;
             cout << "Seleccione una opción: ";
             cin >> opcion;
@@ -711,6 +913,9 @@ int main()
                 precargarMesas(sistema);
                 break;
             case 7:
+                precargarVentas(sistema);
+                break;
+            case 0:
                 cout << "Saliendo..." << endl;
                 break;
             default:
