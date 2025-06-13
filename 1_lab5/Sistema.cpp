@@ -1054,7 +1054,6 @@ IIterator *itMozo = mozos->getIterator();
 }
 
 
-
 void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
     IIterator* it = ventas->getIterator();
 
