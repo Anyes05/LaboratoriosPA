@@ -2,13 +2,13 @@
 
 using namespace std;
 
-DtMenu::DtMenu(char codigo, string descripcion, float precio, string nombre, float descuento) : DtProducto(codigo, descripcion, precio)
+DtMenu::DtMenu(char codigo, string descripcion, float precio, int cantidadVendida, string nombre, float descuento) : DtProducto(codigo, descripcion, precio, cantidadVendida)
 {
     this->nombre = nombre;
     this->descuentoMenu = descuento;
 }
 
-DtMenu::DtMenu() : DtProducto('\0', "", 0.0) {
+DtMenu::DtMenu() : DtProducto() {
     cout << "Debug DtMenu::Constructor: Iniciando construcción por defecto" << endl;
     this->nombre = "";
     this->descuentoMenu = 0.0;

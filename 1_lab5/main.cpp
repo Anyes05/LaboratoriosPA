@@ -14,6 +14,7 @@ void menuAdministrador(ISistema *sistema)
         cout << "3. Alta Empleado" << endl;
         cout << "4. Asignar mesas a mozos" << endl;
         cout << "5. Iniciar Venta a Domicilio" << endl;
+        cout << "6. Informacion de un Producto" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -527,6 +528,77 @@ void menuAdministrador(ISistema *sistema)
             cin.get();
         }
         break;
+        case 6:
+        {
+            system("clear");
+            cout << "INFORMACIÓN DE UN PRODUCTO" << endl;
+            ICollection *productos = sistema->obtenerProductos();
+            IIterator *it = productos->getIterator();
+            while (it->hasCurrent())
+            {
+                DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+                if (dtProducto)
+                {
+                    cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
+                }
+                it->next();
+            }
+            delete it;
+            cout << "Ingrese el código del producto para ver más detalles: ";
+            char codigoProducto;
+            cin >> codigoProducto;
+            cin.ignore();
+            try
+            {
+                bool esMenu = sistema->ingresarCodigoProducto(codigoProducto);
+                if (esMenu)
+                {
+                    productos = sistema->infoProductosIncluidosMenu();
+                    if (productos->isEmpty())
+                    {
+                        cout << "El menú no tiene productos incluidos." << endl;
+                    }
+                    else
+                    {
+                        cout << "Productos incluidos en el menú:" << endl;
+                        IIterator *itMenu = productos->getIterator();
+                        while (itMenu->hasCurrent())
+                        {
+                            DtComun *dtComun = dynamic_cast<DtComun *>(itMenu->getCurrent());
+                            if (dtComun)
+                            {
+                                cout << "Código: " << dtComun->getCodigo() << " | Descripción: " << dtComun->getdescripcion() << " | Precio: " << dtComun->getprecio() << " | Cantidad Vendida:" << dtComun->getCantidadVendida() << endl;
+                            }
+                            itMenu->next();
+                        }
+                        delete itMenu;
+                    }
+                }
+                else
+                {
+                    DtProducto *dtProducto = sistema->infoProducto();
+                    if (dtProducto)
+                    {
+                        cout << "Código: " << dtProducto->getCodigo() << endl;
+                        cout << "Descripción: " << dtProducto->getdescripcion() << endl;
+                        cout << "Precio: " << dtProducto->getprecio() << endl;
+                        cout << "Cantidad Vendida: " << dtProducto->getCantidadVendida() << endl;
+                        delete dtProducto; // Liberar memoria del DtProducto
+                    }
+                    else
+                    {
+                        cout << "No se encontró información para el producto con código: " << codigoProducto << endl;
+                    }
+
+                }
+                delete productos; // Liberar memoria de la colección
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+            break;
+        }
         default:
             cout << "Opción inválida." << endl;
         }

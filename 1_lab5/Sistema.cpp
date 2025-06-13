@@ -137,7 +137,7 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     // Guardar los datos en el datatypes
     string nombreMenu = "Menu ";
     nombreMenu += codigoMenu;
-    menuTemp = new DtMenu(codigoMenu, descripcion, 0, nombreMenu, 0.0);
+    menuTemp = new DtMenu(codigoMenu, descripcion, 0, 0, nombreMenu, 0.0);
 
     // Listar todos los productos comunes y devolverlos como DtComun
 
@@ -238,7 +238,7 @@ void Sistema::agregarProductoComun(char codigoComun, string descripcion, float p
         }
 
         // Crear nueva instancia
-        productoComunTemp = new DtComun(codigoComun, descripcion, precio);
+        productoComunTemp = new DtComun(codigoComun, descripcion, precio, 0);
     }
     catch (const exception &e)
     {
@@ -1159,17 +1159,16 @@ void Sistema::confirmarAgregarProducto()
             delete key; 
             throw runtime_error("El producto no se encontró en el pedido existente.");
         }
-        delete key; 
+        delete key; // Solo aquí, porque NO la agregaste al diccionario
     }
     else
     {
         ventaTemp->getProductos()->add(key, pedidoTemp);
+        // NO hacer delete key aquí, el diccionario se encarga
     }
     ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio()));
-    // sumar cantidad vendida del producto
     pedidoTemp->getProducto()->setCantidadVendida(pedidoTemp->getProducto()->getCantidadVendida() + pedidoTemp->getCantProductos());
     pedidoTemp = nullptr;
-    delete key; // Liberar memoria del key después de usarlo
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
@@ -1210,7 +1209,7 @@ void Sistema::ingresarMesa(int idMesa)
         {
             Producto *producto = pedido->getProducto();
             // Si es un pedido, obtenemos el DtProducto del producto asociado
-            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio());
+            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio(), producto->getCantidadVendida());
             productos->add(dtProducto); // Agregar el DtProducto a la colección
         }
         
@@ -1264,8 +1263,8 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     cantidadAQuitar = cant; // Asignar la cantidad a quitar
 }
 
- void Sistema::quitarProductoVenta()
- {
+void Sistema::quitarProductoVenta()
+{
     if (productoAQuitar == nullptr || mesaSeleccionada == nullptr)
     {
         throw runtime_error("No hay un producto o mesa seleccionada para quitar.");
@@ -1280,7 +1279,17 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
         if (pedido != nullptr && pedido->getProducto()->getCodigo() == productoAQuitar->getCodigo())
         {
             encontrado = true;
-            int res = pedido->restarProductos(cantidadAQuitar); // Restar la cantidad del pedido
+            int cantidadRestada = cantidadAQuitar;
+            int res = pedido->restarProductos(cantidadRestada); // Restar la cantidad del pedido
+
+            // Restar la cantidad vendida al producto
+            Producto* prod = pedido->getProducto();
+            if (prod != nullptr) {
+                int nuevaCantidadVendida = prod->getCantidadVendida() - cantidadRestada;
+                if (nuevaCantidadVendida < 0) nuevaCantidadVendida = 0;
+                prod->setCantidadVendida(nuevaCantidadVendida);
+            }
+
             if (res <= 0) {
                 // Si la cantidad restante es 0 o negativa, eliminar el pedido de la venta
                 char codStr[2] = {productoAQuitar->getCodigo(), '\0'};
@@ -1298,8 +1307,7 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     {
         throw runtime_error("El producto seleccionado no se encuentra en la venta.");
     }
-
- }
+}
 
 
  /*------ VENTAS DE UN MOZO ------*/
@@ -1487,7 +1495,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
         Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
         if (pedido) {
             Producto* p = pedido->getProducto();
-            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio());
+            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio(),p->getCantidadVendida());
             colDtProductos->add(dtProd);
         }
         it->next();
@@ -1541,7 +1549,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
         Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
         if (prod != nullptr)
         {
-            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio(), prod->getCantidadVendida());
             listaProductos->add(dtProducto);
         }
         it->next();
@@ -1579,7 +1587,7 @@ ICollection *Sistema::obtenerProductos() {
     while (it->hasCurrent()) {
         Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
         if (prod != nullptr) {
-            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio(), prod->getCantidadVendida());
             listaProductos->add(dtProducto);
         }
         it->next();
@@ -1607,13 +1615,15 @@ bool Sistema::ingresarCodigoProducto(char codigo)
     if (dynamic_cast<Menu *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
-        return esMenu = true; 
+        esMenu = true; 
+        return true; // Producto encontrado y es un menú
         delete key;
     }
     else if (dynamic_cast<Comun *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
-        return esMenu = false; 
+        esMenu = false; 
+        return false; // Producto encontrado y es un producto común
         delete key;
     }
     else
