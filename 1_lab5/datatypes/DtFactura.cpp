@@ -6,6 +6,7 @@ DtFactura::DtFactura() {}
 
 // DtFactura.cpp
 DtFactura::DtFactura(int codigoVenta, DtFecha fecha, ICollection* productos, float descuento, float subtotal) {
+
     this->codigoVenta = codigoVenta;
     this->fecha = fecha;
     this->productos = productos;

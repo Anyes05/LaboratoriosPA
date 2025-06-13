@@ -14,9 +14,11 @@
 #include "Pedido.h"
 #include "Domicilio.h"
 
+#include "datatypes/DtFactura.h"
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
 #include "datatypes/DtProducto.h"
+
 
 class Sistema : public ISistema
 {
@@ -102,6 +104,10 @@ public:
     void asignarRepartidorDomicilio(int idRepartidor);
     DtFacturaDomicilio confirmarPedido();
 
+    /*------ VENTAS DE UN MOZO ------*/
+    void listarMozos();
+    void mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
+    
     /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
     ICollection *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
     void seleccionarProductoAgregar(char codigo, int cantidad);
@@ -112,12 +118,13 @@ public:
     ICollection *productosVenta(); // devuele una coleccion de DtProducto
     void seleccionarProductoQuitar(char codigo, int cant);
     void quitarProductoVenta();
+
     ICollection *pedidosVentaActual(); // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     
     /*------ FACTURACION DE UNA VENTA ------*/
     DtVenta finalizarVenta(int nroMesa);
     void aplicarDescuento(int descuento);
-    DtFactura generarFactura(DtVenta venta);
+    DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura);
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();

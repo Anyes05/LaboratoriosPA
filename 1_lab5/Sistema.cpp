@@ -50,6 +50,7 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
+
 /*char normalizarCodigo(char codigo) {
     return std::toupper(static_cast<unsigned char>(codigo));
 }
@@ -1068,6 +1069,7 @@ ICollection *Sistema::listarParaAgregar(int idMesa)
     if (mesaSeleccionada == nullptr)
         throw runtime_error("No existe una mesa con el número especificado.");
 
+
     if (mesaSeleccionada->getLocal() == nullptr || mesaSeleccionada->getLocal()->getActiva() == false)
         throw runtime_error("La mesa no tiene una venta activa.");
 
@@ -1299,6 +1301,85 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
 
  }
 
+
+ /*------ VENTAS DE UN MOZO ------*/
+
+
+void Sistema::listarMozos(){
+
+IIterator *itMozo = mozos->getIterator();
+    while (itMozo->hasCurrent())
+    {
+        Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
+        if (mozo != nullptr)
+        {
+            cout << "ID: " << mozo->getIdEmpleado() << ", Nombre: " << mozo->getNombre() << endl;
+        }
+        itMozo->next();
+    }
+    delete itMozo;
+}
+
+
+void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
+    IIterator* it = ventas->getIterator();
+
+    while (it->hasCurrent()) {
+        Venta *venta = dynamic_cast<Venta *>(it->getCurrent());
+
+        Local *vLocal = dynamic_cast<Local *>(venta); //ventas locales
+        if (vLocal != nullptr) {
+            Mozo *mozo = vLocal->getMozo();
+            if (mozo != nullptr && mozo->getIdEmpleado() == idMozo) {
+                Factura *factura = venta->getFactura();
+                
+                if (factura != nullptr) {
+                    DtFecha f = factura->getFecha();
+                if ((f.getAnio() > fecha1.getAnio() || (f.getAnio() == fecha1.getAnio() &&
+                    (f.getMes() > fecha1.getMes() || (f.getMes() == fecha1.getMes() && f.getDia() >= fecha1.getDia()))))
+                    &&
+                    (f.getAnio() < fecha2.getAnio() || (f.getAnio() == fecha2.getAnio() &&
+                    (f.getMes() < fecha2.getMes() || (f.getMes() == fecha2.getMes() && f.getDia() <= fecha2.getDia()))))
+                ) {
+                    float subtotal = venta->getSubTotal();
+                        float descuento = venta->getDescuento();
+
+                        cout << "Factura N°: " << venta->getNumero() << "\n";
+                        cout << "Fecha: " << f.getDia() << "/" << f.getMes() << "/" << f.getAnio() << "\n";
+
+                        cout << "Productos:\n";
+                        IDictionary* prodPedidos = venta->getProductos();
+                        IIterator* itPedidos = prodPedidos->getIterator();
+                        while (itPedidos->hasCurrent()) {
+                            Pedido* pedido = dynamic_cast<Pedido*>(itPedidos->getCurrent());
+                            if (pedido != nullptr) {
+                                Producto* p = pedido->getProducto();
+                                int cantidad = pedido->getCantProductos();
+
+                                cout << "- " << p->getDescripcion() << " x " << cantidad
+                                     << " ($" << p->getPrecio() << " c/u)" << endl;
+                            }
+                            itPedidos->next();
+                        }
+                        delete itPedidos;
+
+                        float montoConDescuento = subtotal * (1 - descuento / 100);
+                        float totalConIVA = montoConDescuento * 1.22f; //IVA 22%
+
+                        cout << "Subtotal: $" << subtotal << "\n";
+                        cout << "Descuento: " << descuento << "%\n";
+                        cout << "Monto con descuento: $" << montoConDescuento << "\n";
+                        cout << "Total con IVA: $" << totalConIVA << "\n";
+                        cout << "-----------------------------\n";
+                    }
+                 }
+            }
+        }
+        it->next();
+    }
+}
+
+
 /*------ FACTURACION DE UNA VENTA ------*/
 
 DtVenta Sistema::finalizarVenta(int nroMesa) {
@@ -1386,7 +1467,7 @@ void Sistema::aplicarDescuento(int descuento) {
     ventaTemporal->setTotal(totalConDescuento);
 }
 
-DtFactura Sistema::generarFactura(DtVenta ventaDTO) {
+DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
     if (!ventaTemporal)
         throw invalid_argument("No hay venta seleccionada para generar factura.");
 
@@ -1394,7 +1475,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO) {
         throw invalid_argument("La venta ya fue facturada.");
 
     // fecha manual pa probar
-    DtFecha fechaActual(12, 6, 2025);
+    DtFecha fechaActual = fechaFactura;
 
     //guardo los productos en coleccion
     ICollection* colDtProductos = new List();

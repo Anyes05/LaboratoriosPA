@@ -543,6 +543,7 @@ void menuMozo(ISistema *sistema)
         cout << "2. Agregar producto a una venta" << endl;
         cout << "3. Quitar producto a una venta" << endl;
         cout << "4. Facturacion de una venta" << endl;
+        cout << "5. Mostrar ventas de un mozo" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -801,8 +802,14 @@ void menuMozo(ISistema *sistema)
                     sistema->aplicarDescuento(descuento);
                 }
 
-                // Generar factura
-                DtFactura facturaDTO = sistema->generarFactura(ventaDTO);
+                int dia, mes, anio;
+                cout << "Ingrese la fecha de la factura (DD MM AAAA): ";
+                cin >> dia >> mes >> anio;
+                DtFecha fechaFactura(dia, mes, anio);
+
+                // Generar factura con fecha
+                DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
+                
 
                 // Mostrar datos
                 cout << "\n------ FACTURA ------\n";
@@ -834,7 +841,42 @@ void menuMozo(ISistema *sistema)
             }
             break;
         }
+        
         case 5:
+        {
+                system("clear");
+            cout << "--- MOSTRAR VENTAS DE UN MOZO ---" << endl;
+            sistema->listarMozos(); cout << endl;
+            int idMozo;
+            cout << "Ingrese el ID del mozo: ";
+            cin >> idMozo;
+            cin.ignore();
+
+            int dia1, mes1, anio1, dia2, mes2, anio2;
+
+            cout << "Ingrese la fecha de inicio (DD MM AAAA): ";
+            cin >> dia1 >> mes1 >> anio1;
+            cin.ignore();
+
+            cout << "Ingrese la fecha de fin (DD MM AAAA): ";
+            cin >> dia2 >> mes2 >> anio2;
+            cin.ignore();
+
+            DtFecha fechaInicio(dia1, mes1, anio1);
+            DtFecha fechaFin(dia2, mes2, anio2);
+
+            try
+            {
+                sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error al mostrar ventas: " << e.what() << endl;
+            }
+            break;
+        }
+        case 0:
+
             cout << "Volviendo al menú principal..." << endl;
             break;
         default:
@@ -938,13 +980,15 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->elegirMedio(2); // Auto
         sistema->darAltaEmpleado();
 
+        
+
         cout << "Datos de prueba cargados exitosamente!" << endl;
     }
     catch (const exception &e)
     {
         cout << "Error al cargar datos de prueba: " << e.what() << endl;
     }
-}
+}  
 
 void precargarMesas(ISistema *sistema)
 {
@@ -980,6 +1024,7 @@ void precargarMesas(ISistema *sistema)
         cout << "Error al precargar mesas: " << e.what() << endl;
     }
 }
+
 
 int main()
 {
