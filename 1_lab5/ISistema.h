@@ -77,10 +77,11 @@ public:
     // virtual void finalizarVenta(int nroMesa) = 0;
     // virtual void aplicarDescuento(int descuento) = 0;
     // virtual DtFactura generarFactura(DtVenta venta) = 0;
-    // virtual ICollectible *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
-
-    // virtual void seleccionarProductoBaja(string codigo) = 0;
-    // virtual void darBajaProducto() = 0;
+    
+    /*------ BAJA PRODUCTO ------*/
+    virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
+    virtual void seleccionarProductoBaja(char codigo) = 0;
+    //virtual void darBajaProducto() = 0;
 };
 
 #endif
