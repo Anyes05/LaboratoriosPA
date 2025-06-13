@@ -73,7 +73,7 @@ public:
     virtual ICollection *productosVenta() = 0; // devuele una coleccion de DtProducto
     virtual void seleccionarProductoQuitar(char codigo, int cant) = 0;
     virtual void quitarProductoVenta() = 0;
-<<<<<<< HEAD
+
     virtual ICollection* pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     
     /*------ FACTURACION DE UNA VENTA ------*/
@@ -84,17 +84,22 @@ public:
     //virtual ICollectible *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoBaja(string codigo) = 0;
     // virtual void darBajaProducto() = 0;
-=======
+
     virtual ICollection *pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     // virtual void finalizarVenta(int nroMesa) = 0;
     // virtual void aplicarDescuento(int descuento) = 0;
     // virtual DtFactura generarFactura(DtVenta venta) = 0;
     
+    /*------ INFORMACION DE UN PRODUCTO ------*/
+    virtual ICollection* obtenerProductos() = 0;
+    virtual bool ingresarCodigoProducto(char codigo) = 0;
+    virtual DtProducto* infoProducto() = 0;
+    virtual ICollection* infoProductosIncluidosMenu() = 0;
+
     /*------ BAJA PRODUCTO ------*/
     virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     virtual void seleccionarProductoBaja(char codigo) = 0;
     //virtual void darBajaProducto() = 0;
->>>>>>> 8b72a9372bbdd1fbd11db011a97cecde8c6ec2ff
 };
 
 #endif
