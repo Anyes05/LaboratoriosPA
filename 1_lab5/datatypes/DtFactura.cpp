@@ -4,14 +4,16 @@
 
 DtFactura::DtFactura() {}
 
-DtFactura::DtFactura(int codigoVenta, DtFecha fecha, ICollection* productos, float descuento, float subTotal) {
+// DtFactura.cpp
+DtFactura::DtFactura(int codigoVenta, DtFecha fecha, ICollection* productos, float descuento, float subtotal) {
+
     this->codigoVenta = codigoVenta;
     this->fecha = fecha;
     this->productos = productos;
     this->descuento = descuento;
-    this->subTotal = subTotal;
-
+    this->subTotal = subtotal;
 }
+
 
 int DtFactura::getCodigoVenta() {
 return codigoVenta;
@@ -22,8 +24,9 @@ DtFecha DtFactura::getFecha() {
 }
 
 ICollection* DtFactura::getProductos() {
-return productos;
+    return this->productos;
 }
+
 
 float DtFactura::getDescuento() {
 return descuento;

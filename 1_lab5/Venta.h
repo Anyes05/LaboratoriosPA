@@ -3,11 +3,13 @@
 
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
-#include "Factura.h" 
-#include "ICollection/collections/ListNode.h" 
+#include "ICollection/collections/List.h" 
 #include "ICollection/interfaces/IDictionary.h"
 #include "ICollection/interfaces/OrderedKey.h" 
 
+#include "Factura.h"
+#include "Pedido.h"
+#include "datatypes/DtVenta.h"
 
 using namespace std;
 
@@ -21,7 +23,7 @@ private:
     bool activa; // indica si la venta está activa o no
     Factura* factura;
     IDictionary * productos; // lista de productos 
-    IDictionary * pedidos; // lista de pedidos asociados a la venta
+    ICollection * pedido;
 public:
     Venta(int numero, float subTotal, float descuento); //constructor
     virtual ~Venta(); //destructor
@@ -33,7 +35,6 @@ public:
     bool getActiva();
     Factura* getFactura(); 
     IDictionary * getProductos();
-    IDictionary * getPedido();
     void setNumero(int numero);
     void setSubTotal(float subTotal);
     void setDescuento(float descuento);
@@ -45,6 +46,7 @@ public:
     void eliminarMenu(); // donde esta esto en el diagrama de comunicacion? creo que no está o no le corresponde a venta 
     ListNode productosVenta();  
     void eliminarProductoVenta();
+    virtual void agregarPedido(Pedido *pedido);
         
 };
 

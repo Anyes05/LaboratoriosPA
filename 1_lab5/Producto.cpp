@@ -23,6 +23,10 @@ float Producto::getPrecio(){
     return this->precio;
 }
 
+bool Producto::esMenu(char codigo) {
+    return false;
+}
+
 void Producto::setCodigo(char cod){
     this-> codigo=cod;
 }

@@ -12,9 +12,13 @@
 #include "Repartidor.h"
 #include "Cliente.h"
 #include "Pedido.h"
+#include "Domicilio.h"
 
+#include "datatypes/DtFactura.h"
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
+#include "datatypes/DtProducto.h"
+
 
 class Sistema : public ISistema
 {
@@ -30,10 +34,10 @@ private:
     ICollection *clientes;
 
     ICollection *mesasElegidasParaVenta; // Coleccion de mesas elegidas temporalmente, son seleccionadas por el mozo para iniciar una venta
-    int idMozoSeleccionado; // ID del mozo seleccionado para iniciar una venta
-    Venta *ventaTemp; // Venta seleccionada temporalmente para agregar productos
-    Pedido *pedidoTemp; // Pedido seleccionado temporalmente para agregar productos
-    bool estaEnPedido; // Indica si el producto está en el pedido
+    int idMozoSeleccionado;              // ID del mozo seleccionado para iniciar una venta
+    Venta *ventaTemp;                    // Venta seleccionada temporalmente para agregar productos
+    Pedido *pedidoTemp;                  // Pedido seleccionado temporalmente para agregar productos
+    bool estaEnPedido;                   // Indica si el producto está en el pedido
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
@@ -45,13 +49,18 @@ private:
     int idE;
     DtCliente *clienteTemp;
     Mesa *mesaSeleccionada;
-    Producto * productoAQuitar;
+    Producto *productoAQuitar;
     int cantidadAQuitar;
+    Mesa *mesaTemp;
+    Local * ventaTemporal;
+    IDictionary *productosEnPedidoDomicilio;
+    int idRepartidorSeleccionado;
+    Producto *productoBaja;
 
 public:
     ~Sistema();
     static Sistema *getInstance();
-    //char normalizarProducto(char codigo); // Normaliza el código del producto, si es un número lo convierte a char
+    // char normalizarProducto(char codigo); // Normaliza el código del producto, si es un número lo convierte a char
 
     /*------ ALTA PRODCUTO -----*/
     bool existeProducto(char codigo);                              // retorna true si existe un producto con es codigo
@@ -80,13 +89,13 @@ public:
     ICollection *calcularAsignacion(int cantMesas, int cantMozos);
 
     /*------ INICIAR VENTA EN MESA ------*/
-    DtAsignacion* ingresarIdMozo(int idMozo); // devuele un DtAsignacion
-    void elegirMesas(int numero);            // devuele una coleccion de DtMesas
+    DtAsignacion *ingresarIdMozo(int idMozo); // devuele un DtAsignacion
+    void elegirMesas(int numero);             // devuele una coleccion de DtMesas
     void confirmarVentaEnMesa();
 
     /*------ VENTA A DOMICILIO ------*/
-    bool ventaDomicilio(char telefono); // Retorna true si el cliente existe
-    IDictionary *listarProductos();     // retorna una coleccion de DtProducto
+    bool ventaDomicilio(string telefono); // Retorna true si el cliente existe
+    ICollection *listarProductos();       // retorna una coleccion de DtProducto
     void agregarProductoPedido(char codigo, int cantidad);
     ICollection *listarRepartidores(); // Retruna una coleccion de Dtrepartidor
     void asignarRepartidorDomicilio(int idRepartidor);
@@ -108,12 +117,19 @@ public:
     void quitarProductoVenta();
 
     ICollection *pedidosVentaActual(); // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
-    // void finalizarVenta(int nroMesa);
-    // void aplicarDescuento(int descuento);
-    // DtFactura generarFactura(DtVenta venta);
+    
+    /*------ FACTURACION DE UNA VENTA ------*/
+    DtVenta finalizarVenta(int nroMesa);
+    void aplicarDescuento(int descuento);
+    DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura);
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
+    
+    /*------ BAJA PRODUCTO ------*/
+    ICollection *mostrarProductos(); // devuele una coleccion de DtProducto
+    void seleccionarProductoBaja(char codigo);
+    //void darBajaProducto();
 };
 
 #endif

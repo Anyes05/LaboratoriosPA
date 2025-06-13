@@ -13,6 +13,7 @@ void menuAdministrador(ISistema *sistema)
         cout << "2. Alta Cliente" << endl;
         cout << "3. Alta Empleado" << endl;
         cout << "4. Asignar mesas a mozos" << endl;
+        cout << "5. Iniciar Venta a Domicilio" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -21,7 +22,7 @@ void menuAdministrador(ISistema *sistema)
         {
         case 1:
         {
-            system("clear");
+            (void)system("clear");
             cout << "ALTA DE PRODUCTO" << endl;
             cout << "1 - Producto Común" << endl;
             cout << "2 - Menú" << endl;
@@ -188,7 +189,7 @@ void menuAdministrador(ISistema *sistema)
             string nombre, calle, calleEsquina, telefono;
             int nroPuerta;
 
-            system("clear");
+            (void)system("clear");
 
             cout << "ALTA CLIENTE" << endl;
             cout << "Ingrese telefono: ";
@@ -334,7 +335,7 @@ void menuAdministrador(ISistema *sistema)
         }
         case 4:
         {
-            system("clear");
+            (void)system("clear");
             cout << "ASIGNAR MESAS A MOZOS" << endl;
             cout << "Ingrese la cantidad de mesas a asignar: " << endl;
             int cantMesas;
@@ -379,9 +380,153 @@ void menuAdministrador(ISistema *sistema)
         }
         case 5:
         {
-            cout << "Volviendo al menú principal..." << endl;
-            break;
+            system("clear");
+            cout << "--- INICIAR VENTA A DOMICILIO ---" << endl;
+            string telefonoCliente;
+            cout << "Ingrese el teléfono del cliente: ";
+            cin >> telefonoCliente;
+            cin.ignore();
+
+            try
+            {
+                if (!sistema->ventaDomicilio(telefonoCliente))
+                {
+                    cout << "El cliente con teléfono " << telefonoCliente << " no está registrado." << endl;
+                    cout << "¿Desea dar de alta un nuevo cliente? (S/N): ";
+                    char altaClienteOpt;
+                    cin >> altaClienteOpt;
+                    cin.ignore();
+
+                    if (altaClienteOpt == 'S' || altaClienteOpt == 's')
+                    {
+                        string nombre, calle, calleEsquina;
+                        int nroPuerta;
+                        cout << "\n--- ALTA NUEVO CLIENTE ---" << endl;
+                        cout << "Ingrese nombre: ";
+                        getline(cin, nombre);
+                        cout << "Ingrese calle: ";
+                        getline(cin, calle);
+                        cout << "Ingrese calleEsquina: ";
+                        getline(cin, calleEsquina);
+                        cout << "Ingrese nro de puerta: ";
+                        cin >> nroPuerta;
+                        cin.ignore();
+
+                        DtDireccion direccion(calle, nroPuerta, calleEsquina);
+                        sistema->altaCliente(telefonoCliente, nombre, direccion);
+                        sistema->confirmarAlta();
+                        cout << "Cliente dado de alta correctamente." << endl;
+                    }
+                    else
+                    {
+                        cout << "Operación de venta a domicilio cancelada." << endl;
+                        break;
+                    }
+                }
+
+                // Listar productos y agregar al pedido
+                char agregarMasProductos = 's';
+                while (agregarMasProductos == 'S' || agregarMasProductos == 's')
+                {
+                    cout << "\n--- Productos Disponibles ---" << endl;
+                    ICollection *productosDisp = sistema->listarProductos();
+                    if (productosDisp->isEmpty())
+                    {
+                        cout << "No hay productos disponibles. Por favor, cargue datos de prueba (Opción 3 en el menú principal)." << endl;
+                        delete productosDisp;
+                        // Salir del bucle de agregar productos si no hay ninguno
+                        break;
+                    }
+
+                    IIterator *itProd = productosDisp->getIterator();
+                    while (itProd->hasCurrent())
+                    {
+                        DtProducto *dtProd = dynamic_cast<DtProducto *>(itProd->getCurrent());
+                        if (dtProd != nullptr)
+                        {
+                            cout << "Código: " << dtProd->getCodigo() << " | Descripción: " << dtProd->getdescripcion() << " | Precio: " << dtProd->getprecio() << endl;
+                        }
+                        itProd->next();
+                    }
+                    delete itProd;
+                    delete productosDisp; // Liberar memoria de la colección
+
+                    char codigoProducto;
+                    int cantidadProducto;
+                    cout << "Ingrese el código del producto a agregar: ";
+                    cin >> codigoProducto;
+                    cout << "Ingrese la cantidad: ";
+                    cin >> cantidadProducto;
+                    cin.ignore();
+
+                    sistema->agregarProductoPedido(codigoProducto, cantidadProducto);
+                    cout << "Producto agregado al pedido." << endl;
+
+                    cout << "¿Desea agregar otro producto al pedido? (S/N): ";
+                    cin >> agregarMasProductos;
+                    cin.ignore();
+                }
+
+                // Listar repartidores y asignar uno
+                cout << "\n--- Repartidores Disponibles ---" << endl;
+                ICollection *repartidoresDisp = sistema->listarRepartidores();
+                if (repartidoresDisp->isEmpty())
+                {
+                    cout << "No hay repartidores disponibles." << endl;
+                    delete repartidoresDisp;
+                    cout << "Operación de venta a domicilio cancelada." << endl;
+                    break;
+                }
+
+                IIterator *itRep = repartidoresDisp->getIterator();
+                while (itRep->hasCurrent())
+                {
+                    DtRepartidor *dtRep = dynamic_cast<DtRepartidor *>(itRep->getCurrent());
+                    if (dtRep != nullptr)
+                    {
+                        cout << "ID: " << dtRep->getIdRepartidor() << " | Nombre: " << dtRep->getNombre() << " | Transporte: " << dtRep->getTransporte() << endl;
+                    }
+                    itRep->next();
+                }
+                delete itRep;
+                delete repartidoresDisp; // Liberar memoria de la colección
+
+                int idRepartidor;
+                cout << "Ingrese el ID del repartidor a asignar: ";
+                cin >> idRepartidor;
+                cin.ignore();
+                sistema->asignarRepartidorDomicilio(idRepartidor);
+                cout << "Repartidor asignado correctamente." << endl;
+
+                // Confirmar pedido
+                char confirmarPedidoOpt;
+                cout << "¿Desea confirmar el pedido? (S/N): ";
+                cin >> confirmarPedidoOpt;
+                cin.ignore();
+
+                if (confirmarPedidoOpt == 'S' || confirmarPedidoOpt == 's')
+                {
+                    DtFacturaDomicilio factura = sistema->confirmarPedido();
+                    cout << "\n--- FACTURA DE VENTA A DOMICILIO ---" << endl;
+                    cout << "Número de Venta: " << factura.getVenta().getidVenta() << endl;
+                    cout << "Subtotal: " << factura.getVenta().getTotal() + factura.getVenta().getDescuento() << endl; // Total + Descuento para obtener subtotal
+                    cout << "Descuento Aplicado: " << factura.getVenta().getDescuento() << endl;
+                    cout << "Total: " << factura.getVenta().getTotal() << endl;
+                    cout << "Repartidor: " << factura.getRepartidor().getNombre() << " (ID: " << factura.getRepartidor().getIdRepartidor() << ", Medio: " << factura.getRepartidor().getTransporte() << ")" << endl;
+                    cout << "Venta a domicilio confirmada y facturada." << endl;
+                }
+                else
+                {
+                    cout << "Pedido cancelado." << endl;
+                }
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error en Venta a Domicilio: " << e.what() << endl;
+            }
+            cin.get();
         }
+        break;
         default:
             cout << "Opción inválida." << endl;
         }
@@ -397,7 +542,8 @@ void menuMozo(ISistema *sistema)
         cout << "1. Iniciar venta en mesa" << endl;
         cout << "2. Agregar producto a una venta" << endl;
         cout << "3. Quitar producto a una venta" << endl;
-        cout << "4. mostrar ventas" << endl;
+        cout << "4. Facturacion de una venta" << endl;
+        cout << "5. Mostrar ventas de un mozo" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -406,7 +552,7 @@ void menuMozo(ISistema *sistema)
         {
         case 1:
         {
-            system("clear");
+            (void)system("clear");
             cout << "INICIAR VENTA EN UNA MESA" << endl;
             cout << "Ingrese el identificador del mozo: " << endl;
             int idMozo;
@@ -449,7 +595,7 @@ void menuMozo(ISistema *sistema)
                     cin >> numeroMesa;
                     cin.ignore();
                 }
-                system("clear");
+                (void)system("clear");
                 cout << "Desea iniciar la venta en las mesas seleccionadas? (S/N): ";
                 char confirmar;
                 cin >> confirmar;
@@ -475,7 +621,7 @@ void menuMozo(ISistema *sistema)
         }
         case 2:
         {
-            system("clear");
+            (void)system("clear");
             cout << "AGREGAR PRODUCTO A UNA VENTA" << endl;
             cout << "Ingrese el número de mesa: ";
             int idMesa;
@@ -508,7 +654,7 @@ void menuMozo(ISistema *sistema)
                     cout << "Ingrese la cantidad: ";
                     cin >> cantidad;
                     cin.ignore();
-                    
+
                     sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
                     cout << "Desea confirmar la adición del producto? (S/N): ";
                     char confirmar;
@@ -538,7 +684,7 @@ void menuMozo(ISistema *sistema)
         }
         case 3:
         {
-            system ("clear");
+            (void)system ("clear");
             cout << "QUITAR PRODUCTO DE UNA VENTA" << endl;
             cout << "Ingrese el número de una de las mesas involucradas en la venta: ";
             int idMesa;
@@ -617,7 +763,7 @@ void menuMozo(ISistema *sistema)
                         {
                             cout << "Operación cancelada." << endl;
                         }
-                        
+
                     }
                     catch (const std::exception &e)
                     {
@@ -635,39 +781,102 @@ void menuMozo(ISistema *sistema)
             }
             break;
         }
-        case 4:
+        case 4: {
+            try {
+                int nroMesa;
+                cout << "Ingrese el número de la mesa: ";
+                cin >> nroMesa;
+
+                // Finalizar la venta
+                DtVenta ventaDTO = sistema->finalizarVenta(nroMesa);
+
+                char desc;
+                cout << "¿Desea aplicar un descuento? (s/n): ";
+                cin >> desc;
+
+                if (desc== 's' || desc == 'S') {
+                    int descuento;
+                    cout << "Ingrese el porcentaje de descuento (0-100): ";
+                    cin >> descuento;
+
+                    sistema->aplicarDescuento(descuento);
+                }
+
+                int dia, mes, anio;
+                cout << "Ingrese la fecha de la factura (DD MM AAAA): ";
+                cin >> dia >> mes >> anio;
+                DtFecha fechaFactura(dia, mes, anio);
+
+                // Generar factura con fecha
+                DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
+                
+
+                // Mostrar datos
+                cout << "\n------ FACTURA ------\n";
+                cout << "Código de venta: " << facturaDTO.getCodigoVenta() << endl;
+                //cout << "Fecha: " << facturaDTO.getFecha() << endl;
+
+                cout << "\nProductos:\n";
+                IIterator* it = facturaDTO.getProductos()->getIterator();
+                while (it->hasCurrent()) {
+                    DtProducto* p = dynamic_cast<DtProducto*>(it->getCurrent());
+                    cout << "Descripción: " << p->getdescripcion() << "Precio: $" << p->getprecio() << endl;
+                    it->next();
+                }
+                delete it;
+
+                float subtotal = facturaDTO.getSubtotal();
+                float descuentoAplicado = facturaDTO.getDescuento();
+                float total = subtotal * (1 - descuentoAplicado / 100.0f);
+                float totalConIVA = total * 1.22;
+
+                cout << "\nSubtotal: $" << subtotal << endl;
+                cout << "Descuento aplicado: " << descuentoAplicado << "%" << endl;
+                cout << "Total con descuento: $" << total << endl;
+                cout << "Total con IVA (22%): $" << totalConIVA << endl;
+                cout << "----------------------\n";
+
+            } catch (const exception& e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            break;
+        }
+        
+        case 5:
         {
-        system("clear");
-    cout << "--- MOSTRAR VENTAS DE UN MOZO ---" << endl;
-    int idMozo;
-    cout << "Ingrese el ID del mozo: ";
-    cin >> idMozo;
-    cin.ignore();
+                system("clear");
+            cout << "--- MOSTRAR VENTAS DE UN MOZO ---" << endl;
+            sistema->listarMozos(); cout << endl;
+            int idMozo;
+            cout << "Ingrese el ID del mozo: ";
+            cin >> idMozo;
+            cin.ignore();
 
-    int dia1, mes1, anio1, dia2, mes2, anio2;
+            int dia1, mes1, anio1, dia2, mes2, anio2;
 
-    cout << "Ingrese la fecha de inicio (DD MM AAAA): ";
-    cin >> dia1 >> mes1 >> anio1;
-    cin.ignore();
+            cout << "Ingrese la fecha de inicio (DD MM AAAA): ";
+            cin >> dia1 >> mes1 >> anio1;
+            cin.ignore();
 
-    cout << "Ingrese la fecha de fin (DD MM AAAA): ";
-    cin >> dia2 >> mes2 >> anio2;
-    cin.ignore();
+            cout << "Ingrese la fecha de fin (DD MM AAAA): ";
+            cin >> dia2 >> mes2 >> anio2;
+            cin.ignore();
 
-    DtFecha fechaInicio(dia1, mes1, anio1);
-    DtFecha fechaFin(dia2, mes2, anio2);
+            DtFecha fechaInicio(dia1, mes1, anio1);
+            DtFecha fechaFin(dia2, mes2, anio2);
 
-    try
-    {
-        sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
-    }
-    catch (const std::exception &e)
-    {
-        cout << "Error al mostrar ventas: " << e.what() << endl;
-    }
-    break;
-}
+            try
+            {
+                sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error al mostrar ventas: " << e.what() << endl;
+            }
+            break;
+        }
         case 0:
+
             cout << "Volviendo al menú principal..." << endl;
             break;
         default:
@@ -676,14 +885,7 @@ void menuMozo(ISistema *sistema)
     } while (opcion != 0);
 }
 
-void menuRepartidor(ISistema *sistema)
-{
-    cout << "Menú Repartidor (a implementar)" << endl;
-}
-void menuCliente(ISistema *sistema)
-{
-    cout << "Menú Cliente (a implementar)" << endl;
-}
+
 void cargarDatosPrueba(ISistema *sistema)
 {
     cout << "Cargando datos de prueba..." << endl;
@@ -729,7 +931,7 @@ void cargarDatosPrueba(ISistema *sistema)
         cout << "Productos comunes cargados exitosamente. Creando menús..." << endl;
 
         // Crear Menú Ejecutivo
-        IDictionary *productosComunes = sistema->agregarMenu('X', "Menú Ejecutivo");
+        sistema->agregarMenu('X', "Menú Ejecutivo");
         sistema->seleccionarProductoComun('A', 1); // Agua Mineral
         sistema->seleccionarProductoComun('E', 1); // Ensalada César
         sistema->seleccionarProductoComun('H', 1); // Bife de Chorizo
@@ -737,7 +939,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
 
         // Crear Menú Vegetariano
-        productosComunes = sistema->agregarMenu('Y', "Menú Vegetariano");
+        sistema->agregarMenu('Y', "Menú Vegetariano");
         sistema->seleccionarProductoComun('A', 1); // Agua Mineral
         sistema->seleccionarProductoComun('E', 1); // Ensalada César
         sistema->seleccionarProductoComun('I', 1); // Pasta Carbonara
@@ -745,7 +947,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
 
         // Crear Menú Familiar
-        productosComunes = sistema->agregarMenu('Z', "Menú Familiar");
+        sistema->agregarMenu('Z', "Menú Familiar");
         sistema->seleccionarProductoComun('B', 4); // 4 Coca Colas
         sistema->seleccionarProductoComun('G', 4); // 4 Panes con Mantequilla
         sistema->seleccionarProductoComun('H', 2); // 2 Bifes de Chorizo
@@ -778,13 +980,15 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->elegirMedio(2); // Auto
         sistema->darAltaEmpleado();
 
+        
+
         cout << "Datos de prueba cargados exitosamente!" << endl;
     }
     catch (const exception &e)
     {
         cout << "Error al cargar datos de prueba: " << e.what() << endl;
     }
-}
+}  
 
 void precargarMesas(ISistema *sistema)
 {
@@ -821,50 +1025,6 @@ void precargarMesas(ISistema *sistema)
     }
 }
 
-void precargarVentas(ISistema* sistema) {
-    cout << "Precargando ventas locales..." << endl;
-
-    try {
-        // Asignamos mesas al mozo con ID 100 (Juan Pérez)
-        DtAsignacion* asignacion = sistema->ingresarIdMozo(100);
-        int* mesas = asignacion->getidMesas();
-        int mesaAsignada = mesas[0]; // Usamos una sola mesa para ejemplo
-
-        sistema->elegirMesas(mesaAsignada);
-        sistema->confirmarVentaEnMesa();
-
-        // Agregamos productos a la venta en mesa
-        sistema->seleccionarProductoAgregar('A', 2); // Agua Mineral x2
-        sistema->seleccionarProductoAgregar('H', 1); // Bife de Chorizo x1
-        sistema->confirmarAgregarProducto();
-
-        // Segunda venta en otra mesa
-        sistema->ingresarIdMozo(100);
-        sistema->elegirMesas(mesas[1]);
-        sistema->confirmarVentaEnMesa();
-
-        sistema->seleccionarProductoAgregar('B', 1); // Coca Cola x1
-        sistema->seleccionarProductoAgregar('I', 1); // Pasta Carbonara x1
-        sistema->confirmarAgregarProducto();
-
-        // Tercera venta
-        sistema->ingresarIdMozo(100);
-        sistema->elegirMesas(mesas[2]);
-        sistema->confirmarVentaEnMesa();
-
-        sistema->seleccionarProductoAgregar('D', 1); // Vino Tinto x1
-        sistema->seleccionarProductoAgregar('N', 1); // Tiramisú x1
-        sistema->confirmarAgregarProducto();
-
-        delete asignacion;
-
-        cout << "Ventas precargadas exitosamente!" << endl;
-
-    } catch (const exception& e) {
-        cout << "Error al precargar ventas: " << e.what() << endl;
-    }
-}
-
 
 int main()
 {
@@ -883,11 +1043,8 @@ int main()
             cout << "===== MENU PRINCIPAL =====" << endl;
             cout << "1. Administrador" << endl;
             cout << "2. Mozo" << endl;
-            cout << "3. Repartidor" << endl;
-            cout << "4. Cliente" << endl;
-            cout << "5. Cargar datos de prueba" << endl;
-            cout << "6. Precargar mesas" << endl;
-            cout << "6. Precargar ventas" << endl;
+            cout << "3. Cargar datos de prueba" << endl;
+            cout << "4. Precargar mesas" << endl;
             cout << "0. Salir" << endl;
             cout << "Seleccione una opción: ";
             cin >> opcion;
@@ -901,19 +1058,10 @@ int main()
                 menuMozo(sistema);
                 break;
             case 3:
-                menuRepartidor(sistema);
-                break;
-            case 4:
-                menuCliente(sistema);
-                break;
-            case 5:
                 cargarDatosPrueba(sistema);
                 break;
-            case 6:
+            case 4:
                 precargarMesas(sistema);
-                break;
-            case 7:
-                precargarVentas(sistema);
                 break;
             case 0:
                 cout << "Saliendo..." << endl;

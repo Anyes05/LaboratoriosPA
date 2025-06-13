@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "ICollection/interfaces/ICollectible.h"
+#include "./datatypes/DtRepartidor.h"
 #include "Empleado.h"
 using namespace std;
 
@@ -16,6 +17,7 @@ public:
     // Getters y setters
     string getTransporte();
     void setTransporte(string); 
+    DtRepartidor* getDtRepartidor();
 };
 
 #endif

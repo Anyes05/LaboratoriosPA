@@ -13,3 +13,7 @@ string Repartidor::getTransporte() {
 void Repartidor::setTransporte(string transporte) {
     this->medioDeTransporte = transporte;
 }
+
+DtRepartidor* Repartidor::getDtRepartidor(){
+    return new DtRepartidor(this->getIdIngresado(),this->getNombre(),this->getTransporte());
+}

@@ -2,10 +2,10 @@
 #define DTREPARTIDOR_H
 
 #include <iostream>
-#include <string>
+#include "../ICollection/interfaces/ICollectible.h"
 using namespace std;
 
-class DtRepartidor {
+class DtRepartidor : public ICollectible{
 private:
     int idRepartidor;
     string nombre;

@@ -10,7 +10,6 @@ using namespace std;
 #include "../ICollection/interfaces/ICollectible.h"
 #include "../ICollection/interfaces/ICollection.h"
 
-
 //#include "DtFecha.h"
 
 class DtFactura : public ICollectible
@@ -21,7 +20,6 @@ private:
     ICollection* productos;
     float descuento; 
     float subTotal;
- 
 
 public:
     DtFactura();
@@ -34,8 +32,6 @@ public:
     float getMontoConDescuento(); // calculado
     float getTotalConIVA();       // calculado
 };
-
-
 
 
 
