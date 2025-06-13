@@ -1526,13 +1526,13 @@ bool Sistema::ingresarCodigoProducto(char codigo)
     if (dynamic_cast<Menu *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
-        esMenu = true; 
+        return esMenu = true; 
         delete key;
     }
     else if (dynamic_cast<Comun *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
-        esMenu = false; 
+        return esMenu = false; 
         delete key;
     }
     else
@@ -1540,6 +1540,7 @@ bool Sistema::ingresarCodigoProducto(char codigo)
         delete key;
         throw runtime_error("El producto no es ni un menú ni un producto común.");
     }
+    
 }
 
 DtProducto* Sistema::infoProducto() {
