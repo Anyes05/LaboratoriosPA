@@ -32,8 +32,9 @@ Sistema::Sistema()
     productoAQuitar = nullptr;
     cantidadAQuitar = 0;
     ventaTemp = nullptr;
-      productosEnPedidoDomicilio = new OrderedDictionary();
-  idRepartidorSeleccionado = 0;
+    productosEnPedidoDomicilio = new OrderedDictionary();
+    idRepartidorSeleccionado = 0;
+    productoBaja = nullptr;
 }
 
 Sistema::~Sistema()
@@ -1306,13 +1307,47 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
 // {
 // }
 
-// ICollectible *Sistema::mostrarProductos()
-// {
-// }
+/* ----------- BAJA DE PRODUCTO ------------- */
 
-// void Sistema::seleccionarProductoBaja(char codigo)
-// {
-// }
+ ICollection *Sistema::mostrarProductos()
+ {
+    if (productos == nullptr || productos->isEmpty())
+    {
+        throw runtime_error("No hay productos disponibles.");
+    }
+
+    ICollection *listaProductos = new List();
+    IIterator *it = productos->getIterator();
+    while (it->hasCurrent())
+    {
+        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+        if (prod != nullptr)
+        {
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            listaProductos->add(dtProducto);
+        }
+        it->next();
+    }
+    delete it;
+
+    return listaProductos;
+ }
+
+ void Sistema::seleccionarProductoBaja(char codigo)
+ {
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+
+    if (!productos->member(key)) // Verifico si el diccionario de productos tiene ese codigo en alguno de ellos
+    {
+        delete key;
+        throw runtime_error("No existe un producto con el código especificado.");
+    }
+
+    productoBaja = dynamic_cast<Producto *>(productos->find(key));
+    
+    delete key;
+ }
 
 // void Sistema::darBajaProducto()
 // {

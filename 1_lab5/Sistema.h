@@ -51,6 +51,7 @@ private:
     int cantidadAQuitar;
     IDictionary *productosEnPedidoDomicilio;
     int idRepartidorSeleccionado;
+    Producto *productoBaja;
 
 public:
     ~Sistema();
@@ -110,9 +111,11 @@ public:
     // void finalizarVenta(int nroMesa);
     // void aplicarDescuento(int descuento);
     // DtFactura generarFactura(DtVenta venta);
-    // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
-    // void seleccionarProductoBaja(char codigo);
-    // void darBajaProducto();
+    
+    /*------ BAJA PRODUCTO ------*/
+    ICollection *mostrarProductos(); // devuele una coleccion de DtProducto
+    void seleccionarProductoBaja(char codigo);
+    //void darBajaProducto();
 };
 
 #endif
