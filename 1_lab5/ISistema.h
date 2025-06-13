@@ -74,11 +74,13 @@ public:
     virtual void seleccionarProductoQuitar(char codigo, int cant) = 0;
     virtual void quitarProductoVenta() = 0;
     virtual ICollection* pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
-    // virtual void finalizarVenta(int nroMesa) = 0;
-    // virtual void aplicarDescuento(int descuento) = 0;
-    // virtual DtFactura generarFactura(DtVenta venta) = 0;
-    // virtual ICollectible *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
-
+    
+    /*------ FACTURACION DE UNA VENTA ------*/
+    virtual DtVenta finalizarVenta(int nroMesa) = 0;
+    virtual void aplicarDescuento(int descuento) = 0;
+    virtual DtFactura generarFactura(DtVenta venta) = 0;
+    
+    //virtual ICollectible *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     // virtual void seleccionarProductoBaja(string codigo) = 0;
     // virtual void darBajaProducto() = 0;
 };

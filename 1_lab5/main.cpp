@@ -21,7 +21,7 @@ void menuAdministrador(ISistema *sistema)
         {
         case 1:
         {
-            system("clear");
+            (void)system("clear");
             cout << "ALTA DE PRODUCTO" << endl;
             cout << "1 - Producto Común" << endl;
             cout << "2 - Menú" << endl;
@@ -188,7 +188,7 @@ void menuAdministrador(ISistema *sistema)
             string nombre, calle, calleEsquina, telefono;
             int nroPuerta;
 
-            system("clear");
+            (void)system("clear");
 
             cout << "ALTA CLIENTE" << endl;
             cout << "Ingrese telefono: ";
@@ -334,7 +334,7 @@ void menuAdministrador(ISistema *sistema)
         }
         case 4:
         {
-            system("clear");
+            (void)system("clear");
             cout << "ASIGNAR MESAS A MOZOS" << endl;
             cout << "Ingrese la cantidad de mesas a asignar: " << endl;
             int cantMesas;
@@ -397,6 +397,7 @@ void menuMozo(ISistema *sistema)
         cout << "1. Iniciar venta en mesa" << endl;
         cout << "2. Agregar producto a una venta" << endl;
         cout << "3. Quitar producto a una venta" << endl;
+        cout << "4. Facturacion de una venta" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -405,7 +406,7 @@ void menuMozo(ISistema *sistema)
         {
         case 1:
         {
-            system("clear");
+            (void)system("clear");
             cout << "INICIAR VENTA EN UNA MESA" << endl;
             cout << "Ingrese el identificador del mozo: " << endl;
             int idMozo;
@@ -448,7 +449,7 @@ void menuMozo(ISistema *sistema)
                     cin >> numeroMesa;
                     cin.ignore();
                 }
-                system("clear");
+                (void)system("clear");
                 cout << "Desea iniciar la venta en las mesas seleccionadas? (S/N): ";
                 char confirmar;
                 cin >> confirmar;
@@ -474,7 +475,7 @@ void menuMozo(ISistema *sistema)
         }
         case 2:
         {
-            system("clear");
+            (void)system("clear");
             cout << "AGREGAR PRODUCTO A UNA VENTA" << endl;
             cout << "Ingrese el número de mesa: ";
             int idMesa;
@@ -507,7 +508,7 @@ void menuMozo(ISistema *sistema)
                     cout << "Ingrese la cantidad: ";
                     cin >> cantidad;
                     cin.ignore();
-                    
+
                     sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
                     cout << "Desea confirmar la adición del producto? (S/N): ";
                     char confirmar;
@@ -537,7 +538,7 @@ void menuMozo(ISistema *sistema)
         }
         case 3:
         {
-            system ("clear");
+            (void)system ("clear");
             cout << "QUITAR PRODUCTO DE UNA VENTA" << endl;
             cout << "Ingrese el número de una de las mesas involucradas en la venta: ";
             int idMesa;
@@ -616,7 +617,7 @@ void menuMozo(ISistema *sistema)
                         {
                             cout << "Operación cancelada." << endl;
                         }
-                        
+
                     }
                     catch (const std::exception &e)
                     {
@@ -634,7 +635,61 @@ void menuMozo(ISistema *sistema)
             }
             break;
         }
-        case 4:
+        case 4: {
+            try {
+                int nroMesa;
+                cout << "Ingrese el número de la mesa: ";
+                cin >> nroMesa;
+
+                // Finalizar la venta
+                DtVenta ventaDTO = sistema->finalizarVenta(nroMesa);
+
+                char desc;
+                cout << "¿Desea aplicar un descuento? (s/n): ";
+                cin >> desc;
+
+                if (desc== 's' || desc == 'S') {
+                    int descuento;
+                    cout << "Ingrese el porcentaje de descuento (0-100): ";
+                    cin >> descuento;
+
+                    sistema->aplicarDescuento(descuento);
+                }
+
+                // Generar factura
+                DtFactura facturaDTO = sistema->generarFactura(ventaDTO);
+
+                // Mostrar datos
+                cout << "\n------ FACTURA ------\n";
+                cout << "Código de venta: " << facturaDTO.getCodigoVenta() << endl;
+                //cout << "Fecha: " << facturaDTO.getFecha() << endl;
+
+                cout << "\nProductos:\n";
+                IIterator* it = facturaDTO.getProductos()->getIterator();
+                while (it->hasCurrent()) {
+                    DtProducto* p = dynamic_cast<DtProducto*>(it->getCurrent());
+                    cout << "Descripción: " << p->getdescripcion() << "Precio: $" << p->getprecio() << endl;
+                    it->next();
+                }
+                delete it;
+
+                float subtotal = facturaDTO.getSubtotal();
+                float descuentoAplicado = facturaDTO.getDescuento();
+                float total = subtotal * (1 - descuentoAplicado / 100.0f);
+                float totalConIVA = total * 1.22;
+
+                cout << "\nSubtotal: $" << subtotal << endl;
+                cout << "Descuento aplicado: " << descuentoAplicado << "%" << endl;
+                cout << "Total con descuento: $" << total << endl;
+                cout << "Total con IVA (22%): $" << totalConIVA << endl;
+                cout << "----------------------\n";
+
+            } catch (const exception& e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            break;
+        }
+        case 5:
             cout << "Volviendo al menú principal..." << endl;
             break;
         default:
@@ -696,7 +751,7 @@ void cargarDatosPrueba(ISistema *sistema)
         cout << "Productos comunes cargados exitosamente. Creando menús..." << endl;
 
         // Crear Menú Ejecutivo
-        IDictionary *productosComunes = sistema->agregarMenu('X', "Menú Ejecutivo");
+        sistema->agregarMenu('X', "Menú Ejecutivo");
         sistema->seleccionarProductoComun('A', 1); // Agua Mineral
         sistema->seleccionarProductoComun('E', 1); // Ensalada César
         sistema->seleccionarProductoComun('H', 1); // Bife de Chorizo
@@ -704,7 +759,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
 
         // Crear Menú Vegetariano
-        productosComunes = sistema->agregarMenu('Y', "Menú Vegetariano");
+        sistema->agregarMenu('Y', "Menú Vegetariano");
         sistema->seleccionarProductoComun('A', 1); // Agua Mineral
         sistema->seleccionarProductoComun('E', 1); // Ensalada César
         sistema->seleccionarProductoComun('I', 1); // Pasta Carbonara
@@ -712,7 +767,7 @@ void cargarDatosPrueba(ISistema *sistema)
         sistema->darAltaProducto();
 
         // Crear Menú Familiar
-        productosComunes = sistema->agregarMenu('Z', "Menú Familiar");
+        sistema->agregarMenu('Z', "Menú Familiar");
         sistema->seleccionarProductoComun('B', 4); // 4 Coca Colas
         sistema->seleccionarProductoComun('G', 4); // 4 Panes con Mantequilla
         sistema->seleccionarProductoComun('H', 2); // 2 Bifes de Chorizo
