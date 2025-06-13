@@ -57,7 +57,7 @@ public:
 
     /*------ VENTA A DOMICILIO ------*/
     virtual bool ventaDomicilio(string telefono) = 0; // Returns true if client exists, false otherwise
-    virtual IDictionary *listarProductos() = 0;       // Returns a collection of DtProducto
+    virtual ICollection *listarProductos() = 0;       // Returns a collection of DtProducto
     virtual void agregarProductoPedido(char codigo, int cantidad) = 0;
     virtual ICollection *listarRepartidores() = 0; // Returns a collection of DtRepartidor
     virtual void asignarRepartidorDomicilio(int idRepartidor) = 0;

@@ -90,7 +90,7 @@ public:
 
     /*------ VENTA A DOMICILIO ------*/
     bool ventaDomicilio(string telefono); // Retorna true si el cliente existe
-    IDictionary *listarProductos();       // retorna una coleccion de DtProducto
+    ICollection *listarProductos();       // retorna una coleccion de DtProducto
     void agregarProductoPedido(char codigo, int cantidad);
     ICollection *listarRepartidores(); // Retruna una coleccion de Dtrepartidor
     void asignarRepartidorDomicilio(int idRepartidor);

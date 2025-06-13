@@ -1,12 +1,12 @@
 #include "Venta.h"
-#include <iostream>
+
 using namespace std;
 
 Venta::Venta(int numero, float subTotal, float descuento) {
     this->numero = numero;
     this->subTotal = subTotal;
     this->descuento = descuento;
-    this->total = 0;
+    this->total = subTotal - descuento; // Calcular el total correctamente
     this->factura = nullptr; 
     productos = new OrderedDictionary();
     pedido = new List(); // Inicializar la colección de pedidos

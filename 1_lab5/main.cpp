@@ -429,10 +429,10 @@ void menuAdministrador(ISistema *sistema)
                 while (agregarMasProductos == 'S' || agregarMasProductos == 's')
                 {
                     cout << "\n--- Productos Disponibles ---" << endl;
-                    IDictionary *productosDisp = sistema->listarProductos();
+                    ICollection *productosDisp = sistema->listarProductos();
                     if (productosDisp->isEmpty())
                     {
-                        cout << "No hay productos disponibles. Por favor, cargue datos de prueba (Opción 5 en el menú principal)." << endl;
+                        cout << "No hay productos disponibles. Por favor, cargue datos de prueba (Opción 3 en el menú principal)." << endl;
                         delete productosDisp;
                         // Salir del bucle de agregar productos si no hay ninguno
                         break;
@@ -441,19 +441,15 @@ void menuAdministrador(ISistema *sistema)
                     IIterator *itProd = productosDisp->getIterator();
                     while (itProd->hasCurrent())
                     {
-                        OrderedDictionaryEntry *entry = dynamic_cast<OrderedDictionaryEntry *>(itProd->getCurrent());
-                        if (entry != nullptr)
+                        DtProducto *dtProd = dynamic_cast<DtProducto *>(itProd->getCurrent());
+                        if (dtProd != nullptr)
                         {
-                            DtProducto *dtProd = dynamic_cast<DtProducto *>(entry->getVal());
-                            if (dtProd != nullptr)
-                            {
-                                cout << "Código: " << dtProd->getCodigo() << " | Descripción: " << dtProd->getdescripcion() << " | Precio: " << dtProd->getprecio() << endl;
-                            }
+                            cout << "Código: " << dtProd->getCodigo() << " | Descripción: " << dtProd->getdescripcion() << " | Precio: " << dtProd->getprecio() << endl;
                         }
                         itProd->next();
                     }
                     delete itProd;
-                    delete productosDisp; // Liberar memoria del diccionario
+                    delete productosDisp; // Liberar memoria de la colección
 
                     char codigoProducto;
                     int cantidadProducto;
@@ -792,14 +788,7 @@ void menuMozo(ISistema *sistema)
     } while (opcion != 0);
 }
 
-void menuRepartidor(ISistema *sistema)
-{
-    cout << "Menú Repartidor (a implementar)" << endl;
-}
-void menuCliente(ISistema *sistema)
-{
-    cout << "Menú Cliente (a implementar)" << endl;
-}
+
 void cargarDatosPrueba(ISistema *sistema)
 {
     cout << "Cargando datos de prueba..." << endl;
@@ -954,10 +943,8 @@ int main()
             cout << "===== MENU PRINCIPAL =====" << endl;
             cout << "1. Administrador" << endl;
             cout << "2. Mozo" << endl;
-            cout << "3. Repartidor" << endl;
-            cout << "4. Cliente" << endl;
-            cout << "5. Cargar datos de prueba" << endl;
-            cout << "6. Precargar mesas" << endl;
+            cout << "3. Cargar datos de prueba" << endl;
+            cout << "4. Precargar mesas" << endl;
             cout << "0. Salir" << endl;
             cout << "Seleccione una opción: ";
             cin >> opcion;
@@ -971,18 +958,12 @@ int main()
                 menuMozo(sistema);
                 break;
             case 3:
-                menuRepartidor(sistema);
-                break;
-            case 4:
-                menuCliente(sistema);
-                break;
-            case 5:
                 cargarDatosPrueba(sistema);
                 break;
-            case 6:
+            case 4:
                 precargarMesas(sistema);
                 break;
-            case 7:
+            case 0:
                 cout << "Saliendo..." << endl;
                 break;
             default:
