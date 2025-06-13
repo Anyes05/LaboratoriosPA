@@ -807,7 +807,7 @@ void menuMozo(ISistema *sistema)
                 cin >> dia >> mes >> anio;
                 DtFecha fechaFactura(dia, mes, anio);
 
-                // Generar factura con fecha
+                // factura con fecha
                 DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
                 
 

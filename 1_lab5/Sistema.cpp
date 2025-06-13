@@ -1363,10 +1363,8 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
                         }
                         delete itPedidos;
 
-                        // Calcular monto con descuento y total con IVA, si lo haces en DtFactura
-                        // podés llamar esos métodos o calcular acá, según tu implementación.
                         float montoConDescuento = subtotal * (1 - descuento / 100);
-                        float totalConIVA = montoConDescuento * 1.21f; // ejemplo IVA 21%
+                        float totalConIVA = montoConDescuento * 1.22f; 
 
                         cout << "Subtotal: $" << subtotal << "\n";
                         cout << "Descuento: " << descuento << "%\n";
