@@ -8,6 +8,7 @@ Producto::Producto(char codigo, string descripcion, float precio)
     this->codigo = codigo;
     this->descripcion = descripcion;
     this->precio = precio;
+    this->cantidadVendida = 0; // Inicializar cantidadVendida a 0
 }
 
 //destructor
@@ -21,6 +22,10 @@ string Producto::getDescripcion(){
 }
 float Producto::getPrecio(){
     return this->precio;
+}
+
+int Producto::getCantidadVendida() {
+    return this->cantidadVendida;
 }
 
 bool Producto::esMenu(char codigo) {
@@ -37,6 +42,10 @@ void Producto::setDescripcion(string desc){
 
 void Producto::setPrecio(float pre){
     this->precio=pre;
+}
+
+void Producto::setCantidadVendida(int cant){
+    this->cantidadVendida=cant;
 }
 
 bool Producto::noExiste(char cod){

@@ -1155,18 +1155,20 @@ void Sistema::confirmarAgregarProducto()
         }
         else
         {
-            delete key; // Solo aquí, porque no la agregaste
+            delete key; 
             throw runtime_error("El producto no se encontró en el pedido existente.");
         }
-        delete key; // Solo aquí, porque no la agregaste
+        delete key; 
     }
     else
     {
-        ventaTemp->getProductos()->add(key, pedidoTemp); // NO borrar key aquí
-        // El diccionario se encarga de liberar la clave cuando remueve el elemento
+        ventaTemp->getProductos()->add(key, pedidoTemp);
     }
     ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio()));
+    // sumar cantidad vendida del producto
+    pedidoTemp->getProducto()->setCantidadVendida(pedidoTemp->getProducto()->getCantidadVendida() + pedidoTemp->getCantProductos());
     pedidoTemp = nullptr;
+    delete key; // Liberar memoria del key después de usarlo
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
@@ -1299,6 +1301,7 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
  }
 
 
+
  /*------ VENTAS DE UN MOZO ------*/
 
 
@@ -1377,7 +1380,6 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
         it->next();
     }
 }
-
 
 /*------ FACTURACION DE UNA VENTA ------*/
 
@@ -1550,8 +1552,8 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
     return listaProductos;
  }
 
- void Sistema::seleccionarProductoBaja(char codigo)
- {
+void Sistema::seleccionarProductoBaja(char codigo)
+{
     char codStr[2] = {codigo, '\0'};
     IKey *key = new String(codStr);
 
@@ -1564,9 +1566,116 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
     productoBaja = dynamic_cast<Producto *>(productos->find(key));
     
     delete key;
- }
+}
 
 // void Sistema::darBajaProducto()
 // {
 // }
+
+/* ----------- INFORMACION DE UN PRODUCTO ------------- */
+
+ICollection *Sistema::obtenerProductos() {
+    IIterator *it = productos->getIterator();
+    ICollection *listaProductos = new List();
+    while (it->hasCurrent()) {
+        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+        if (prod != nullptr) {
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            listaProductos->add(dtProducto);
+        }
+        it->next();
+    }
+delete it;
+
+    if (listaProductos->isEmpty()) {
+        delete listaProductos;
+        throw runtime_error("No hay productos disponibles.");
+    }
+    
+    return listaProductos; // Retorna una colección de DtProducto
+}
+
+bool Sistema::ingresarCodigoProducto(char codigo)
+{
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+
+    if (!productos->member(key)) // Verifico si el diccionario de productos tiene ese codigo en alguno de ellos
+    {
+        delete key;
+        return false; // Producto no encontrado
+    }
+    if (dynamic_cast<Menu *>(productos->find(key)) != nullptr)
+    {
+        codigoProductoInformar = codigo; // Guardar el código del producto para informar
+        return esMenu = true; 
+        delete key;
+    }
+    else if (dynamic_cast<Comun *>(productos->find(key)) != nullptr)
+    {
+        codigoProductoInformar = codigo; // Guardar el código del producto para informar
+        return esMenu = false; 
+        delete key;
+    }
+    else
+    {
+        delete key;
+        throw runtime_error("El producto no es ni un menú ni un producto común.");
+    }
+    
+}
+
+DtProducto* Sistema::infoProducto() {
+
+    if (codigoProductoInformar == '\0') {
+        throw runtime_error("No se ha ingresado un código de producto válido.");
+    }
+
+    char codStr[2] = {codigoProductoInformar, '\0'};
+    IKey *key = new String(codStr);
+    Producto *producto = dynamic_cast<Producto *>(productos->find(key));
+    delete key;
+    if (producto == nullptr) {
+        // Si no se encuentra el producto, lanzamos una excepción
+        throw runtime_error("No existe un producto con el código especificado.");
+    }
+    
+    return producto->getDT(); // Retorna un puntero a DtProducto del producto encontrado
+    
+}
+
+ICollection * Sistema::infoProductosIncluidosMenu() {
+
+    if (codigoProductoInformar == '\0' || !esMenu) {
+        throw runtime_error("No se ha ingresado un código de menú válido.");
+    }
+
+    char codStr[2] = {codigoProductoInformar, '\0'};
+    IKey *key = new String(codStr);
+    Menu *menu = dynamic_cast<Menu *>(productos->find(key));
+    delete key;
+
+    if (menu == nullptr) {
+        throw runtime_error("No existe un menú con el código especificado.");
+    }
+
+    ICollection *MenuYSusProductos = new List();
+    MenuYSusProductos->add(menu->getDT()); // Agregar el DtProducto del menú
+    IIterator *it = menu->getProductosComunes()->getIterator(); // Obtener los productos comunes del menú
+    while (it->hasCurrent()) {
+        Comun *productoComun = dynamic_cast<Comun *>(it->getCurrent());
+        if (productoComun != nullptr) {
+            DtProducto *dtProducto = productoComun->getDT(); // Obtener el DtProducto del producto común
+            MenuYSusProductos->add(dtProducto); // Agregarlo a la colección
+        }
+        it->next();
+    }
+    delete it;
+    if (MenuYSusProductos->isEmpty()) {
+        delete MenuYSusProductos;
+        throw runtime_error("El menú no contiene productos comunes.");
+    }
+    return MenuYSusProductos; // Retorna una colección de DtProducto que incluye el menú y sus productos comunes
+
+}
 

@@ -37,7 +37,10 @@ private:
     int idMozoSeleccionado;              // ID del mozo seleccionado para iniciar una venta
     Venta *ventaTemp;                    // Venta seleccionada temporalmente para agregar productos
     Pedido *pedidoTemp;                  // Pedido seleccionado temporalmente para agregar productos
-    bool estaEnPedido;                   // Indica si el producto está en el pedido
+    bool estaEnPedido;                   // Indica si el producto seleccionado está en un pedido
+    bool esMenu;                         // Indica si el producto seleccionado es un menú
+    char codigoProductoInformar;         // Código del producto seleccionado para informar
+    int cantidadVentas;
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
@@ -125,11 +128,19 @@ public:
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
+
+    /*------ INFORMACION DE UN PRODUCTO ------*/
+    ICollection* obtenerProductos();
+    bool ingresarCodigoProducto(char codigo);
+    DtProducto* infoProducto();
+    ICollection* infoProductosIncluidosMenu();  
     
     /*------ BAJA PRODUCTO ------*/
     ICollection *mostrarProductos(); // devuele una coleccion de DtProducto
     void seleccionarProductoBaja(char codigo);
     //void darBajaProducto();
+    
+
 };
 
 #endif

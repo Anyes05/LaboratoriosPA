@@ -12,6 +12,7 @@ private:
     char codigo;
     string descripcion;
     float precio;
+    int cantidadVendida;
 public:
     DtProducto(char, string, float);
     virtual ~DtProducto();
@@ -19,6 +20,7 @@ public:
     char getCodigo();
     string getdescripcion();
     float getprecio();
+    int getCantidadVendida();
 };
 
 #endif

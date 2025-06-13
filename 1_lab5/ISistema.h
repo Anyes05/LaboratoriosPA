@@ -84,7 +84,13 @@ public:
     virtual DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura) = 0;
 
     virtual ICollection *pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
-    
+
+    /*------ INFORMACION DE UN PRODUCTO ------*/
+    virtual ICollection* obtenerProductos() = 0;
+    virtual bool ingresarCodigoProducto(char codigo) = 0;
+    virtual DtProducto* infoProducto() = 0;
+    virtual ICollection* infoProductosIncluidosMenu() = 0;
+
     /*------ BAJA PRODUCTO ------*/
     virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     virtual void seleccionarProductoBaja(char codigo) = 0;

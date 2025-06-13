@@ -5,12 +5,14 @@ DtProducto::DtProducto(char codigo, string descripcion, float precio)
     this->codigo = codigo;
     this->descripcion = descripcion;
     this->precio = precio;
+    this->cantidadVendida = 0; // Inicializar cantidadVendida a 0
 }
 
 DtProducto::DtProducto() {
     this->codigo = '\0';
     this->descripcion = "";
     this->precio = 0.0;
+    this->cantidadVendida = 0; // Inicializar cantidadVendida a 0
 }
 
 DtProducto::~DtProducto(){}
@@ -26,3 +28,8 @@ string DtProducto::getdescripcion(){
 float DtProducto::getprecio(){
     return this->precio;
 }
+
+int DtProducto::getCantidadVendida() {
+    return this->cantidadVendida;
+}
+
