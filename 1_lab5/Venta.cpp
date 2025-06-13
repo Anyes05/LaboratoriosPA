@@ -69,9 +69,8 @@ bool Venta::getActiva() {
 void Venta::setActiva(bool activa) {
     if (activa) {
         factura = nullptr; // Si se activa, no hay factura
-    } else {
-        activa = false; 
     }
+    // Si se desactiva, la factura ya debe estar asignada desde generarFactura
 }
 
 void Venta::agregarPedido(Pedido* pedido) {

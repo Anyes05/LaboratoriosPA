@@ -32,6 +32,8 @@ Sistema::Sistema()
     productoAQuitar = nullptr;
     cantidadAQuitar = 0;
     ventaTemp = nullptr;
+    mesaTemp = nullptr;
+    ventaTemporal = nullptr;
     productosEnPedidoDomicilio = new OrderedDictionary();
     idRepartidorSeleccionado = 0;
     productoBaja = nullptr;
@@ -1295,17 +1297,152 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
 
  }
 
-// void Sistema::finalizarVenta(int nroMesa)
-// {
-// }
 
-// void Sistema::aplicarDescuento(int descuento)
-// {
-// }
 
-// DtFactura Sistema::generarFactura(DtVenta venta)
-// {
-// }
+/*------ FACTURACION DE UNA VENTA ------*/
+
+DtVenta Sistema::finalizarVenta(int nroMesa) {
+    //buscar mesa
+    IKey* key = new Integer(nroMesa);
+    Mesa* mesa = dynamic_cast<Mesa*>(mesas->find(key));
+    delete key;
+
+    if (!mesa)
+        throw invalid_argument("Mesa no encontrada.");
+    
+    Local* venta = mesa->getLocal();
+    if (!venta)
+        throw invalid_argument("No hay venta activa en la mesa.");
+
+    if (!venta->getActiva())
+        throw invalid_argument("La venta ya fue finalizada.");
+
+    ventaTemporal = venta;
+    venta->setActiva(false);
+
+    //calcular subtotal
+    float subtotal = 0.0f;
+    IDictionary* pedidos = venta->getProductos();
+    IIterator* it = pedidos->getIterator();
+
+    while (it->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedido) {
+            Producto* producto = pedido->getProducto();
+            subtotal += producto->getPrecio() * pedido->getCantProductos();
+        }
+        it->next();
+    }
+    delete it;
+
+    venta->setSubTotal(subtotal);
+    venta->setTotal(subtotal);  //total sin descuento aún
+
+    //retornar DTO con datos actualizados
+    int numeroVenta = venta->getNumero();
+    float descuento = venta->getDescuento();
+    bool facturada = (venta->getFactura() != nullptr); // Facturada si ya tiene factura asociada
+
+    DtVenta ventaDTO(numeroVenta, descuento, facturada, subtotal);
+    return ventaDTO;
+}
+
+void Sistema::aplicarDescuento(int descuento) {
+    if (!ventaTemporal)
+        throw invalid_argument("No hay venta seleccionada para aplicar descuento.");
+
+    if (descuento < 0 || descuento > 100)
+        throw invalid_argument("El descuento debe estar entre 0 y 100.");
+
+    //validar que no haya menú en la venta para aplicar desc
+    IDictionary* pedidos = ventaTemporal->getProductos();
+    IIterator* it = pedidos->getIterator();
+
+    bool hayMenu = false;
+    while (it->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedido) {
+            Producto* p = pedido->getProducto();
+            if (dynamic_cast<Menu*>(p) != nullptr) {
+                hayMenu = true;
+                break;
+            }
+        }
+        it->next();
+    }
+    delete it;
+
+    if (hayMenu) {
+        cout << "No se puede aplicar descuento porque hay un menú en la venta. Se continuará sin descuento." << endl;
+        ventaTemporal->setDescuento(0);
+        ventaTemporal->setTotal(ventaTemporal->getSubTotal());
+        return;
+    }
+
+    float subtotal = ventaTemporal->getSubTotal();
+    float totalConDescuento = subtotal * (1 - descuento / 100.0f);
+
+    ventaTemporal->setDescuento(descuento);
+    ventaTemporal->setTotal(totalConDescuento);
+}
+
+DtFactura Sistema::generarFactura(DtVenta ventaDTO) {
+    if (!ventaTemporal)
+        throw invalid_argument("No hay venta seleccionada para generar factura.");
+
+    if (ventaTemporal->getFactura() != nullptr)
+        throw invalid_argument("La venta ya fue facturada.");
+
+    // fecha manual pa probar
+    DtFecha fechaActual(12, 6, 2025);
+
+    //guardo los productos en coleccion
+    ICollection* colDtProductos = new List();
+
+    IDictionary* pedidos = ventaTemporal->getProductos();
+    IIterator* it = pedidos->getIterator();
+
+    while (it->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedido) {
+            Producto* p = pedido->getProducto();
+            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio());
+            colDtProductos->add(dtProd);
+        }
+        it->next();
+    }
+    delete it;
+
+    float subtotal = ventaTemporal->getSubTotal();
+    float descuento = ventaTemporal->getDescuento();
+
+    DtFactura facturaDTO(ventaTemporal->getNumero(), fechaActual, colDtProductos, descuento, subtotal);
+
+    Factura* factura = new Factura(to_string(ventaTemporal->getNumero()), fechaActual, DtHora(0, 0));
+    factura->setVenta(ventaDTO);
+    //factura->setProducto(productos);
+    ventaTemporal->setFactura(factura);
+
+    // Liberar las mesas de la venta finalizada
+    Local* ventaLocal = dynamic_cast<Local*>(ventaTemporal);
+    if (ventaLocal) {
+        ICollection* mesas = ventaLocal->getMesas();
+        IIterator* itMesas = mesas->getIterator();
+        while (itMesas->hasCurrent()) {
+            Mesa* mesa = dynamic_cast<Mesa*>(itMesas->getCurrent());
+            if (mesa) {
+                mesa->setLocal(nullptr); // Liberar la mesa
+            }
+            itMesas->next();
+        }
+        delete itMesas;
+    }
+
+    ventaTemporal = nullptr;
+
+    return facturaDTO;
+}
+
 
 /* ----------- BAJA DE PRODUCTO ------------- */
 

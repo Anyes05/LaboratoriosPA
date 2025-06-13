@@ -7,32 +7,31 @@ using namespace std;
 
 #include "DtFecha.h"
 #include "DtProducto.h"
+#include "../ICollection/interfaces/ICollectible.h"
+#include "../ICollection/interfaces/ICollection.h"
 
 //#include "DtFecha.h"
 
-class DtFactura
+class DtFactura : public ICollectible
 {
 private:
     int codigoVenta;
     DtFecha fecha;
-    DtProducto producto;
+    ICollection* productos;
     float descuento; 
     float subTotal;
- 
 
 public:
     DtFactura();
-    DtFactura(int codigoVenta, DtFecha fecha, DtProducto producto, float descuento, float subtotal);
+    DtFactura(int codigoVenta, DtFecha fecha, ICollection* productos, float descuento, float subtotal);
     int getCodigoVenta();
     DtFecha getFecha();
-    DtProducto getProducto();
+    ICollection* getProductos();
     float getDescuento();
     float getSubtotal();
     float getMontoConDescuento(); // calculado
     float getTotalConIVA();       // calculado
 };
-
-
 
 
 

@@ -49,6 +49,8 @@ private:
     Mesa *mesaSeleccionada;
     Producto *productoAQuitar;
     int cantidadAQuitar;
+    Mesa *mesaTemp;
+    Local * ventaTemporal;
     IDictionary *productosEnPedidoDomicilio;
     int idRepartidorSeleccionado;
     Producto *productoBaja;
@@ -108,9 +110,14 @@ public:
     void seleccionarProductoQuitar(char codigo, int cant);
     void quitarProductoVenta();
     ICollection *pedidosVentaActual(); // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
-    // void finalizarVenta(int nroMesa);
-    // void aplicarDescuento(int descuento);
-    // DtFactura generarFactura(DtVenta venta);
+    
+    /*------ FACTURACION DE UNA VENTA ------*/
+    DtVenta finalizarVenta(int nroMesa);
+    void aplicarDescuento(int descuento);
+    DtFactura generarFactura(DtVenta venta);
+    // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
+    // void seleccionarProductoBaja(char codigo);
+    // void darBajaProducto();
     
     /*------ BAJA PRODUCTO ------*/
     ICollection *mostrarProductos(); // devuele una coleccion de DtProducto
