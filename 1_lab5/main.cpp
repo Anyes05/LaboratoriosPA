@@ -13,6 +13,7 @@ void menuAdministrador(ISistema *sistema)
         cout << "2. Alta Cliente" << endl;
         cout << "3. Alta Empleado" << endl;
         cout << "4. Asignar mesas a mozos" << endl;
+        cout << "5. Iniciar Venta a Domicilio" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -379,9 +380,153 @@ void menuAdministrador(ISistema *sistema)
         }
         case 5:
         {
-            cout << "Volviendo al menú principal..." << endl;
-            break;
+            system("clear");
+            cout << "--- INICIAR VENTA A DOMICILIO ---" << endl;
+            string telefonoCliente;
+            cout << "Ingrese el teléfono del cliente: ";
+            cin >> telefonoCliente;
+            cin.ignore();
+
+            try
+            {
+                if (!sistema->ventaDomicilio(telefonoCliente))
+                {
+                    cout << "El cliente con teléfono " << telefonoCliente << " no está registrado." << endl;
+                    cout << "¿Desea dar de alta un nuevo cliente? (S/N): ";
+                    char altaClienteOpt;
+                    cin >> altaClienteOpt;
+                    cin.ignore();
+
+                    if (altaClienteOpt == 'S' || altaClienteOpt == 's')
+                    {
+                        string nombre, calle, calleEsquina;
+                        int nroPuerta;
+                        cout << "\n--- ALTA NUEVO CLIENTE ---" << endl;
+                        cout << "Ingrese nombre: ";
+                        getline(cin, nombre);
+                        cout << "Ingrese calle: ";
+                        getline(cin, calle);
+                        cout << "Ingrese calleEsquina: ";
+                        getline(cin, calleEsquina);
+                        cout << "Ingrese nro de puerta: ";
+                        cin >> nroPuerta;
+                        cin.ignore();
+
+                        DtDireccion direccion(calle, nroPuerta, calleEsquina);
+                        sistema->altaCliente(telefonoCliente, nombre, direccion);
+                        sistema->confirmarAlta();
+                        cout << "Cliente dado de alta correctamente." << endl;
+                    }
+                    else
+                    {
+                        cout << "Operación de venta a domicilio cancelada." << endl;
+                        break;
+                    }
+                }
+
+                // Listar productos y agregar al pedido
+                char agregarMasProductos = 's';
+                while (agregarMasProductos == 'S' || agregarMasProductos == 's')
+                {
+                    cout << "\n--- Productos Disponibles ---" << endl;
+                    ICollection *productosDisp = sistema->listarProductos();
+                    if (productosDisp->isEmpty())
+                    {
+                        cout << "No hay productos disponibles. Por favor, cargue datos de prueba (Opción 3 en el menú principal)." << endl;
+                        delete productosDisp;
+                        // Salir del bucle de agregar productos si no hay ninguno
+                        break;
+                    }
+
+                    IIterator *itProd = productosDisp->getIterator();
+                    while (itProd->hasCurrent())
+                    {
+                        DtProducto *dtProd = dynamic_cast<DtProducto *>(itProd->getCurrent());
+                        if (dtProd != nullptr)
+                        {
+                            cout << "Código: " << dtProd->getCodigo() << " | Descripción: " << dtProd->getdescripcion() << " | Precio: " << dtProd->getprecio() << endl;
+                        }
+                        itProd->next();
+                    }
+                    delete itProd;
+                    delete productosDisp; // Liberar memoria de la colección
+
+                    char codigoProducto;
+                    int cantidadProducto;
+                    cout << "Ingrese el código del producto a agregar: ";
+                    cin >> codigoProducto;
+                    cout << "Ingrese la cantidad: ";
+                    cin >> cantidadProducto;
+                    cin.ignore();
+
+                    sistema->agregarProductoPedido(codigoProducto, cantidadProducto);
+                    cout << "Producto agregado al pedido." << endl;
+
+                    cout << "¿Desea agregar otro producto al pedido? (S/N): ";
+                    cin >> agregarMasProductos;
+                    cin.ignore();
+                }
+
+                // Listar repartidores y asignar uno
+                cout << "\n--- Repartidores Disponibles ---" << endl;
+                ICollection *repartidoresDisp = sistema->listarRepartidores();
+                if (repartidoresDisp->isEmpty())
+                {
+                    cout << "No hay repartidores disponibles." << endl;
+                    delete repartidoresDisp;
+                    cout << "Operación de venta a domicilio cancelada." << endl;
+                    break;
+                }
+
+                IIterator *itRep = repartidoresDisp->getIterator();
+                while (itRep->hasCurrent())
+                {
+                    DtRepartidor *dtRep = dynamic_cast<DtRepartidor *>(itRep->getCurrent());
+                    if (dtRep != nullptr)
+                    {
+                        cout << "ID: " << dtRep->getIdRepartidor() << " | Nombre: " << dtRep->getNombre() << " | Transporte: " << dtRep->getTransporte() << endl;
+                    }
+                    itRep->next();
+                }
+                delete itRep;
+                delete repartidoresDisp; // Liberar memoria de la colección
+
+                int idRepartidor;
+                cout << "Ingrese el ID del repartidor a asignar: ";
+                cin >> idRepartidor;
+                cin.ignore();
+                sistema->asignarRepartidorDomicilio(idRepartidor);
+                cout << "Repartidor asignado correctamente." << endl;
+
+                // Confirmar pedido
+                char confirmarPedidoOpt;
+                cout << "¿Desea confirmar el pedido? (S/N): ";
+                cin >> confirmarPedidoOpt;
+                cin.ignore();
+
+                if (confirmarPedidoOpt == 'S' || confirmarPedidoOpt == 's')
+                {
+                    DtFacturaDomicilio factura = sistema->confirmarPedido();
+                    cout << "\n--- FACTURA DE VENTA A DOMICILIO ---" << endl;
+                    cout << "Número de Venta: " << factura.getVenta().getidVenta() << endl;
+                    cout << "Subtotal: " << factura.getVenta().getTotal() + factura.getVenta().getDescuento() << endl; // Total + Descuento para obtener subtotal
+                    cout << "Descuento Aplicado: " << factura.getVenta().getDescuento() << endl;
+                    cout << "Total: " << factura.getVenta().getTotal() << endl;
+                    cout << "Repartidor: " << factura.getRepartidor().getNombre() << " (ID: " << factura.getRepartidor().getIdRepartidor() << ", Medio: " << factura.getRepartidor().getTransporte() << ")" << endl;
+                    cout << "Venta a domicilio confirmada y facturada." << endl;
+                }
+                else
+                {
+                    cout << "Pedido cancelado." << endl;
+                }
+            }
+            catch (const std::exception &e)
+            {
+                cout << "Error en Venta a Domicilio: " << e.what() << endl;
+            }
+            cin.get();
         }
+        break;
         default:
             cout << "Opción inválida." << endl;
         }
@@ -698,14 +843,7 @@ void menuMozo(ISistema *sistema)
     } while (opcion != 0);
 }
 
-void menuRepartidor(ISistema *sistema)
-{
-    cout << "Menú Repartidor (a implementar)" << endl;
-}
-void menuCliente(ISistema *sistema)
-{
-    cout << "Menú Cliente (a implementar)" << endl;
-}
+
 void cargarDatosPrueba(ISistema *sistema)
 {
     cout << "Cargando datos de prueba..." << endl;
@@ -860,10 +998,8 @@ int main()
             cout << "===== MENU PRINCIPAL =====" << endl;
             cout << "1. Administrador" << endl;
             cout << "2. Mozo" << endl;
-            cout << "3. Repartidor" << endl;
-            cout << "4. Cliente" << endl;
-            cout << "5. Cargar datos de prueba" << endl;
-            cout << "6. Precargar mesas" << endl;
+            cout << "3. Cargar datos de prueba" << endl;
+            cout << "4. Precargar mesas" << endl;
             cout << "0. Salir" << endl;
             cout << "Seleccione una opción: ";
             cin >> opcion;
@@ -877,18 +1013,12 @@ int main()
                 menuMozo(sistema);
                 break;
             case 3:
-                menuRepartidor(sistema);
-                break;
-            case 4:
-                menuCliente(sistema);
-                break;
-            case 5:
                 cargarDatosPrueba(sistema);
                 break;
-            case 6:
+            case 4:
                 precargarMesas(sistema);
                 break;
-            case 7:
+            case 0:
                 cout << "Saliendo..." << endl;
                 break;
             default:

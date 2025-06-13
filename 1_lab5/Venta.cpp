@@ -1,13 +1,15 @@
 #include "Venta.h"
-#include <iostream>
+
 using namespace std;
 
 Venta::Venta(int numero, float subTotal, float descuento) {
     this->numero = numero;
     this->subTotal = subTotal;
     this->descuento = descuento;
-    this->total = 0;
+    this->total = subTotal - descuento; // Calcular el total correctamente
     this->factura = nullptr; 
+    productos = new OrderedDictionary();
+    pedido = new List(); // Inicializar la colección de pedidos
 }
 
 Venta::~Venta() {}
@@ -34,10 +36,6 @@ Factura* Venta::getFactura() {
 
 IDictionary* Venta::getProductos() {
     return productos;
-}
-
-IDictionary* Venta::getPedido() {
-    return pedidos;
 }
 
 void Venta::setNumero(int numero) {
@@ -75,6 +73,11 @@ void Venta::setActiva(bool activa) {
     // Si se desactiva, la factura ya debe estar asignada desde generarFactura
 }
 
+void Venta::agregarPedido(Pedido* pedido) {
+    if (pedido != nullptr && this->pedido != nullptr) {
+        this->pedido->add(pedido);
+    }
+}
 
 
 /*

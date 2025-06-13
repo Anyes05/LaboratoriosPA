@@ -34,6 +34,9 @@ Sistema::Sistema()
     ventaTemp = nullptr;
     mesaTemp = nullptr;
     ventaTemporal = nullptr;
+    productosEnPedidoDomicilio = new OrderedDictionary();
+    idRepartidorSeleccionado = 0;
+    productoBaja = nullptr;
 }
 
 Sistema::~Sistema()
@@ -419,10 +422,9 @@ void Sistema::confirmarAlta()
 {
     if (clienteTemp != nullptr)
     {
-        Cliente* cliente = new Cliente(clienteTemp->getTelefono(), clienteTemp->getNombre(), clienteTemp->getDireccion());
+        Cliente* cliente = new Cliente(clienteTemp->getNombre(), clienteTemp->getTelefono(), clienteTemp->getDireccion());
         clientes->add(cliente);
-        delete clienteTemp;
-        clienteTemp = nullptr;
+        // No eliminar clienteTemp aquí, se eliminará en confirmarPedido
     }
 }
 
@@ -773,28 +775,287 @@ void Sistema::confirmarVentaEnMesa()
 
 /*----- VENTA A DOMICILIO -----*/
 
-bool Sistema::ventaDomicilio(char telefono) {
-    throw runtime_error("Funcionalidad no implementada");
+bool Sistema::ventaDomicilio(string telefono)
+{
+  return existeCliente(telefono);
 }
 
-IDictionary* Sistema::listarProductos() {
-    throw runtime_error("Funcionalidad no implementada");
+ICollection *Sistema::listarProductos()
+{
+  List *listaDtProductos = new List();
+  IIterator *it = productos->getIterator();
+  
+  while (it->hasCurrent())
+  {
+    Producto *p = dynamic_cast<Producto *>(it->getCurrent());
+    if (p != nullptr)
+    {
+      DtProducto *dt = dynamic_cast<DtProducto *>(p->getDT());
+      if (dt != nullptr)
+      {
+        listaDtProductos->add(dt);
+      }
+    }
+    it->next();
+  }
+  delete it;
+  
+  return listaDtProductos;
 }
 
-void Sistema::agregarProductoPedido(char codigo, int cantidad) {
-    throw runtime_error("Funcionalidad no implementada");
+void Sistema::agregarProductoPedido(char codigo, int cantidad)
+{
+  char codStr[2] = {codigo, '\0'};
+  String *key = new String(codStr);
+
+  if (!productos->member(key))
+  {
+    delete key;
+    throw invalid_argument("No existe un producto con el código especificado.");
+  }
+
+  // Obtener el producto
+  Producto *prod = dynamic_cast<Producto *>(productos->find(key));
+
+  if (productosEnPedidoDomicilio->member(key))
+  {
+    // Si el producto ya está en el pedido, actualizar la cantidad
+    Integer *cantActual = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
+    if (cantActual != nullptr)
+    {
+      int nuevaCantidad = cantActual->getValue() + cantidad;
+      productosEnPedidoDomicilio->remove(key); // Remover la entrada vieja
+      productosEnPedidoDomicilio->add(key, new Integer(nuevaCantidad));
+      delete cantActual; // Liberar la memoria del Integer anterior
+    }
+  }
+  else
+  {
+    // Si el producto no está en el pedido, agregarlo
+    productosEnPedidoDomicilio->add(key, new Integer(cantidad));
+  }
 }
 
-ICollection* Sistema::listarRepartidores() {
-    throw runtime_error("Funcionalidad no implementada");
+ICollection *Sistema::listarRepartidores()
+{
+  List *listaDtRepartidores = new List();
+  IIterator *it = repartidores->getIterator();
+  while (it->hasCurrent())
+  {
+    Repartidor *r = dynamic_cast<Repartidor *>(it->getCurrent());
+    if (r != nullptr)
+    {
+      DtRepartidor *dt = dynamic_cast<DtRepartidor *>(r->getDtRepartidor());
+      listaDtRepartidores->add(dt);
+    }
+    it->next();
+  }
+  delete it;
+  return listaDtRepartidores;
 }
 
-void Sistema::asignarRepartidorDomicilio(int idRepartidor) {
-    throw runtime_error("Funcionalidad no implementada");
+void Sistema::asignarRepartidorDomicilio(int idRepartidor)
+{
+  // Buscar el repartidor por idIngresado en lugar de idEmpleado
+  IIterator *it = repartidores->getIterator();
+  Repartidor *repartidorEncontrado = nullptr;
+  
+  while (it->hasCurrent())
+  {
+    Repartidor *rep = dynamic_cast<Repartidor *>(it->getCurrent());
+    if (rep != nullptr && rep->getIdIngresado() == idRepartidor)
+    {
+      repartidorEncontrado = rep;
+      break;
+    }
+    it->next();
+  }
+  delete it;
+  
+  if (repartidorEncontrado == nullptr)
+  {
+    throw invalid_argument("No existe un repartidor con el ID especificado.");
+  }
+  
+  this->idRepartidorSeleccionado = idRepartidor;
 }
 
-DtFacturaDomicilio Sistema::confirmarPedido() {
-    throw runtime_error("Funcionalidad no implementada");
+DtFacturaDomicilio Sistema::confirmarPedido()
+{
+  if (productosEnPedidoDomicilio == nullptr || productosEnPedidoDomicilio->isEmpty())
+  {
+    throw runtime_error("No hay productos en el pedido a domicilio para confirmar.");
+  }
+  if (idRepartidorSeleccionado == 0)
+  {
+    throw runtime_error("No se ha asignado un repartidor para el pedido a domicilio.");
+  }
+
+  // 1. Calcular subtotal y verificar si hay menús
+  float subTotal = 0.0;
+  bool hayMenu = false;
+  bool todosSonComunes = true;
+
+  // Primera pasada: calcular subtotal y verificar tipos de productos
+  // Como OrderedDictionary devuelve solo valores, necesitamos iterar de otra manera
+  // Vamos a iterar sobre todos los productos y verificar si están en el pedido
+  IIterator *it = productos->getIterator();
+  while (it->hasCurrent())
+  {
+    Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+    if (prod != nullptr)
+    {
+      char codStr[2] = {prod->getCodigo(), '\0'};
+      String *key = new String(codStr);
+      
+      if (productosEnPedidoDomicilio->member(key))
+      {
+        Integer *cantidad = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
+        if (cantidad != nullptr)
+        {
+          float precioProducto = prod->getPrecio();
+          int cantProducto = cantidad->getValue();
+          float subtotalProducto = precioProducto * cantProducto;
+          subTotal += subtotalProducto;
+
+          // Verificar si es menú o común
+          Menu *menu = dynamic_cast<Menu *>(prod);
+          if (menu != nullptr)
+          {
+            hayMenu = true;
+            todosSonComunes = false;
+          }
+          else
+          {
+            Comun *comun = dynamic_cast<Comun *>(prod);
+            if (comun == nullptr)
+              todosSonComunes = false;
+          }
+        }
+      }
+      delete key;
+    }
+    it->next();
+  }
+  delete it;
+
+  // 2. Calcular descuento según las reglas
+  float descuento = 0.0;
+  if (todosSonComunes && !hayMenu)
+  {
+    // Si todos los productos son comunes y no hay menús, aplicar descuento del IVA (22%)
+    descuento = subTotal * 0.22;
+  }
+  // Si hay menús, no se aplica descuento (descuento = 0.0)
+
+  // 3. Calcular total
+  float total = subTotal - descuento;
+
+  // 4. Crear una nueva Venta de tipo Domicilio
+  Domicilio *nuevaVenta = new Domicilio(ventas->getSize() + 1, subTotal, descuento, nullptr, nullptr);
+  nuevaVenta->setActiva(true);
+
+  // 5. Asignar los productos y sus cantidades
+  it = productos->getIterator();
+  while (it->hasCurrent())
+  {
+    Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+    if (prod != nullptr)
+    {
+      char codStr[2] = {prod->getCodigo(), '\0'};
+      String *key = new String(codStr);
+      
+      if (productosEnPedidoDomicilio->member(key))
+      {
+        Integer *cantidad = dynamic_cast<Integer *>(productosEnPedidoDomicilio->find(key));
+        if (cantidad != nullptr)
+        {
+          Pedido *pedido = new Pedido(cantidad->getValue());
+          pedido->setProducto(prod);
+          nuevaVenta->agregarPedido(pedido);
+        }
+      }
+      delete key;
+    }
+    it->next();
+  }
+  delete it;
+
+  // 6. Asignar el Repartidor seleccionado
+  // Buscar el repartidor por idIngresado en lugar de idEmpleado
+  IIterator *itRep = repartidores->getIterator();
+  Repartidor *repartidorAsignado = nullptr;
+  
+  while (itRep->hasCurrent())
+  {
+    Repartidor *rep = dynamic_cast<Repartidor *>(itRep->getCurrent());
+    if (rep != nullptr && rep->getIdIngresado() == idRepartidorSeleccionado)
+    {
+      repartidorAsignado = rep;
+      break;
+    }
+    itRep->next();
+  }
+  delete itRep;
+  
+  if (repartidorAsignado == nullptr)
+  {
+    throw runtime_error("El repartidor seleccionado no existe.");
+  }
+  nuevaVenta->setRepartidor(repartidorAsignado);
+
+  // 7. Asignar el cliente actual a la venta
+  // Buscar el cliente por teléfono en la colección de clientes del sistema
+  Cliente *clienteReal = nullptr;
+  if (clienteTemp != nullptr)
+  {
+    IIterator *itC = clientes->getIterator();
+    while (itC->hasCurrent())
+    {
+      Cliente *c = dynamic_cast<Cliente *>(itC->getCurrent());
+      if (c != nullptr && c->getTelefono() == clienteTemp->getTelefono())
+      {
+        clienteReal = c;
+        break;
+      }
+      itC->next();
+    }
+    delete itC;
+
+    if (clienteReal != nullptr)
+    {
+      nuevaVenta->setCliente(clienteReal);
+    }
+    else
+    {
+      // Si no se encuentra el cliente, crear uno nuevo con los datos temporales
+      Cliente *nuevoCliente = new Cliente(clienteTemp->getNombre(), clienteTemp->getTelefono(), clienteTemp->getDireccion());
+      clientes->add(nuevoCliente);
+      nuevaVenta->setCliente(nuevoCliente);
+    }
+  }
+
+  // 8. Generar un DtFacturaDomicilio
+  DtFacturaDomicilio factura = nuevaVenta->generarFacturaDomicilio();
+
+  // 9. Limpiar los datos temporales del pedido
+  if (productosEnPedidoDomicilio != nullptr)
+  {
+      delete productosEnPedidoDomicilio; // Eliminar el diccionario actual, liberando su memoria
+      productosEnPedidoDomicilio = new OrderedDictionary(); // Crear una nueva instancia vacía
+  }
+  
+  idRepartidorSeleccionado = 0;
+  if (clienteTemp != nullptr)
+  {
+    delete clienteTemp;
+    clienteTemp = nullptr;
+  }
+
+  // 10. Almacenar la venta en la colección de ventas del sistema
+  ventas->add(new Integer(nuevaVenta->getNumero()), nuevaVenta);
+
+  return factura;
 }
 
 /*----- AGREGAR PRODUCTO A UNA VENTA -----*/
@@ -1183,13 +1444,47 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO) {
 }
 
 
-// ICollectible *Sistema::mostrarProductos()
-// { en la venta
-// }
+/* ----------- BAJA DE PRODUCTO ------------- */
 
-// void Sistema::seleccionarProductoBaja(char codigo)
-// {
-// }
+ ICollection *Sistema::mostrarProductos()
+ {
+    if (productos == nullptr || productos->isEmpty())
+    {
+        throw runtime_error("No hay productos disponibles.");
+    }
+
+    ICollection *listaProductos = new List();
+    IIterator *it = productos->getIterator();
+    while (it->hasCurrent())
+    {
+        Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
+        if (prod != nullptr)
+        {
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            listaProductos->add(dtProducto);
+        }
+        it->next();
+    }
+    delete it;
+
+    return listaProductos;
+ }
+
+ void Sistema::seleccionarProductoBaja(char codigo)
+ {
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+
+    if (!productos->member(key)) // Verifico si el diccionario de productos tiene ese codigo en alguno de ellos
+    {
+        delete key;
+        throw runtime_error("No existe un producto con el código especificado.");
+    }
+
+    productoBaja = dynamic_cast<Producto *>(productos->find(key));
+    
+    delete key;
+ }
 
 // void Sistema::darBajaProducto()
 // {
