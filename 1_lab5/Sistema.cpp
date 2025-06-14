@@ -974,6 +974,7 @@ DtFacturaDomicilio Sistema::confirmarPedido()
           Pedido *pedido = new Pedido(cantidad->getValue());
           pedido->setProducto(prod);
           nuevaVenta->agregarPedido(pedido);
+          prod->setCantidadVendida(prod->getCantidadVendida() + cantidad->getValue());
         }
       }
       delete key;
