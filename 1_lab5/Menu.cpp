@@ -143,8 +143,14 @@ void Menu::darBaja()
 }
 
 DtProducto* Menu::getDT() {
-    // Devuelve un DtProducto con los datos del menú
-    return new DtProducto(this->getCodigo(), this->getDescripcion(), this->getPrecio(), 0);
+    return new DtMenu(
+        this->getCodigo(),
+        this->getDescripcion(),
+        this->getPrecio(),
+        this->getCantidadVendida(), 
+        this->getNombre(),
+        this->getDescuentoMenu()
+    );
 }
 
 void Menu::agregarProducto(IDictionary *pc)

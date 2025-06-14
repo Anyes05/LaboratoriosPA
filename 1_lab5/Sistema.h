@@ -134,6 +134,7 @@ public:
     bool ingresarCodigoProducto(char codigo);
     DtProducto* infoProducto();
     ICollection* infoProductosIncluidosMenu();  
+    IDictionary* obtenerProductosMenu(char codigoMenu); // Devuelve un diccionario de DtProducto AUXULIAR
     
     /*------ BAJA PRODUCTO ------*/
     ICollection *mostrarProductos(); // devuele una coleccion de DtProducto

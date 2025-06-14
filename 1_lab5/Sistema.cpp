@@ -1702,6 +1702,9 @@ if (ventas == nullptr || ventas->isEmpty()) {
 
 ICollection *Sistema::obtenerProductos() {
     IIterator *it = productos->getIterator();
+    if (it == nullptr || !it->hasCurrent()) {
+        throw runtime_error("No hay productos disponibles.");
+    }
     ICollection *listaProductos = new List();
     while (it->hasCurrent()) {
         Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
@@ -1772,38 +1775,61 @@ DtProducto* Sistema::infoProducto() {
     
 }
 
-ICollection * Sistema::infoProductosIncluidosMenu() {
-
+ICollection* Sistema::infoProductosIncluidosMenu() {
     if (codigoProductoInformar == '\0' || !esMenu) {
         throw runtime_error("No se ha ingresado un código de menú válido.");
     }
 
     char codStr[2] = {codigoProductoInformar, '\0'};
-    IKey *key = new String(codStr);
-    Menu *menu = dynamic_cast<Menu *>(productos->find(key));
+    IKey* key = new String(codStr);
+    Menu* menu = dynamic_cast<Menu*>(productos->find(key));
     delete key;
 
-    if (menu == nullptr) {
+    if (!menu) {
         throw runtime_error("No existe un menú con el código especificado.");
     }
 
-    ICollection *MenuYSusProductos = new List();
-    MenuYSusProductos->add(menu->getDT()); // Agregar el DtProducto del menú
-    IIterator *it = menu->getProductosComunes()->getIterator(); // Obtener los productos comunes del menú
+    ICollection* resultado = new List();
+
+    // Agregar el DTO del menú (con cantidad vendida del menú)
+    DtMenu* dtMenu = dynamic_cast<DtMenu*>(menu->getDT());
+    resultado->add(dtMenu);
+
+    // Obtener la composición real del menú (Comun_Menu)
+    IDictionary* composicion = menu->getComun_Menu();
+    IIterator* it = composicion->getIterator();
     while (it->hasCurrent()) {
-        Comun *productoComun = dynamic_cast<Comun *>(it->getCurrent());
-        if (productoComun != nullptr) {
-            DtProducto *dtProducto = productoComun->getDT(); // Obtener el DtProducto del producto común
-            MenuYSusProductos->add(dtProducto); // Agregarlo a la colección
+        Comun_Menu* comunMenu = dynamic_cast<Comun_Menu*>(it->getCurrent());
+        if (comunMenu) {
+            Comun* comun = comunMenu->getComun();
+            // Crear un DTO con la cantidad definida en el menú (no la vendida)
+            DtComun* dtComun = new DtComun(
+                comun->getCodigo(),
+                comun->getDescripcion(),
+                comun->getPrecio(),
+                comunMenu->getCantProducto() // cantidad definida en el menú
+            );
+            resultado->add(dtComun);
         }
         it->next();
     }
     delete it;
-    if (MenuYSusProductos->isEmpty()) {
-        delete MenuYSusProductos;
+
+    if (resultado->isEmpty()) {
+        delete resultado;
         throw runtime_error("El menú no contiene productos comunes.");
     }
-    return MenuYSusProductos; // Retorna una colección de DtProducto que incluye el menú y sus productos comunes
+    return resultado; // El primer elemento es el menú, los siguientes los productos comunes con su cantidad en el menú
+}
 
+IDictionary* Sistema::obtenerProductosMenu(char codigoMenu) {
+    char codigoNorm = toupper(codigoMenu);
+    char codStr[2] = {codigoNorm, '\0'};
+    IKey* key = new String(codStr);
+    Producto* prod = dynamic_cast<Producto*>(productos->find(key));
+    delete key;
+    Menu* menu = dynamic_cast<Menu*>(prod);
+    if (!menu) return nullptr;
+    return menu->getComun_Menu(); 
 }
 

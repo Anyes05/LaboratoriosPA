@@ -6,6 +6,7 @@
 #include "Comun-Menu.h"
 #include "./datatypes/DtProducto.h"
 #include "./datatypes/DtComun.h"
+#include "./datatypes/DtMenu.h"
 
 #include "./ICollection/collections/OrderedDictionary.h"
 
