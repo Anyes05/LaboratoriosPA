@@ -33,8 +33,8 @@ public:
     void setComun_Menu(IDictionary *comun_menu);
 
     void darBaja();                    // funcion heredada y polimorfica
-    bool contieneProducto(DtProducto); // creo que se pdeberia pasar solamente un codigo en esta y la siguiente funcion
-    void eliminarProdcuto(DtProducto);
+    bool contieneProducto(char); // creo que se pdeberia pasar solamente un codigo en esta y la siguiente funcion
+    void eliminarProductoComun(char);
     bool esVacio(Menu *);
 
     void darAltaMenu(Comun *comun, int cantidad);

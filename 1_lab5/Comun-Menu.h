@@ -18,6 +18,7 @@ public:
     //getterts y setters
     int getCantProducto();
     void setCantProducto(int);
+    Comun * getComun(); // 
     
 };
 

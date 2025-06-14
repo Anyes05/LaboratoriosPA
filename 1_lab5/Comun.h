@@ -12,7 +12,7 @@ public:
     Comun(char, string, float);
     ~Comun();
 
-    void eliminarProducto();
+    void eliminarProducto(); // es lo mismo que darBaja, no la preciso creo
     void agregarProductoComun(char codigoComun, string descripcion, float precio);
     void darBaja(); //funcion heredada y polimorfica
     void agregarCant();

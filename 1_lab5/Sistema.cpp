@@ -1575,9 +1575,128 @@ void Sistema::seleccionarProductoBaja(char codigo)
     delete key;
 }
 
-// void Sistema::darBajaProducto()
-// {
-// }
+/*
+
+ void Sistema::darBajaProducto()
+ {
+    if (productoBaja == nullptr)
+        throw runtime_error("No hay un producto seleccionado para dar de baja.");
+
+    char codStr[2] = {productoBaja->getCodigo(), '\0'};
+    IKey *keyProducto = new String(codStr);
+
+    // CASO: Si no hay ventas, eliminar directamente el producto. Supongo que esto tiene que estar contemplado
+    if (ventas == nullptr || ventas->isEmpty()) {
+        // Si es un producto común, quitarlo de los menús y eliminar menús vacíos
+        Comun* comun = dynamic_cast<Comun*>(productoBaja);
+        if (comun != nullptr) {
+            bool reiniciarIterador;
+            do {
+                reiniciarIterador = false;
+                IIterator *itProd = productos->getIterator();
+                while (itProd->hasCurrent()) {
+                    Menu *menu = dynamic_cast<Menu *>(itProd->getCurrent());
+                    if (menu) {
+                        menu->eliminarProductoComun(comun->getCodigo());
+                        if (menu->getProductosComunes()->isEmpty()) {
+                            char codMenuStr[2] = {menu->getCodigo(), '\0'};
+                            IKey* keyMenu = new String(codMenuStr);
+                            menu->darBaja();
+                            productos->remove(keyMenu);
+                            // delete menu; // solo si el diccionario no es dueño
+                            delete keyMenu;
+                            delete itProd;
+                            reiniciarIterador = true;
+                            break;
+                        }
+                    }
+                    itProd->next();
+                }
+                if (!reiniciarIterador)
+                    delete itProd;
+            } while (reiniciarIterador);
+        }
+        productos->remove(keyProducto);
+        delete productoBaja; // Liberar memoria del producto
+        delete keyProducto; // Liberar memoria de la clave
+        productoBaja = nullptr; // Limpiar el puntero
+        return; // Salir de la función si no hay ventas
+    }    
+
+if (ventas == nullptr || ventas->isEmpty()) {
+    throw runtime_error("No hay ventas registradas en el sistema.");
+}
+    // Ahora si: Caso general para dar de baja un producto
+    // 1. Verificar que todas las ventas que contienen el producto han sido facturadas
+    cout << "debug recorriendo ventas para dar de baja producto" << endl; // borrar
+    IIterator *itVentas = ventas->getIterator();
+    while (itVentas->hasCurrent()) {
+        Venta *venta = dynamic_cast<Venta *>(itVentas->getCurrent());
+        cout << "debug venta = " << venta->getNumero() << endl; // borrar
+        if (venta && venta->getProductos()) {
+            IIterator *itPedidos = venta->getProductos()->getIterator();
+            while (itPedidos->hasCurrent()) {
+                Pedido *pedido = dynamic_cast<Pedido *>(itPedidos->getCurrent());
+                if (pedido && pedido->getProducto()->getCodigo() == productoBaja->getCodigo()) {
+                    // Si la venta no está facturada, no se puede eliminar
+                    if (venta->getActiva()) {
+                        delete itPedidos;
+                        delete itVentas;
+                        delete keyProducto;
+                        throw runtime_error("No se puede eliminar el producto porque hay ventas sin facturar que lo contienen.");
+                    }
+                }
+                itPedidos->next();
+            }
+            delete itPedidos;
+        }
+        itVentas->next();
+    }
+    delete itVentas;
+
+    // 2. Si es un producto común, quitarlo de todos los menús y eliminar menús vacíos en el mismo recorrido
+    Comun* comun = dynamic_cast<Comun*>(productoBaja);
+    if (comun != nullptr) {
+        bool reiniciarIterador;
+        do {
+            reiniciarIterador = false;
+            IIterator *itProd = productos->getIterator();
+            while (itProd->hasCurrent()) {
+                Menu *menu = dynamic_cast<Menu *>(itProd->getCurrent());
+                if (menu) {
+                    menu->eliminarProductoComun(comun->getCodigo());
+                    cout << "eliminar Producto Comun anda(?)" << endl;
+                        // Si el menú queda vacío, eliminarlo del sistema
+                        if (menu->getProductosComunes()->isEmpty()) {
+                            char codMenuStr[2] = {menu->getCodigo(), '\0'};
+                            IKey* keyMenu = new String(codMenuStr);
+                            menu->darBaja(); // Limpia el menú internamente
+                            cout << "eliminar Menu anda(?)" << endl;
+                            productos->remove(keyMenu); // Elimina del sistema
+                            // delete menu; // Libera memoria
+                            delete keyMenu;
+                            delete itProd; // Eliminar el iterador actual
+                            reiniciarIterador = true; // Reiniciar iterador para evitar problemas de iteración
+                            break; // Salir del bucle para reiniciar el iterador
+                        }
+                    
+                }
+                itProd->next();
+            }
+            if (!reiniciarIterador) {
+                delete itProd; // Liberar el iterador solo si no se reinicia
+            }
+        } while (reiniciarIterador); // Repetir si se eliminó un menú y hay que reiniciar el iterador
+    }
+
+    // 3. Eliminar el producto del sistema
+    productos->remove(keyProducto);
+    delete productoBaja;
+    delete keyProducto;
+    productoBaja = nullptr;
+
+ }
+ */
 
 /* ----------- INFORMACION DE UN PRODUCTO ------------- */
 

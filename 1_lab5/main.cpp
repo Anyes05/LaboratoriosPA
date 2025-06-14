@@ -15,6 +15,8 @@ void menuAdministrador(ISistema *sistema)
         cout << "4. Asignar mesas a mozos" << endl;
         cout << "5. Iniciar Venta a Domicilio" << endl;
         cout << "6. Informacion de un Producto" << endl;
+        cout << "7. Resumen facturación de un día" << endl;
+        cout << "8. Baja de producto" << endl;
         cout << "0. Volver" << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -599,6 +601,64 @@ void menuAdministrador(ISistema *sistema)
             }
             break;
         }
+/*        case 8:
+        {
+            system("clear");
+            cout << "BAJA DE PRODUCTO" << endl;
+            try{
+                ICollection *productos = sistema->mostrarProductos();
+                IIterator *it = productos->getIterator();
+                cout << "Productos disponibles: " << endl;
+                while (it->hasCurrent())
+                {
+                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+                    if (dtProducto)
+                    {
+                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
+                    }
+                    it->next();
+                }
+                delete it;
+                delete productos;
+
+                // Seleccionar producto a eliminar
+                cout << "Ingrese el código del producto a dar de baja: ";
+                char codigoProducto;
+                cin >> codigoProducto;
+                cin.ignore();
+                
+                try {
+                    sistema->seleccionarProductoBaja(codigoProducto);
+                } catch (const std::exception &e) {
+                    cout << "Error: " << e.what() << endl;
+                    break;
+                }
+
+                // Confirmar o cancelar la baja
+                cout << "¿Desea confirmar la baja del producto? (S/N): ";
+                char confirmarBaja;
+                cin >> confirmarBaja;
+                cin.ignore();
+
+                if (confirmarBaja == 'S' || confirmarBaja == 's')
+                {
+                    try {
+                        sistema->darBajaProducto();
+                        cout << "Producto dado de baja correctamente." << endl;
+                    } catch (const std::exception &e) {
+                        cout << "Error al dar de baja el producto: " << e.what() << endl;
+                        break;
+                    }
+                }
+                else
+                {
+                    cout << "Baja de producto cancelada." << endl;
+                }
+            } catch (const std::exception &e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            break;
+        }*/
         default:
             cout << "Opción inválida." << endl;
         }
