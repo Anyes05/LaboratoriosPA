@@ -19,3 +19,7 @@ int Comun_Menu::getCantProducto(){
 void Comun_Menu::setCantProducto(int cant){
     this->cantProducto=cant;
 }
+
+Comun * Comun_Menu::getComun(){ // 
+    return this->productoComun;
+}
