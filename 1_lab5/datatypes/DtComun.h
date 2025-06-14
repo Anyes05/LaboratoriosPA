@@ -7,7 +7,7 @@ class DtComun : public DtProducto{
     private:
 
     public:
-        DtComun(char, string, float);
+        DtComun(char, string, float, int);
         DtComun();
         ~DtComun();
 };

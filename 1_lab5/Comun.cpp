@@ -15,5 +15,5 @@ void Comun::darBaja() {
 }
 
 DtProducto* Comun::getDT() {
-    return new DtComun(codigo, descripcion, precio);
+    return new DtComun(codigo, descripcion, precio, cantidadVendida);
 }

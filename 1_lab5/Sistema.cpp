@@ -50,6 +50,7 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
+
 /*char normalizarCodigo(char codigo) {
     return std::toupper(static_cast<unsigned char>(codigo));
 }
@@ -136,7 +137,7 @@ IDictionary *Sistema::agregarMenu(char codigoMenu, string descripcion)
     // Guardar los datos en el datatypes
     string nombreMenu = "Menu ";
     nombreMenu += codigoMenu;
-    menuTemp = new DtMenu(codigoMenu, descripcion, 0, nombreMenu, 0.0);
+    menuTemp = new DtMenu(codigoMenu, descripcion, 0, 0, nombreMenu, 0.0);
 
     // Listar todos los productos comunes y devolverlos como DtComun
 
@@ -237,7 +238,7 @@ void Sistema::agregarProductoComun(char codigoComun, string descripcion, float p
         }
 
         // Crear nueva instancia
-        productoComunTemp = new DtComun(codigoComun, descripcion, precio);
+        productoComunTemp = new DtComun(codigoComun, descripcion, precio, 0);
     }
     catch (const exception &e)
     {
@@ -1158,17 +1159,16 @@ void Sistema::confirmarAgregarProducto()
             delete key; 
             throw runtime_error("El producto no se encontró en el pedido existente.");
         }
-        delete key; 
+        delete key; // Solo aquí, porque NO la agregaste al diccionario
     }
     else
     {
         ventaTemp->getProductos()->add(key, pedidoTemp);
+        // NO hacer delete key aquí, el diccionario se encarga
     }
     ventaTemp->setSubTotal(ventaTemp->getSubTotal() + (pedidoTemp->getCantProductos() * pedidoTemp->getProducto()->getPrecio()));
-    // sumar cantidad vendida del producto
     pedidoTemp->getProducto()->setCantidadVendida(pedidoTemp->getProducto()->getCantidadVendida() + pedidoTemp->getCantProductos());
     pedidoTemp = nullptr;
-    delete key; // Liberar memoria del key después de usarlo
 }
 
 /* ------ QUITAR PRODUCTO DE UNA VENTA ----------*/
@@ -1209,7 +1209,7 @@ void Sistema::ingresarMesa(int idMesa)
         {
             Producto *producto = pedido->getProducto();
             // Si es un pedido, obtenemos el DtProducto del producto asociado
-            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio());
+            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio(), producto->getCantidadVendida());
             productos->add(dtProducto); // Agregar el DtProducto a la colección
         }
         
@@ -1263,8 +1263,8 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     cantidadAQuitar = cant; // Asignar la cantidad a quitar
 }
 
- void Sistema::quitarProductoVenta()
- {
+void Sistema::quitarProductoVenta()
+{
     if (productoAQuitar == nullptr || mesaSeleccionada == nullptr)
     {
         throw runtime_error("No hay un producto o mesa seleccionada para quitar.");
@@ -1279,7 +1279,17 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
         if (pedido != nullptr && pedido->getProducto()->getCodigo() == productoAQuitar->getCodigo())
         {
             encontrado = true;
-            int res = pedido->restarProductos(cantidadAQuitar); // Restar la cantidad del pedido
+            int cantidadRestada = cantidadAQuitar;
+            int res = pedido->restarProductos(cantidadRestada); // Restar la cantidad del pedido
+
+            // Restar la cantidad vendida al producto
+            Producto* prod = pedido->getProducto();
+            if (prod != nullptr) {
+                int nuevaCantidadVendida = prod->getCantidadVendida() - cantidadRestada;
+                if (nuevaCantidadVendida < 0) nuevaCantidadVendida = 0;
+                prod->setCantidadVendida(nuevaCantidadVendida);
+            }
+
             if (res <= 0) {
                 // Si la cantidad restante es 0 o negativa, eliminar el pedido de la venta
                 char codStr[2] = {productoAQuitar->getCodigo(), '\0'};
@@ -1297,9 +1307,7 @@ void Sistema::seleccionarProductoQuitar(char codigo, int cant) // se le pasa el 
     {
         throw runtime_error("El producto seleccionado no se encuentra en la venta.");
     }
-
- }
-
+}
 
 
  /*------ VENTAS DE UN MOZO ------*/
@@ -1364,6 +1372,7 @@ void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2){
                         delete itPedidos;
 
                         float montoConDescuento = subtotal * (1 - descuento / 100);
+
                         float totalConIVA = montoConDescuento * 1.22f; 
 
                         cout << "Subtotal: $" << subtotal << "\n";
@@ -1427,6 +1436,92 @@ DtVenta Sistema::finalizarVenta(int nroMesa) {
     return ventaDTO;
 }
 
+void Sistema::agregarMesaAFacturacion(int nroMesa) {
+    if (!ventaTemporal)
+        throw invalid_argument("No hay una venta seleccionada para facturación.");
+
+    //buscar la mesa a agregar
+    IKey* key = new Integer(nroMesa);
+    Mesa* mesaAgregar = dynamic_cast<Mesa*>(mesas->find(key));
+    delete key;
+
+    if (!mesaAgregar)
+        throw invalid_argument("Mesa no encontrada.");
+    
+    Local* ventaAgregar = mesaAgregar->getLocal();
+    if (!ventaAgregar)
+        throw invalid_argument("No hay venta activa en la mesa a agregar.");
+
+    if (!ventaAgregar->getActiva())
+        throw invalid_argument("La venta de la mesa a agregar ya fue finalizada.");
+
+    if (ventaAgregar == ventaTemporal)
+        throw invalid_argument("La mesa ya está incluida en la facturación actual.");
+
+    //verificar que el mozo sea el mismo
+    if (ventaAgregar->getMozo()->getIdEmpleado() != ventaTemporal->getMozo()->getIdEmpleado())
+        throw invalid_argument("Solo se pueden combinar mesas del mismo mozo.");
+
+    //combinar los productos de ambas ventas
+    IDictionary* pedidosAgregar = ventaAgregar->getProductos();
+    IDictionary* pedidosActuales = ventaTemporal->getProductos();
+    
+    IIterator* it = pedidosAgregar->getIterator();
+    while (it->hasCurrent()) {
+        Pedido* pedidoAgregar = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedidoAgregar) {
+            char codigo = pedidoAgregar->getProducto()->getCodigo();
+            char codStr[2] = {codigo, '\0'};
+            IKey* keyProd = new String(codStr);
+            
+            if (pedidosActuales->member(keyProd)) {
+                //si el producto ya existe, sumar las cantidades
+                Pedido* pedidoExistente = dynamic_cast<Pedido*>(pedidosActuales->find(keyProd));
+                if (pedidoExistente) {
+                    pedidoExistente->setCantProductos(
+                        pedidoExistente->getCantProductos() + pedidoAgregar->getCantProductos()
+                    );
+                }
+                delete keyProd;
+            } else {
+                //si el producto no existe, crear nuevo pedido
+                Pedido* nuevoPedido = new Pedido(pedidoAgregar->getCantProductos());
+                nuevoPedido->setProducto(pedidoAgregar->getProducto());
+                pedidosActuales->add(keyProd, nuevoPedido);
+            }
+        }
+        it->next();
+    }
+    delete it;
+
+    //agregar la mesa a la colección de mesas de la venta principal
+    ICollection* mesasVenta = ventaTemporal->getMesas();
+    mesasVenta->add(mesaAgregar);
+    
+    //asignar la venta principal a la mesa agregada
+    mesaAgregar->setLocal(ventaTemporal);
+    
+    //desactivar la venta de la mesa agregada
+    ventaAgregar->setActiva(false);
+
+    //recalcular subtotal
+    float nuevoSubtotal = 0.0f;
+    IIterator* itRecalc = pedidosActuales->getIterator();
+    while (itRecalc->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(itRecalc->getCurrent());
+        if (pedido) {
+            Producto* producto = pedido->getProducto();
+            nuevoSubtotal += producto->getPrecio() * pedido->getCantProductos();
+        }
+        itRecalc->next();
+    }
+    delete itRecalc;
+
+    ventaTemporal->setSubTotal(nuevoSubtotal);
+    ventaTemporal->setTotal(nuevoSubtotal);
+}
+
+
 void Sistema::aplicarDescuento(int descuento) {
     if (!ventaTemporal)
         throw invalid_argument("No hay venta seleccionada para aplicar descuento.");
@@ -1486,7 +1581,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
         Pedido* pedido = dynamic_cast<Pedido*>(it->getCurrent());
         if (pedido) {
             Producto* p = pedido->getProducto();
-            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio());
+            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio(),p->getCantidadVendida());
             colDtProductos->add(dtProd);
         }
         it->next();
@@ -1540,7 +1635,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
         Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
         if (prod != nullptr)
         {
-            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio(), prod->getCantidadVendida());
             listaProductos->add(dtProducto);
         }
         it->next();
@@ -1566,9 +1661,128 @@ void Sistema::seleccionarProductoBaja(char codigo)
     delete key;
 }
 
-// void Sistema::darBajaProducto()
-// {
-// }
+/*
+
+ void Sistema::darBajaProducto()
+ {
+    if (productoBaja == nullptr)
+        throw runtime_error("No hay un producto seleccionado para dar de baja.");
+
+    char codStr[2] = {productoBaja->getCodigo(), '\0'};
+    IKey *keyProducto = new String(codStr);
+
+    // CASO: Si no hay ventas, eliminar directamente el producto. Supongo que esto tiene que estar contemplado
+    if (ventas == nullptr || ventas->isEmpty()) {
+        // Si es un producto común, quitarlo de los menús y eliminar menús vacíos
+        Comun* comun = dynamic_cast<Comun*>(productoBaja);
+        if (comun != nullptr) {
+            bool reiniciarIterador;
+            do {
+                reiniciarIterador = false;
+                IIterator *itProd = productos->getIterator();
+                while (itProd->hasCurrent()) {
+                    Menu *menu = dynamic_cast<Menu *>(itProd->getCurrent());
+                    if (menu) {
+                        menu->eliminarProductoComun(comun->getCodigo());
+                        if (menu->getProductosComunes()->isEmpty()) {
+                            char codMenuStr[2] = {menu->getCodigo(), '\0'};
+                            IKey* keyMenu = new String(codMenuStr);
+                            menu->darBaja();
+                            productos->remove(keyMenu);
+                            // delete menu; // solo si el diccionario no es dueño
+                            delete keyMenu;
+                            delete itProd;
+                            reiniciarIterador = true;
+                            break;
+                        }
+                    }
+                    itProd->next();
+                }
+                if (!reiniciarIterador)
+                    delete itProd;
+            } while (reiniciarIterador);
+        }
+        productos->remove(keyProducto);
+        delete productoBaja; // Liberar memoria del producto
+        delete keyProducto; // Liberar memoria de la clave
+        productoBaja = nullptr; // Limpiar el puntero
+        return; // Salir de la función si no hay ventas
+    }    
+
+if (ventas == nullptr || ventas->isEmpty()) {
+    throw runtime_error("No hay ventas registradas en el sistema.");
+}
+    // Ahora si: Caso general para dar de baja un producto
+    // 1. Verificar que todas las ventas que contienen el producto han sido facturadas
+    cout << "debug recorriendo ventas para dar de baja producto" << endl; // borrar
+    IIterator *itVentas = ventas->getIterator();
+    while (itVentas->hasCurrent()) {
+        Venta *venta = dynamic_cast<Venta *>(itVentas->getCurrent());
+        cout << "debug venta = " << venta->getNumero() << endl; // borrar
+        if (venta && venta->getProductos()) {
+            IIterator *itPedidos = venta->getProductos()->getIterator();
+            while (itPedidos->hasCurrent()) {
+                Pedido *pedido = dynamic_cast<Pedido *>(itPedidos->getCurrent());
+                if (pedido && pedido->getProducto()->getCodigo() == productoBaja->getCodigo()) {
+                    // Si la venta no está facturada, no se puede eliminar
+                    if (venta->getActiva()) {
+                        delete itPedidos;
+                        delete itVentas;
+                        delete keyProducto;
+                        throw runtime_error("No se puede eliminar el producto porque hay ventas sin facturar que lo contienen.");
+                    }
+                }
+                itPedidos->next();
+            }
+            delete itPedidos;
+        }
+        itVentas->next();
+    }
+    delete itVentas;
+
+    // 2. Si es un producto común, quitarlo de todos los menús y eliminar menús vacíos en el mismo recorrido
+    Comun* comun = dynamic_cast<Comun*>(productoBaja);
+    if (comun != nullptr) {
+        bool reiniciarIterador;
+        do {
+            reiniciarIterador = false;
+            IIterator *itProd = productos->getIterator();
+            while (itProd->hasCurrent()) {
+                Menu *menu = dynamic_cast<Menu *>(itProd->getCurrent());
+                if (menu) {
+                    menu->eliminarProductoComun(comun->getCodigo());
+                    cout << "eliminar Producto Comun anda(?)" << endl;
+                        // Si el menú queda vacío, eliminarlo del sistema
+                        if (menu->getProductosComunes()->isEmpty()) {
+                            char codMenuStr[2] = {menu->getCodigo(), '\0'};
+                            IKey* keyMenu = new String(codMenuStr);
+                            menu->darBaja(); // Limpia el menú internamente
+                            cout << "eliminar Menu anda(?)" << endl;
+                            productos->remove(keyMenu); // Elimina del sistema
+                            // delete menu; // Libera memoria
+                            delete keyMenu;
+                            delete itProd; // Eliminar el iterador actual
+                            reiniciarIterador = true; // Reiniciar iterador para evitar problemas de iteración
+                            break; // Salir del bucle para reiniciar el iterador
+                        }
+                    
+                }
+                itProd->next();
+            }
+            if (!reiniciarIterador) {
+                delete itProd; // Liberar el iterador solo si no se reinicia
+            }
+        } while (reiniciarIterador); // Repetir si se eliminó un menú y hay que reiniciar el iterador
+    }
+
+    // 3. Eliminar el producto del sistema
+    productos->remove(keyProducto);
+    delete productoBaja;
+    delete keyProducto;
+    productoBaja = nullptr;
+
+ }
+ */
 
 /* ----------- INFORMACION DE UN PRODUCTO ------------- */
 
@@ -1578,7 +1792,7 @@ ICollection *Sistema::obtenerProductos() {
     while (it->hasCurrent()) {
         Producto *prod = dynamic_cast<Producto *>(it->getCurrent());
         if (prod != nullptr) {
-            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio());
+            DtProducto *dtProducto = new DtProducto(prod->getCodigo(), prod->getDescripcion(), prod->getPrecio(), prod->getCantidadVendida());
             listaProductos->add(dtProducto);
         }
         it->next();
@@ -1606,13 +1820,15 @@ bool Sistema::ingresarCodigoProducto(char codigo)
     if (dynamic_cast<Menu *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
-        return esMenu = true; 
+        esMenu = true; 
+        return true; // Producto encontrado y es un menú
         delete key;
     }
     else if (dynamic_cast<Comun *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
-        return esMenu = false; 
+        esMenu = false; 
+        return false; // Producto encontrado y es un producto común
         delete key;
     }
     else
@@ -1677,3 +1893,79 @@ ICollection * Sistema::infoProductosIncluidosMenu() {
 
 }
 
+
+
+/* ----------- FACTURACIÓN DE UN DIA ------------- */
+
+DtFacturacionDia* Sistema::mostrarInforme(DtFecha fecha){
+    ICollection *facturasLocales = new List();
+    ICollection *facturasDomicilio = new List();
+    float totalFacturado = 0;
+
+    IIterator *it = ventas->getIterator();
+    while(it->hasCurrent()){
+        Venta *venta = dynamic_cast<Venta*>(it->getCurrent());
+        Factura *f = venta->getFactura();
+        if(f != nullptr){
+            DtFecha fFecha = f->getFecha();
+            if (fFecha.getDia() == fecha.getDia() && fFecha.getMes() == fecha.getMes() && fFecha.getAnio() == fecha.getAnio()) {
+                Local* ventaLocal = dynamic_cast<Local*>(venta);
+                Domicilio* ventaDomicilio = dynamic_cast<Domicilio*>(venta);
+                 if (ventaLocal != nullptr) {
+                    // Convertir productos de IDictionary* a ICollection* de DtProducto* porque sino no funciona
+                    ICollection* productosDT = new List();
+                    IDictionary* pedidos = ventaLocal->getProductos();
+                    IIterator* itProd = pedidos->getIterator();
+                    while (itProd->hasCurrent()) {
+                        Pedido* pedido = dynamic_cast<Pedido*>(itProd->getCurrent());
+                        if (pedido) {
+                            Producto* p = pedido->getProducto();
+                            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio(), p->getCantidadVendida());
+                            productosDT->add(dtProd);
+                        }
+                        itProd->next();
+                    }
+                    delete itProd;
+
+                    DtFactura* dt = new DtFactura(ventaLocal->getNumero(),f->getFecha(),productosDT,ventaLocal->getDescuento(),ventaLocal->getSubTotal());
+
+                    facturasLocales->add(dt);
+                    totalFacturado += f->getVenta().getTotal(); 
+                }
+                else if (ventaDomicilio != nullptr) {
+                    ICollection* productosDTO = new List();
+                    IDictionary* pedidos = ventaDomicilio->getProductos();
+                    IIterator* itProd = pedidos->getIterator();
+                    while (itProd->hasCurrent()) {
+                        Pedido* pedido = dynamic_cast<Pedido*>(itProd->getCurrent());
+                        if (pedido) {
+                            Producto* p = pedido->getProducto();
+                            DtProducto* dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio(), p->getCantidadVendida());
+                            productosDTO->add(dtProd);
+                        }
+                        itProd->next();
+                    }
+                    delete itProd;
+
+                    DtFactura* dt = new DtFactura(
+                        ventaDomicilio->getNumero(),
+                        f->getFecha(),
+                        productosDTO,
+                        ventaDomicilio->getDescuento(),
+                        ventaDomicilio->getSubTotal()
+                    );
+
+                    facturasDomicilio->add(dt);
+                    totalFacturado += f->getVenta().getTotal();
+                }
+            }
+        }
+        it->next();
+    }
+    delete it;
+
+    DtFacturacionDia* resultado = new DtFacturacionDia(fecha, facturasLocales, facturasDomicilio);
+    // faltaria totalfacturado
+
+    return resultado;
+}

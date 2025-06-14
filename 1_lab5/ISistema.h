@@ -94,7 +94,9 @@ public:
     /*------ BAJA PRODUCTO ------*/
     virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     virtual void seleccionarProductoBaja(char codigo) = 0;
+
     //virtual void darBajaProducto() = 0;
+
 };
 
 #endif

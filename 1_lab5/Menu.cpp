@@ -57,9 +57,6 @@ IDictionary* Menu::getProductosComunes() {
     return comunes;
 }
 
-
-
-
 IDictionary *Menu::getComun_Menu()
 {
     return this->comun_menu;
@@ -82,14 +79,72 @@ void Menu::setProductosComunes(IDictionary *productosComunes)
     this->productosComunes = productosComunes;
 }
 
+bool Menu::contieneProducto(char codigo)
+{
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+    bool existe = this->productosComunes->member(key);
+    delete key;
+    return existe;
+}
+
+void Menu::eliminarProductoComun(char codigo)
+{
+    char codStr[2] = {codigo, '\0'};
+    IKey *key = new String(codStr);
+    if (this->productosComunes->member(key))
+    {
+        this->productosComunes->remove(key);
+        this->comun_menu->remove(key);
+    }
+    delete key;
+}
+
+bool Menu::esVacio(Menu *menu)
+{
+    return menu->getProductosComunes()->isEmpty();
+}
+
 void Menu::darBaja()
 {
-    // lógica aquí
+    IIterator *it = productosComunes->getIterator();
+    while (it->hasCurrent())
+    {
+        Comun* comun = dynamic_cast<Comun*>(it->getCurrent());
+        if (comun != nullptr) {
+            char codigoChar = comun->getCodigo();
+            char codigoStr[2] = {codigoChar, '\0'};
+            IKey* key = new String(codigoStr);
+            it->next(); // Avanzar antes de eliminar
+            productosComunes->remove(key);
+            delete key;
+        } else {
+            it->next();
+        }
+    }
+    delete it;
+
+    IIterator* it2 = comun_menu->getIterator();
+    while (it2->hasCurrent())
+    {
+        Comun_Menu* relacion = dynamic_cast<Comun_Menu*>(it2->getCurrent());
+        if (relacion != nullptr) {
+            char codigoChar = relacion->getComun()->getCodigo();
+            char codigoStr[2] = {codigoChar, '\0'};
+            IKey* key = new String(codigoStr);
+            it2->next(); // Avanzar antes de eliminar
+            comun_menu->remove(key);
+            delete key;
+        } else {
+            it2->next();
+        }
+    }
+    delete it2;
 }
 
 DtProducto* Menu::getDT() {
     // Devuelve un DtProducto con los datos del menú
-    return new DtProducto(this->getCodigo(), this->getDescripcion(), this->getPrecio());
+    return new DtProducto(this->getCodigo(), this->getDescripcion(), this->getPrecio(), 0);
 }
 
 void Menu::agregarProducto(IDictionary *pc)
