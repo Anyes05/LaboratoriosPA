@@ -926,11 +926,31 @@ void menuMozo(ISistema *sistema)
         case 4: {
             try {
                 int nroMesa;
-                cout << "Ingrese el número de la mesa: ";
+                cout << "Ingrese el número de la mesa principal: ";
                 cin >> nroMesa;
 
                 // Finalizar la venta
                 DtVenta ventaDTO = sistema->finalizarVenta(nroMesa);
+
+                // Preguntar si quiere agregar otra mesa
+                char agregarMesa = 's';
+                while (agregarMesa == 's' || agregarMesa == 'S') {
+                    cout << "¿Desea agregar otra mesa a esta factura? (s/n): ";
+                    cin >> agregarMesa;
+
+                    if (agregarMesa == 's' || agregarMesa == 'S') {
+                        int nroMesaAgregar;
+                        cout << "Ingrese el número de la mesa a agregar: ";
+                        cin >> nroMesaAgregar;
+
+                        try {
+                           // sistema->agregarMesaAFacturacion(nroMesaAgregar);
+                            cout << "Mesa "<< nroMesaAgregar << " agregada a la facturación." << endl;
+                        } catch (const exception& e) {
+                            cout << "Error al agregar mesa: " << e.what() << endl;
+                        }
+                    }
+                }
 
                 char desc;
                 cout << "¿Desea aplicar un descuento? (s/n): ";
@@ -951,7 +971,7 @@ void menuMozo(ISistema *sistema)
 
                 // Generar factura con fecha
                 DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
-                
+
 
                 // Mostrar datos
                 cout << "\n------ FACTURA ------\n";

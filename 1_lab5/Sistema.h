@@ -125,6 +125,7 @@ public:
     DtVenta finalizarVenta(int nroMesa);
     void aplicarDescuento(int descuento);
     DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura);
+    void agregarMesaAFacturacion(int nroMesa);
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();

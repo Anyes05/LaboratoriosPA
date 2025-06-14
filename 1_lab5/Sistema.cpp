@@ -1408,7 +1408,7 @@ DtVenta Sistema::finalizarVenta(int nroMesa) {
         throw invalid_argument("La venta ya fue finalizada.");
 
     ventaTemporal = venta;
-    venta->setActiva(false);
+    //venta->setActiva(false);
 
     //calcular subtotal
     float subtotal = 0.0f;
@@ -1437,6 +1437,94 @@ DtVenta Sistema::finalizarVenta(int nroMesa) {
     return ventaDTO;
 }
 
+
+void Sistema::agregarMesaAFacturacion(int nroMesa) {
+    if (!ventaTemporal)
+        throw invalid_argument("No hay una venta seleccionada para facturación.");
+
+    //buscar la mesa a agregar
+    IKey* key = new Integer(nroMesa);
+    Mesa* mesaAgregar = dynamic_cast<Mesa*>(mesas->find(key));
+    delete key;
+
+    if (!mesaAgregar)
+        throw invalid_argument("Mesa no encontrada.");
+    
+    Local* ventaAgregar = mesaAgregar->getLocal();
+    if (!ventaAgregar)
+        throw invalid_argument("No hay venta activa en la mesa a agregar.");
+
+    if (!ventaAgregar->getActiva())
+        throw invalid_argument("La venta de la mesa a agregar ya fue finalizada.");
+
+    if (ventaAgregar == ventaTemporal)
+        throw invalid_argument("La mesa ya está incluida en la facturación actual.");
+
+    //verificar que el mozo sea el mismo
+    if (ventaAgregar->getMozo()->getIdEmpleado() != ventaTemporal->getMozo()->getIdEmpleado())
+        throw invalid_argument("Solo se pueden combinar mesas del mismo mozo.");
+
+    //combinar los productos de ambas ventas
+    IDictionary* pedidosAgregar = ventaAgregar->getProductos();
+    IDictionary* pedidosActuales = ventaTemporal->getProductos();
+    
+    IIterator* it = pedidosAgregar->getIterator();
+    while (it->hasCurrent()) {
+        Pedido* pedidoAgregar = dynamic_cast<Pedido*>(it->getCurrent());
+        if (pedidoAgregar) {
+            char codigo = pedidoAgregar->getProducto()->getCodigo();
+            char codStr[2] = {codigo, '\0'};
+            IKey* keyProd = new String(codStr);
+            
+            if (pedidosActuales->member(keyProd)) {
+                //si el producto ya existe, sumar las cantidades
+                Pedido* pedidoExistente = dynamic_cast<Pedido*>(pedidosActuales->find(keyProd));
+                if (pedidoExistente) {
+                    pedidoExistente->setCantProductos(
+                        pedidoExistente->getCantProductos() + pedidoAgregar->getCantProductos()
+                    );
+                }
+                delete keyProd;
+            } else {
+                //si el producto no existe, crear nuevo pedido
+                Pedido* nuevoPedido = new Pedido(pedidoAgregar->getCantProductos());
+                nuevoPedido->setProducto(pedidoAgregar->getProducto());
+                pedidosActuales->add(keyProd, nuevoPedido);
+            }
+        }
+        it->next();
+    }
+    delete it;
+
+    //agregar la mesa a la colección de mesas de la venta principal
+    ICollection* mesasVenta = ventaTemporal->getMesas();
+    mesasVenta->add(mesaAgregar);
+    
+    //asignar la venta principal a la mesa agregada
+    mesaAgregar->setLocal(ventaTemporal);
+    
+    //desactivar la venta de la mesa agregada
+    ventaAgregar->setActiva(false);
+
+    //recalcular subtotal
+    float nuevoSubtotal = 0.0f;
+    IIterator* itRecalc = pedidosActuales->getIterator();
+    while (itRecalc->hasCurrent()) {
+        Pedido* pedido = dynamic_cast<Pedido*>(itRecalc->getCurrent());
+        if (pedido) {
+            Producto* producto = pedido->getProducto();
+            nuevoSubtotal += producto->getPrecio() * pedido->getCantProductos();
+        }
+        itRecalc->next();
+    }
+    delete itRecalc;
+
+    ventaTemporal->setSubTotal(nuevoSubtotal);
+    ventaTemporal->setTotal(nuevoSubtotal);
+}
+
+
+
 void Sistema::aplicarDescuento(int descuento) {
     if (!ventaTemporal)
         throw invalid_argument("No hay venta seleccionada para aplicar descuento.");
@@ -1463,7 +1551,7 @@ void Sistema::aplicarDescuento(int descuento) {
     delete it;
 
     if (hayMenu) {
-        cout << "No se puede aplicar descuento porque hay un menú en la venta. Se continuará sin descuento." << endl;
+        throw invalid_argument("No se puede aplicar descuento porque hay un menu en la venta.");
         ventaTemporal->setDescuento(0);
         ventaTemporal->setTotal(ventaTemporal->getSubTotal());
         return;
@@ -1513,7 +1601,10 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
     //factura->setProducto(productos);
     ventaTemporal->setFactura(factura);
 
-    // Liberar las mesas de la venta finalizada
+    //desactivar la venta al generar la factura
+    ventaTemporal->setActiva(false);
+
+    //liberar las mesas de la venta finalizada
     Local* ventaLocal = dynamic_cast<Local*>(ventaTemporal);
     if (ventaLocal) {
         ICollection* mesas = ventaLocal->getMesas();
@@ -1521,7 +1612,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
         while (itMesas->hasCurrent()) {
             Mesa* mesa = dynamic_cast<Mesa*>(itMesas->getCurrent());
             if (mesa) {
-                mesa->setLocal(nullptr); // Liberar la mesa
+                mesa->setLocal(nullptr); //liberar la mesa
             }
             itMesas->next();
         }
@@ -1532,7 +1623,6 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura) {
 
     return facturaDTO;
 }
-
 
 /* ----------- BAJA DE PRODUCTO ------------- */
 
