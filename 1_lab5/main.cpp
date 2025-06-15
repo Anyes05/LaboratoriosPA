@@ -555,27 +555,38 @@ void menuAdministrador(ISistema *sistema)
                 bool esMenu = sistema->ingresarCodigoProducto(codigoProducto);
                 if (esMenu)
                 {
-                    productos = sistema->infoProductosIncluidosMenu();
-                    if (productos->isEmpty())
-                    {
-                        cout << "El menú no tiene productos incluidos." << endl;
-                    }
-                    else
-                    {
-                        cout << "Productos incluidos en el menú:" << endl;
-                        IIterator *itMenu = productos->getIterator();
-                        while (itMenu->hasCurrent())
-                        {
-                            DtComun *dtComun = dynamic_cast<DtComun *>(itMenu->getCurrent());
-                            if (dtComun)
-                            {
-                                cout << "Código: " << dtComun->getCodigo() << " | Descripción: " << dtComun->getdescripcion() << " | Precio: " << dtComun->getprecio() << " | Cantidad Vendida:" << dtComun->getCantidadVendida() << endl;
+                    ICollection* menuYProductos = sistema->infoProductosIncluidosMenu();
+                    IIterator* itMenu = menuYProductos->getIterator();
+                    bool primero = true;
+                    while (itMenu->hasCurrent()) {
+                        DtProducto* dt = dynamic_cast<DtProducto*>(itMenu->getCurrent());
+                        if (dt) {
+                            if (primero) {
+                                DtMenu* dtMenu = dynamic_cast<DtMenu*>(dt);
+                                if (!dtMenu) {
+                                    throw std::runtime_error("No es menú válido.");
+                                }
+                                cout << "Información del menú:" << endl;
+                                cout << "Nombre: " << dtMenu->getNombre() << endl;
+                                cout << "Código: " << dtMenu->getCodigo() << endl;
+                                cout << "Descripción: " << dtMenu->getdescripcion() << endl;
+                                cout << "Precio: " << dtMenu->getprecio() << endl;
+                                cout << "Cantidad Vendida: " << dtMenu->getCantidadVendida() << endl;
+                                cout << "Productos incluidos:" << endl;
+                                primero = false;
+                            } else {
+                                DtComun* dtComun = dynamic_cast<DtComun*>(dt);
+                                cout << "Código: " << dtComun->getCodigo()
+                                     << " | Descripción: " << dtComun->getdescripcion()
+                                     << " | Precio: " << dtComun->getprecio()
+                                     << " | Cantidad en menú: " << dtComun->getCantidadVendida() << endl;
                             }
-                            itMenu->next();
                         }
-                        delete itMenu;
+                        itMenu->next();
                     }
-                }
+                    delete itMenu;
+                    delete menuYProductos;
+                }   
                 else
                 {
                     DtProducto *dtProducto = sistema->infoProducto();
@@ -591,14 +602,13 @@ void menuAdministrador(ISistema *sistema)
                     {
                         cout << "No se encontró información para el producto con código: " << codigoProducto << endl;
                     }
-
                 }
-                delete productos; // Liberar memoria de la colección
             }
             catch(const std::exception& e)
             {
                 std::cerr << e.what() << '\n';
             }
+            delete productos; // Liberar memoria de la colección
             break;
         }
 /*        case 8:
@@ -916,11 +926,31 @@ void menuMozo(ISistema *sistema)
         case 4: {
             try {
                 int nroMesa;
-                cout << "Ingrese el número de la mesa: ";
+                cout << "Ingrese el número de la mesa principal: ";
                 cin >> nroMesa;
 
                 // Finalizar la venta
                 DtVenta ventaDTO = sistema->finalizarVenta(nroMesa);
+
+                // Preguntar si quiere agregar otra mesa
+                char agregarMesa = 's';
+                while (agregarMesa == 's' || agregarMesa == 'S') {
+                    cout << "¿Desea agregar otra mesa a esta factura? (s/n): ";
+                    cin >> agregarMesa;
+
+                    if (agregarMesa == 's' || agregarMesa == 'S') {
+                        int nroMesaAgregar;
+                        cout << "Ingrese el número de la mesa a agregar: ";
+                        cin >> nroMesaAgregar;
+
+                        try {
+                           // sistema->agregarMesaAFacturacion(nroMesaAgregar);
+                            cout << "Mesa "<< nroMesaAgregar << " agregada a la facturación." << endl;
+                        } catch (const exception& e) {
+                            cout << "Error al agregar mesa: " << e.what() << endl;
+                        }
+                    }
+                }
 
                 char desc;
                 cout << "¿Desea aplicar un descuento? (s/n): ";
@@ -941,7 +971,7 @@ void menuMozo(ISistema *sistema)
 
                 // factura con fecha
                 DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
-                
+
 
                 // Mostrar datos
                 cout << "\n------ FACTURA ------\n";

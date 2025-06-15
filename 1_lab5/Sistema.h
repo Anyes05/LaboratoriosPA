@@ -125,6 +125,7 @@ public:
     DtVenta finalizarVenta(int nroMesa);
     void aplicarDescuento(int descuento);
     DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura);
+    void agregarMesaAFacturacion(int nroMesa);
     // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
     // void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
@@ -134,6 +135,7 @@ public:
     bool ingresarCodigoProducto(char codigo);
     DtProducto* infoProducto();
     ICollection* infoProductosIncluidosMenu();  
+    IDictionary* obtenerProductosMenu(char codigoMenu); // Devuelve un diccionario de DtProducto AUXULIAR
     
     /*------ BAJA PRODUCTO ------*/
     ICollection *mostrarProductos(); // devuele una coleccion de DtProducto

@@ -90,6 +90,7 @@ public:
     virtual bool ingresarCodigoProducto(char codigo) = 0;
     virtual DtProducto* infoProducto() = 0;
     virtual ICollection* infoProductosIncluidosMenu() = 0;
+    virtual IDictionary* obtenerProductosMenu(char codigoMenu) = 0; // Devuelve un diccionario de DtProducto AUXULIAR
 
     /*------ BAJA PRODUCTO ------*/
     virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
