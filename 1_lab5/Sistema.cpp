@@ -657,7 +657,6 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         Mozo *mozo = dynamic_cast<Mozo *>(current);
         if (mozo == nullptr)
         {
-            cout << "Error: Un elemento en la colección de mozos no es Mozo." << endl;
             it->next();
             continue;
         }
@@ -674,7 +673,6 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
             IKey *keyMesa = new Integer(mesaActual);
             if (mesas->member(keyMesa))
             {
-                cout << "Advertencia: Ya existe una mesa con número " << mesaActual << ". No se agregará de nuevo." << endl;
                 delete keyMesa;
                 delete nuevaMesa;
             }
@@ -1210,9 +1208,13 @@ ICollection *Sistema::productosVenta() // me devuelve un set de DtProducto
         if (pedido != nullptr)
         {
             Producto *producto = pedido->getProducto();
-            // Si es un pedido, obtenemos el DtProducto del producto asociado
-            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio(), producto->getCantidadVendida());
-            productos->add(dtProducto); // Agregar el DtProducto a la colección
+            DtPedido *dtPedido = new DtPedido(
+                pedido->getCantProductos(),
+                producto->getCodigo(),
+                producto->getDescripcion(),
+                producto->getPrecio()
+            );
+            productos->add(dtPedido);
         }
 
         it->next();
@@ -1239,8 +1241,15 @@ ICollection *Sistema::pedidosVentaActual()
     while (it->hasCurrent())
     {
         Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
-        if (pedido)
-            pedidos->add(pedido);
+        if (pedido) {
+            Producto *prod = pedido->getProducto();
+            pedidos->add(new DtPedido(
+                pedido->getCantProductos(),
+                prod->getCodigo(),
+                prod->getDescripcion(),
+                prod->getPrecio()
+            ));
+        }
         it->next();
     }
     delete it;
@@ -1715,11 +1724,11 @@ ICollection *Sistema::retornarMenus()
 
 void Sistema::darBajaProducto()
 {
+    bool esMenu = dynamic_cast<Menu *>(productoBaja);
+    char codStr[2] = {productoBaja->getCodigo(), '\0'};
+    IKey *key = new String(codStr);
     if (ventas->isEmpty()) // Me fijo si no hay ventas (mejor caso), asi que solo elimno el producto de la coleccion de productos
     {
-        bool esMenu = dynamic_cast<DtMenu *>(productoBaja->getDT());
-        char codStr[2] = {productoBaja->getCodigo(), '\0'};
-        IKey *key = new String(codStr);
         if (!esMenu)
         {
             // Buscar en todos los menús y eliminar la referencia si existe
@@ -1729,14 +1738,11 @@ void Sistema::darBajaProducto()
                 Menu *menu = dynamic_cast<Menu *>(itProd->getCurrent());
                 if (menu)
                 {
-                    std::cout << "[Depuración] Antes de eliminar Producto Común: " << menu->getCodigo() << std::endl;
                     menu->eliminarProductoComun(productoBaja->getCodigo());
-                    std::cout << "[Depuración] Después de eliminar Producto Común: " << menu->getCodigo() << std::endl;
                     if (menu->getProductosComunes()->isEmpty())
                     {
                         char codMenuStr[2] = {menu->getCodigo(), '\0'};
                         IKey *keyMenu = new String(codMenuStr);
-                        std::cout << "[Depuración] Eliminando menú vacío: " << menu->getCodigo() << std::endl;
                         menu->darBaja();
                         productos->remove(keyMenu);
                         delete keyMenu;
@@ -1754,15 +1760,24 @@ void Sistema::darBajaProducto()
             }
             delete itProd;
         }
-        std::cout << "[Depuración] Eliminando producto de la colección principal: " << productoBaja->getCodigo() << std::endl;
+        if (esMenu)
+        {
+            // Si es un menú, eliminarlo directamente
+            Menu *menu = dynamic_cast<Menu *>(productoBaja);
+            if (menu != nullptr)
+            {
+                menu->darBaja();
+            }
+            else
+                throw runtime_error("El producto seleccionado no es un menú válido.");
+        }
         productos->remove(key);
         delete productoBaja;
         delete key;
         productoBaja = nullptr;
-        std::cout << "[Depuración] Baja de producto finalizada correctamente." << std::endl;
         return;
     }
-    else
+    else // cuando si hay ventas 
     {
         IIterator *it = ventas->getIterator();
         bool encontrado = false;
@@ -1773,8 +1788,6 @@ void Sistema::darBajaProducto()
             if (venta != nullptr && venta->getActiva() == true)
             {
                 IDictionary *productosVenta = venta->getProductos();
-                char codStr[2] = {productoBaja->getCodigo(), '\0'};
-                IKey *key = new String(codStr);
                 if (productosVenta->member(key))
                 {
                     delete key;
@@ -1784,8 +1797,78 @@ void Sistema::darBajaProducto()
             }
             it->next();
         }
+        delete it;
+        if (!esMenu) {
+            IIterator *it = ventas->getIterator();
+            while (it->hasCurrent())
+            {
+                Venta *venta = dynamic_cast<Venta *>(it->getCurrent());
+                if (venta != nullptr)
+                {
+                    IDictionary *productosVenta = venta->getProductos();
+                    if (productosVenta->member(key))
+                    {
+                        venta->eliminarProductoVenta(productoBaja->getCodigo());
+                    }
+                    Menu *menu = dynamic_cast<Menu *>(productoBaja);
+                    IIterator *itProd = productos->getIterator();
+                    if (menu != nullptr) {
+                        menu->eliminarProductoComun(productoBaja->getCodigo());
+                    if (menu->getProductosComunes()->isEmpty())
+                    {
+                        char codMenuStr[2] = {menu->getCodigo(), '\0'};
+                        IKey *keyMenu = new String(codMenuStr);
+                        menu->darBaja();
+                        productos->remove(keyMenu);
+                        delete keyMenu;
+                        delete itProd;
+                        itProd = productos->getIterator();
+                        if (!itProd->hasCurrent())
+                        {
+                            delete itProd;
+                            break;
+                        }
+                        continue;
+                    }
+                    }
+
+                }
+                it->next();
+            }
+        }
+        else if (esMenu) // Si es un menú, eliminarlo directamente
+        {
+            IIterator *it = ventas->getIterator();
+            while (it->hasCurrent())
+            {
+                Venta *venta = dynamic_cast<Venta *>(it->getCurrent());
+                if (venta != nullptr)
+                {
+                    IDictionary *productosVenta = venta->getProductos();
+                    if (productosVenta->member(key))
+                    {
+                        venta->eliminarProductoVenta(productoBaja->getCodigo());
+                    }
+
+                }
+                it->next();
+            }
+            Menu *menu = dynamic_cast<Menu *>(productoBaja);
+            if (menu != nullptr)
+            {
+                menu->darBaja();
+            }
+            else
+                throw runtime_error("El producto seleccionado no es un menú válido.");
+        
+        
+        }
+    productos->remove(key);
+    delete productoBaja;
+    delete key;
+    productoBaja = nullptr;
+    return;
     }
-    bool esMenu = dynamic_cast<DtMenu *>(productoBaja->getDT());
 }
 
 /* ----------- INFORMACION DE UN PRODUCTO ------------- */

@@ -1,24 +1,37 @@
+
 #include "DtPedido.h"
 
-DtPedido::DtPedido(int codigoProducto, string descripcion, float precioUnitario, int cantidad) {
-    this->codigoProducto = codigoProducto;
+DtPedido::DtPedido(int cant, char codigo, string descripcion, float precio)
+{
+    this->cantProductos = cant;
+    this->codigo = codigo;
     this->descripcion = descripcion;
-    this->precioUnitario = precioUnitario;
-    this->cantidad = cantidad;
+    this->precio = precio;
 }
 
-int DtPedido::getCodigoProducto() {
-    return this->codigoProducto;
+DtPedido::DtPedido() {
+    this->cantProductos = 0;
+    this->codigo = '\0';
+    this->descripcion = "";
+    this->precio = 0.0;
 }
 
-string DtPedido::getDescripcion() {
+DtPedido::~DtPedido(){}
+
+int DtPedido::getCantProductos() {
+    return this->cantProductos;
+}
+
+char DtPedido::getCodigo(){
+    return this->codigo;
+}
+
+string DtPedido::getdescripcion(){
     return this->descripcion;
 }
 
-float DtPedido::getPrecioUnitario() {
-    return this->precioUnitario;
+float DtPedido::getprecio(){
+    return this->precio;
 }
 
-int DtPedido::getCantidad() {
-    return this->cantidad;
-}
+

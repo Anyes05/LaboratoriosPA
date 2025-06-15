@@ -11,18 +11,7 @@ Menu::Menu(char codigo, string descripcion, float precio, string nombre, float d
 
 // destrcutor
 Menu::~Menu() {
-    std::cout << "[Depuración] Destructor de Menu llamado para: " << this->nombre << " (" << this->getCodigo() << ")" << std::endl;
-    std::cout << "[Depuración] Direcciones antes de liberar: productosComunes=" << productosComunes << ", comun_menu=" << comun_menu << std::endl;
-    if (productosComunes != nullptr) {
-        delete productosComunes;
-        productosComunes = nullptr;
-        std::cout << "[Depuración] productosComunes liberado." << std::endl;
-    }
-    if (comun_menu != nullptr) {
-        delete comun_menu;
-        comun_menu = nullptr;
-        std::cout << "[Depuración] comun_menu liberado." << std::endl;
-    }
+    
 }
 
 // getters y setters
@@ -93,49 +82,28 @@ bool Menu::contieneProducto(char codigo)
 
 void Menu::eliminarProductoComun(char codigo)
 {
-    std::cout << "[Depuración] INICIO eliminarProductoComun para código: " << codigo << std::endl;
-    std::cout << "[Depuración] Direcciones: productosComunes=" << productosComunes << ", comun_menu=" << comun_menu << std::endl;
     char codStr[2] = {codigo, '\0'};
     IKey *key = new String(codStr);
 
     // 1. Eliminar de comun_menu
     if (comun_menu) {
-        std::cout << "[Depuración] comun_menu existe. Buscando clave..." << std::endl;
         if (comun_menu->member(key)) {
-            std::cout << "[Depuración] Clave encontrada en comun_menu. Intentando hacer cast a Comun_Menu..." << std::endl;
             Comun_Menu* relacion = dynamic_cast<Comun_Menu*>(comun_menu->find(key));
             if (relacion) {
-                std::cout << "[Depuración] Cast a Comun_Menu exitoso. Eliminando relación..." << std::endl;
                 comun_menu->remove(key);
-                std::cout << "[Depuración] Relación eliminada. Liberando memoria de la relación..." << std::endl;
                 delete relacion;
-                std::cout << "[Depuración] Memoria de la relación liberada." << std::endl;
-            } else {
-                std::cout << "[Advertencia] No se pudo hacer cast a Comun_Menu para código: " << codigo << std::endl;
-            }
-        } else {
-            std::cout << "[Advertencia] Clave NO encontrada en comun_menu para código: " << codigo << std::endl;
-        }
-    } else {
-        std::cout << "[Error] comun_menu es nullptr!" << std::endl;
+            } 
+        } 
     }
 
     // 2. Eliminar de productosComunes
     if (productosComunes) {
-        std::cout << "[Depuración] productosComunes existe. Buscando clave..." << std::endl;
         if (productosComunes->member(key)) {
-            std::cout << "[Depuración] Clave encontrada en productosComunes. Eliminando referencia..." << std::endl;
             productosComunes->remove(key); // Solo elimina la referencia, NO el objeto
-            std::cout << "[Depuración] Referencia eliminada de productosComunes." << std::endl;
-        } else {
-            std::cout << "[Advertencia] Clave NO encontrada en productosComunes para código: " << codigo << std::endl;
-        }
-    } else {
-        std::cout << "[Error] productosComunes es nullptr!" << std::endl;
-    }
+        } 
+    } 
 
     delete key;
-    std::cout << "[Depuración] FIN eliminarProductoComun para código: " << codigo << std::endl;
 }
 
 bool Menu::esVacio(Menu *menu)

@@ -562,69 +562,85 @@ void menuAdministrador(ISistema *sistema)
                 it->next();
             }
             delete it;
-            cout << "Ingrese el código del producto para ver más detalles: ";
+
             char codigoProducto;
-            cin >> codigoProducto;
-            cin.ignore();
-            try
-            {
-                bool esMenu = sistema->ingresarCodigoProducto(codigoProducto);
-                if (esMenu)
-                {
-                    ICollection* menuYProductos = sistema->infoProductosIncluidosMenu();
-                    IIterator* itMenu = menuYProductos->getIterator();
-                    bool primero = true;
-                    while (itMenu->hasCurrent()) {
-                        DtProducto* dt = dynamic_cast<DtProducto*>(itMenu->getCurrent());
-                        if (dt) {
-                            if (primero) {
-                                DtMenu* dtMenu = dynamic_cast<DtMenu*>(dt);
-                                if (!dtMenu) {
-                                    throw std::runtime_error("No es menú válido.");
+            while (true) {
+                cout << "Ingrese el código del producto para ver más detalles: ";
+                cin >> codigoProducto;
+                cin.ignore();
+                if (!sistema->existeProducto(codigoProducto)) {
+                    cout << "No existe un producto con ese código." << endl;
+                    cout << "¿Desea intentar con otro código? (S/N): ";
+                    char reintentar;
+                    cin >> reintentar;
+                    cin.ignore();
+                    if (reintentar != 'S' && reintentar != 's') {
+                        delete productos;
+                        break;
+                    }
+                } else {
+                    try
+                    {
+                        bool esMenu = sistema->ingresarCodigoProducto(codigoProducto);
+                        if (esMenu)
+                        {
+                            ICollection* menuYProductos = sistema->infoProductosIncluidosMenu();
+                            IIterator* itMenu = menuYProductos->getIterator();
+                            bool primero = true;
+                            while (itMenu->hasCurrent()) {
+                                DtProducto* dt = dynamic_cast<DtProducto*>(itMenu->getCurrent());
+                                if (dt) {
+                                    if (primero) {
+                                        DtMenu* dtMenu = dynamic_cast<DtMenu*>(dt);
+                                        if (!dtMenu) {
+                                            throw std::runtime_error("No es menú válido.");
+                                        }
+                                        cout << "Información del menú:" << endl;
+                                        cout << "Nombre: " << dtMenu->getNombre() << endl;
+                                        cout << "Código: " << dtMenu->getCodigo() << endl;
+                                        cout << "Descripción: " << dtMenu->getdescripcion() << endl;
+                                        cout << "Precio: " << dtMenu->getprecio() << endl;
+                                        cout << "Cantidad Vendida: " << dtMenu->getCantidadVendida() << endl;
+                                        cout << "Productos incluidos:" << endl;
+                                        primero = false;
+                                    } else {
+                                        DtComun* dtComun = dynamic_cast<DtComun*>(dt);
+                                        cout << "Código: " << dtComun->getCodigo()
+                                            << " | Descripción: " << dtComun->getdescripcion()
+                                            << " | Precio: " << dtComun->getprecio()
+                                            << " | Cantidad en menú: " << dtComun->getCantidadVendida() << endl;
+                                    }
                                 }
-                                cout << "Información del menú:" << endl;
-                                cout << "Nombre: " << dtMenu->getNombre() << endl;
-                                cout << "Código: " << dtMenu->getCodigo() << endl;
-                                cout << "Descripción: " << dtMenu->getdescripcion() << endl;
-                                cout << "Precio: " << dtMenu->getprecio() << endl;
-                                cout << "Cantidad Vendida: " << dtMenu->getCantidadVendida() << endl;
-                                cout << "Productos incluidos:" << endl;
-                                primero = false;
-                            } else {
-                                DtComun* dtComun = dynamic_cast<DtComun*>(dt);
-                                cout << "Código: " << dtComun->getCodigo()
-                                     << " | Descripción: " << dtComun->getdescripcion()
-                                     << " | Precio: " << dtComun->getprecio()
-                                     << " | Cantidad en menú: " << dtComun->getCantidadVendida() << endl;
+                                itMenu->next();
+                            }
+                            delete itMenu;
+                            delete menuYProductos;
+                        }   
+                        else
+                        {
+                            DtProducto *dtProducto = sistema->infoProducto();
+                            if (dtProducto)
+                            {
+                                cout << "Código: " << dtProducto->getCodigo() << endl;
+                                cout << "Descripción: " << dtProducto->getdescripcion() << endl;
+                                cout << "Precio: " << dtProducto->getprecio() << endl;
+                                cout << "Cantidad Vendida: " << dtProducto->getCantidadVendida() << endl;
+                                delete dtProducto; // Liberar memoria del DtProducto
+                            }
+                            else
+                            {
+                                cout << "No se encontró información para el producto con código: " << codigoProducto << endl;
                             }
                         }
-                        itMenu->next();
                     }
-                    delete itMenu;
-                    delete menuYProductos;
-                }   
-                else
-                {
-                    DtProducto *dtProducto = sistema->infoProducto();
-                    if (dtProducto)
+                    catch(const std::exception& e)
                     {
-                        cout << "Código: " << dtProducto->getCodigo() << endl;
-                        cout << "Descripción: " << dtProducto->getdescripcion() << endl;
-                        cout << "Precio: " << dtProducto->getprecio() << endl;
-                        cout << "Cantidad Vendida: " << dtProducto->getCantidadVendida() << endl;
-                        delete dtProducto; // Liberar memoria del DtProducto
+                        std::cerr << e.what() << '\n';
                     }
-                    else
-                    {
-                        cout << "No se encontró información para el producto con código: " << codigoProducto << endl;
-                    }
+                    delete productos; // Liberar memoria de la colección
+                    break; // Salir del bucle después de mostrar la info
                 }
             }
-            catch(const std::exception& e)
-            {
-                std::cerr << e.what() << '\n';
-            }
-            delete productos; // Liberar memoria de la colección
             break;
         }
         case 7: {
@@ -922,6 +938,7 @@ void menuMozo(ISistema *sistema)
         {
             (void)system ("clear");
             cout << "QUITAR PRODUCTO DE UNA VENTA" << endl;
+            cout << endl; 
             cout << "Ingrese el número de una de las mesas involucradas en la venta: ";
             int idMesa;
             cin >> idMesa;
@@ -936,12 +953,16 @@ void menuMozo(ISistema *sistema)
                 sistema->ingresarMesa(idMesa);
                 ICollection *productos = sistema->productosVenta();
                 IIterator *it = productos->getIterator();
+                cout << "Productos en la venta actual: " << endl;
                 while (it->hasCurrent())
                 {
-                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
-                    if (dtProducto)
+                    DtPedido *dtPedido = dynamic_cast<DtPedido *>(it->getCurrent());
+                    if (dtPedido)
                     {
-                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() <<  endl;
+                        cout << "Código: " << dtPedido->getCodigo()
+                            << " | Descripción: " << dtPedido->getdescripcion()
+                            << " | Cantidad: " << dtPedido->getCantProductos()
+                            << endl;
                     }
                     it->next();
                 }
@@ -970,22 +991,21 @@ void menuMozo(ISistema *sistema)
                         {
                             sistema->quitarProductoVenta();
                             cout << "Producto quitado de la venta correctamente." << endl;
+                            cout << endl;
                             // Me muestra los productos actuales en la venta, lo dejo, no? Esta mas visual asi <- <- <-
                             try {
-                                ICollection *productosActuales = sistema->pedidosVentaActual();
+                                ICollection *productosActuales = sistema->productosVenta();
                                 IIterator *it2 = productosActuales->getIterator();
                                 cout << "Productos actuales en la venta:" << endl;
                                 while (it2->hasCurrent())
                                 {
-                                    // Aquí accedemos al Pedido para mostrar la cantidad
-                                    Pedido *pedido = dynamic_cast<Pedido *>(it2->getCurrent());
-                                    if (pedido)
+                                    DtPedido *dtPedido = dynamic_cast<DtPedido *>(it2->getCurrent());
+                                    if (dtPedido)
                                     {
-                                        Producto *prod = pedido->getProducto();
-                                        cout << "Código: " << prod->getCodigo()
-                                            << " | Descripción: " << prod->getDescripcion()
-                                            << " | Cantidad: " << pedido->getCantProductos()
-                                            << endl;
+                                        cout << "Código: " << dtPedido->getCodigo()
+                                        << " | Descripción: " << dtPedido->getdescripcion()
+                                        << " | Cantidad: " << dtPedido->getCantProductos()
+                                        << endl;
                                     }
                                     it2->next();
                                 }

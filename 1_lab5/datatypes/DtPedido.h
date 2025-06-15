@@ -1,25 +1,28 @@
+
 #ifndef DTPEDIDO_H
 #define DTPEDIDO_H
 
-#include <string>
+#include <iostream>
 #include "../ICollection/interfaces/ICollectible.h"
 
 using namespace std;
 
-class DtPedido : public ICollectible {
+class DtPedido : public ICollectible
+{
 private:
-    int codigoProducto;
+    int cantProductos;
+    char codigo;
     string descripcion;
-    float precioUnitario;
-    int cantidad;
-
+    float precio;
 public:
-    DtPedido(int codigoProducto, string descripcion, float precioUnitario, int cantidad);
-
-    int getCodigoProducto();
-    string getDescripcion();
-    float getPrecioUnitario();
-    int getCantidad();
+    DtPedido(int, char, string, float);
+    virtual ~DtPedido();
+    DtPedido();
+    int getCantProductos();
+    char getCodigo();
+    string getdescripcion();
+    float getprecio();
 };
 
 #endif
+

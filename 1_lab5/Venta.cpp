@@ -87,4 +87,16 @@ void Venta::eliminarProductoVenta(char codigo) {
         productos->remove(key);
     }
     delete key;
+    // Actualizar el total después de eliminar un producto
+    float nuevoSubTotal = 0.0f;
+    IIterator *it = productos->getIterator();
+    while (it->hasCurrent()) {
+        Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
+        if (pedido != nullptr) {
+            nuevoSubTotal += pedido->getProducto()->getPrecio() * pedido->getCantProductos();
+        }
+        it->next();
+    }
+    delete it;
+    this->setSubTotal(nuevoSubTotal);
 }

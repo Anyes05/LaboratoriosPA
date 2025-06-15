@@ -23,6 +23,8 @@
 #include "datatypes/DtMozo.h"
 #include "datatypes/DtTransporte.h"
 
+
+
 class Sistema : public ISistema
 {
 private:
@@ -66,7 +68,7 @@ private:
 public:
     ~Sistema();
     static Sistema *getInstance();
-    // char normalizarProducto(char codigo); // Normaliza el código del producto, si es un número lo convierte a char
+    //char normalizarProducto(char codigo); // Normaliza el código del producto, si es un número lo convierte a char
 
     /*------ ALTA PRODCUTO -----*/
     bool existeProducto(char codigo);                              // retorna true si existe un producto con es codigo
@@ -129,9 +131,6 @@ public:
     void aplicarDescuento(int descuento);
     DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura);
     void agregarMesaAFacturacion(int nroMesa);
-    // ICollectible *mostrarProductos(); // devuele una coleccion de DtProducto
-    // void seleccionarProductoBaja(char codigo);
-    // void darBajaProducto();
 
     /*------ INFORMACION DE UN PRODUCTO ------*/
     ICollection* obtenerProductos();
