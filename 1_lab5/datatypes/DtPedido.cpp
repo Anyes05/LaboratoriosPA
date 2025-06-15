@@ -1,3 +1,4 @@
+
 #include "DtPedido.h"
 
 DtPedido::DtPedido(int cant, char codigo, string descripcion, float precio)
@@ -32,4 +33,5 @@ string DtPedido::getdescripcion(){
 float DtPedido::getprecio(){
     return this->precio;
 }
+
 

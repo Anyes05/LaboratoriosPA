@@ -41,7 +41,7 @@ public:
 
     /*----- ALTA EMPLEADO -----*/
     virtual void agregarEmpleado(string nombre, int idIngresado) = 0;
-    virtual void listarMedioTransporte() = 0; // devuelve una coleccion de DtMedioTransporte
+    virtual ICollection *listarMedioTransporte() = 0; 
     virtual void elegirMedio(int opcion) = 0;
     virtual void darAltaEmpleado() = 0;
     virtual void mostrarEmpleados() = 0;
@@ -65,8 +65,8 @@ public:
     virtual DtFacturaDomicilio confirmarPedido(DtFecha fechaFactura) = 0;
 
     /*------ VENTAS DE UN MOZO ------*/
-    virtual void listarMozos() = 0;
-    virtual void mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2) = 0;
+    virtual ICollection *listarMozos() = 0;
+    virtual ICollection *mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2) = 0;
 
     /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
     virtual ICollection *listarParaAgregar(int idMesa) = 0; // devuele una coleccion de DtProducto
@@ -87,7 +87,7 @@ public:
 
 
     virtual ICollection *pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
-    
+
     /*------ INFORMACION DE UN PRODUCTO ------*/
     virtual ICollection* obtenerProductos() = 0;
     virtual bool ingresarCodigoProducto(char codigo) = 0;

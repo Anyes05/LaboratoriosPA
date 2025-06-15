@@ -20,6 +20,9 @@
 #include "datatypes/DtProducto.h"
 #include "datatypes/DtFacturacionDia.h"
 #include "datatypes/DtPedido.h"
+#include "datatypes/DtMozo.h"
+#include "datatypes/DtTransporte.h"
+
 
 
 class Sistema : public ISistema
@@ -83,7 +86,7 @@ public:
 
     /*------ ALTA EMPLEADO ------*/
     void agregarEmpleado(string nombre, int idIngresado);
-    void listarMedioTransporte(); // devuelve una coleccion de DtMedioTransporte
+    ICollection *listarMedioTransporte(); // devuelve una coleccion de DtTransporte
     void elegirMedio(int opcion);
     void darAltaEmpleado();
     void mostrarEmpleados();
@@ -107,8 +110,8 @@ public:
     DtFacturaDomicilio confirmarPedido(DtFecha fechaFactura);
 
     /*------ VENTAS DE UN MOZO ------*/
-    void listarMozos();
-    void mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
+    ICollection *listarMozos();
+    ICollection *mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
     
     /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
     ICollection *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto

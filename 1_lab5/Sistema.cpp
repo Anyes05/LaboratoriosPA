@@ -527,12 +527,13 @@ bool Sistema::existeEmpleado(int idIngresado)
     return false;
 }
 
-void Sistema::listarMedioTransporte()
-{
-    for (int i = 0; i < cantidadMedios; i++)
-    {
-        cout << (i + 1) << ". " << transporteToString(medios[i]) << endl;
+ICollection* Sistema::listarMedioTransporte() {
+    ICollection* dtMedios = new List();
+    for (int i = 0; i < cantidadMedios; ++i) {
+        DtTransporte* dt = new DtTransporte(i + 1, transporteToString(medios[i]));
+        dtMedios->add(dt);
     }
+    return dtMedios;
 }
 
 void Sistema::elegirMedio(int opcion)
@@ -1325,84 +1326,72 @@ void Sistema::quitarProductoVenta()
 
 /*------ VENTAS DE UN MOZO ------*/
 
-void Sistema::listarMozos()
+ICollection* Sistema::listarMozos()
 {
-
-    IIterator *itMozo = mozos->getIterator();
+    ICollection* dtMozos = new List(); 
+    IIterator* itMozo = mozos->getIterator();
     while (itMozo->hasCurrent())
     {
-        Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
+        Mozo* mozo = dynamic_cast<Mozo*>(itMozo->getCurrent());
         if (mozo != nullptr)
         {
-            cout << "ID: " << mozo->getIdEmpleado() << ", Nombre: " << mozo->getNombre() << endl;
+            DtMozo* dtMozo = new DtMozo(mozo->getIdEmpleado(), mozo->getNombre());
+            dtMozos->add(dtMozo);
         }
         itMozo->next();
     }
     delete itMozo;
+    return dtMozos;
 }
 
-void Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2)
+ICollection *Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2)
 {
-    IIterator *it = ventas->getIterator();
+   ICollection* facturasAMostrar = new List();
+    IIterator* it = ventas->getIterator();
 
-    while (it->hasCurrent())
-    {
-        Venta *venta = dynamic_cast<Venta *>(it->getCurrent());
+    while (it->hasCurrent()) {
+        Venta* venta = dynamic_cast<Venta*>(it->getCurrent());
+        Local* vLocal = dynamic_cast<Local*>(venta);
 
-        Local *vLocal = dynamic_cast<Local *>(venta); // ventas locales
-        if (vLocal != nullptr)
-        {
-            Mozo *mozo = vLocal->getMozo();
-            if (mozo != nullptr && mozo->getIdEmpleado() == idMozo)
-            {
-                Factura *factura = venta->getFactura();
-
-                if (factura != nullptr)
-                {
+        if (vLocal != nullptr) {
+            Mozo* mozo = vLocal->getMozo();
+            if (mozo != nullptr && mozo->getIdEmpleado() == idMozo) {
+                Factura* factura = venta->getFactura();
+                if (factura != nullptr) {
                     DtFecha f = factura->getFecha();
                     if ((f.getAnio() > fecha1.getAnio() || (f.getAnio() == fecha1.getAnio() &&
-                                                            (f.getMes() > fecha1.getMes() || (f.getMes() == fecha1.getMes() && f.getDia() >= fecha1.getDia())))) &&
+                        (f.getMes() > fecha1.getMes() || (f.getMes() == fecha1.getMes() && f.getDia() >= fecha1.getDia())))) &&
                         (f.getAnio() < fecha2.getAnio() || (f.getAnio() == fecha2.getAnio() &&
-                                                            (f.getMes() < fecha2.getMes() || (f.getMes() == fecha2.getMes() && f.getDia() <= fecha2.getDia())))))
-                    {
-                        float subtotal = venta->getSubTotal();
-                        float descuento = venta->getDescuento();
+                        (f.getMes() < fecha2.getMes() || (f.getMes() == fecha2.getMes() && f.getDia() <= fecha2.getDia()))))) {
 
-                        cout << "Factura N°: " << venta->getNumero() << "\n";
-                        cout << "Fecha: " << f.getDia() << "/" << f.getMes() << "/" << f.getAnio() << "\n";
+                        // ICollection* de DtPedido
+                        ICollection* productos = new List();
+                        IDictionary* prodPedidos = venta->getProductos();
+                        IIterator* itPedidos = prodPedidos->getIterator();
 
-                        cout << "Productos:\n";
-                        IDictionary *prodPedidos = venta->getProductos();
-                        IIterator *itPedidos = prodPedidos->getIterator();
-                        while (itPedidos->hasCurrent())
-                        {
-                            Pedido *pedido = dynamic_cast<Pedido *>(itPedidos->getCurrent());
-                            if (pedido != nullptr)
-                            {
-                                Producto *p = pedido->getProducto();
-                                int cantidad = pedido->getCantProductos();
-
-                                cout << "- " << p->getDescripcion() << " x " << cantidad
-                                     << " ($" << p->getPrecio() << " c/u)" << endl;
+                        while (itPedidos->hasCurrent()) {
+                            Pedido* pedido = dynamic_cast<Pedido*>(itPedidos->getCurrent());
+                            if (pedido != nullptr) {
+                                Producto* p = pedido->getProducto();
+                                DtPedido* dtPedido = new DtPedido(pedido->getCantProductos(),p->getCodigo(),p->getDescripcion(),p->getPrecio());
+                                productos->add(dtPedido);
                             }
                             itPedidos->next();
                         }
                         delete itPedidos;
 
-                        float montoConDescuento = subtotal * (1 - descuento / 100);
-                        float totalConIVA = montoConDescuento * 1.22f; // IVA 22%
+                        DtFactura* dtf = new DtFactura(venta->getNumero(),factura->getFecha(),productos,venta->getDescuento(),venta->getSubTotal());
 
-                        cout << "Subtotal: $" << subtotal << "\n";
-                        cout << "Descuento: " << descuento << "%\n";
-                        cout << "Monto con descuento: $" << montoConDescuento << "\n";
-                        cout << "Total con IVA: $" << totalConIVA << "\n";
-                        cout << "-----------------------------\n";
+                        facturasAMostrar->add(dtf);
                     }
                 }
             }
         }
         it->next();
     }
+    delete it;
+
+    return facturasAMostrar;
 }
 
 /*------ FACTURACION DE UNA VENTA ------*/
@@ -1551,6 +1540,7 @@ void Sistema::agregarMesaAFacturacion(int nroMesa)
 
 void Sistema::aplicarDescuento(int descuento)
 {
+
     if (!ventaTemporal)
         throw invalid_argument("No hay venta seleccionada para aplicar descuento.");
 
@@ -2018,6 +2008,7 @@ IDictionary *Sistema::obtenerProductosMenu(char codigoMenu)
     return menu->getComun_Menu();
 }
 
+
 /*------ RESUMEN FACTURACION DE UN DIA ------*/
 DtFacturacionDia *Sistema::mostrarInforme(DtFecha fecha)
 {
@@ -2105,3 +2096,4 @@ DtFacturacionDia *Sistema::mostrarInforme(DtFecha fecha)
     DtFacturacionDia *resultado = new DtFacturacionDia(fecha, facturasLocales, facturasDomicilio, montoTotalFacturado);
     return resultado;
 }
+

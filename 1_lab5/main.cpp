@@ -285,7 +285,16 @@ void menuAdministrador(ISistema *sistema)
 
             if (esRepartidor == 's' || esRepartidor == 'S'){
                 cout << "Seleccione un medio de transporte:" << endl;
-                sistema->listarMedioTransporte();
+                ICollection* dtMedios = sistema->listarMedioTransporte();
+                IIterator* itMedios = dtMedios->getIterator();
+
+                // 2) La imprimimos
+                while (itMedios->hasCurrent()) {
+                        DtTransporte* dt = dynamic_cast<DtTransporte*>(itMedios->getCurrent());
+                        cout << dt->getId() << ". " << dt->getDescripcion() << endl;
+                        itMedios->next();
+                }
+                delete itMedios;
 
                 int opcion;
                 entradaValida = false;
@@ -1074,7 +1083,7 @@ void menuMozo(ISistema *sistema)
                 cin >> dia >> mes >> anio;
                 DtFecha fechaFactura(dia, mes, anio);
 
-                // Generar factura con fecha
+                // factura con fecha
                 DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
 
 
@@ -1113,7 +1122,19 @@ void menuMozo(ISistema *sistema)
         {
                 (void)system("clear");
             cout << "--- MOSTRAR VENTAS DE UN MOZO ---" << endl;
-            sistema->listarMozos(); cout << endl;
+            ICollection* dtMozos = sistema->listarMozos();
+            IIterator* it = dtMozos->getIterator();
+            while (it->hasCurrent()) {
+                DtMozo* dtMozo = dynamic_cast<DtMozo*>(it->getCurrent());
+                if (dtMozo != nullptr) {
+                    cout << "ID: " << dtMozo->getIdEmpleado()
+                        << ", Nombre: " << dtMozo->getNombre() << endl;
+                }
+                it->next();
+            }
+            delete it;
+            delete dtMozos;
+
             int idMozo;
             cout << "Ingrese el ID del mozo: ";
             cin >> idMozo;
@@ -1134,8 +1155,45 @@ void menuMozo(ISistema *sistema)
 
             try
             {
-                sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
+                ICollection* facturas = sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
+                IIterator* it = facturas->getIterator();
+
+                while (it->hasCurrent()) {
+                DtFactura* factura = dynamic_cast<DtFactura*>(it->getCurrent());
+
+                cout << "Factura N°: " << factura->getCodigoVenta() << endl;
+                DtFecha f = factura->getFecha();
+                cout << "Fecha: " << f.getDia() << "/" << f.getMes() << "/" << f.getAnio() << endl;
+
+                cout << "Productos:\n";
+                ICollection* productos = factura->getProductos();
+                IIterator* itProd = productos->getIterator();
+                while (itProd->hasCurrent()) {
+                    DtPedido* dtp = dynamic_cast<DtPedido*>(itProd->getCurrent());
+                    cout << "- " << dtp->getdescripcion()
+                        << " x " << dtp->getCantProductos()
+                        << " ($" << dtp->getprecio() << " c/u)" << endl;
+
+                    itProd->next();
+                }
+                delete itProd;
+
+                cout << "Subtotal: $" << factura->getSubtotal() << endl;
+                cout << "Descuento: " << factura->getDescuento() << "%" << endl;
+                cout << "Monto con descuento: $" << factura->getMontoConDescuento() << endl;
+                cout << "Total con IVA: $" << factura->getTotalConIVA() << endl;
+                cout << "-----------------------------" << endl;
+
+                it->next();
             }
+            delete it;
+
+            // Liberar memoria si corresponde (de lo contrario puede haber leaks)
+            // ...
+
+            delete facturas;
+
+        } 
             catch (const std::exception &e)
             {
                 cout << "Error al mostrar ventas: " << e.what() << endl;
