@@ -1170,9 +1170,9 @@ void menuMozo(ISistema *sistema)
                 IIterator* itProd = productos->getIterator();
                 while (itProd->hasCurrent()) {
                     DtPedido* dtp = dynamic_cast<DtPedido*>(itProd->getCurrent());
-                    cout << "- " << dtp->getDescripcion()
-                        << " x " << dtp->getCantidad()
-                        << " ($" << dtp->getPrecioUnitario() << " c/u)" << endl;
+                    cout << "- " << dtp->getdescripcion()
+                        << " x " << dtp->getCantProductos()
+                        << " ($" << dtp->getprecio() << " c/u)" << endl;
 
                     itProd->next();
                 }
