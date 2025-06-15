@@ -15,6 +15,7 @@ using namespace std;
 #include "./datatypes/DtFacturaDomicilio.h"
 #include "./datatypes/Transporte.h"
 #include "./datatypes/DtCliente.h"
+#include "./datatypes/DtFacturacionDia.h"
 
 class DtVenta;
 
@@ -61,7 +62,7 @@ public:
     virtual void agregarProductoPedido(char codigo, int cantidad) = 0;
     virtual ICollection *listarRepartidores() = 0; // Returns a collection of DtRepartidor
     virtual void asignarRepartidorDomicilio(int idRepartidor) = 0;
-    virtual DtFacturaDomicilio confirmarPedido() = 0;
+    virtual DtFacturaDomicilio confirmarPedido(DtFecha fechaFactura) = 0;
 
     /*------ VENTAS DE UN MOZO ------*/
     virtual void listarMozos() = 0;
@@ -82,6 +83,8 @@ public:
     virtual DtVenta finalizarVenta(int nroMesa) = 0;
     virtual void aplicarDescuento(int descuento) = 0;
     virtual DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura) = 0;
+    virtual void agregarMesaAFacturacion(int nroMesa) = 0;
+
 
     virtual ICollection *pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
     
@@ -98,6 +101,8 @@ public:
     virtual void darBajaProducto() = 0;
     virtual ICollection* retornarMenus() = 0;
 
+    /*------ RESUMEN FACTURACION DE UN DIA ------*/
+    virtual DtFacturacionDia *mostrarInforme(DtFecha fecha) = 0;
 };
 
 #endif

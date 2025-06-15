@@ -1,8 +1,8 @@
 INTERFACES = ICollection/interfaces/
 COLECCIONES = ICollection/collections/
 
-all: Cliente.o DtCliente.o DtFactura.o DtFacturaDomicilio.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o OrderedDictionary.o IDictionary.o OrderedDictionaryEntry.o String.o IKey.o OrderedKey.o Integer.o main.o
-	g++ Cliente.o DtCliente.o DtFactura.o DtFacturaDomicilio.o  DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o String.o Integer.o OrderedDictionary.o OrderedKey.o  IDictionary.o OrderedDictionaryEntry.o  IKey.o  -o programa
+all: Cliente.o DtFacturacionDia.o DtCliente.o DtFactura.o DtFacturaDomicilio.o DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o OrderedDictionary.o IDictionary.o OrderedDictionaryEntry.o String.o IKey.o OrderedKey.o Integer.o main.o
+	g++ Cliente.o DtFacturacionDia.o DtCliente.o DtFactura.o DtFacturaDomicilio.o  DtRepartidor.o DtHora.o DtVenta.o DtFecha.o DtMesa.o DtComun.o DtMenu.o DtProducto.o DtAsignacion.o DtDireccion.o Domicilio.o Local.o Venta.o Producto.o Comun.o Comun-Menu.o Menu.o Empleado.o Factura.o Mesa.o Mozo.o Pedido.o Repartidor.o ISistema.o Sistema.o Factory.o ICollectible.o IIterator.o ICollection.o ListNode.o ListIterator.o List.o main.o String.o Integer.o OrderedDictionary.o OrderedKey.o  IDictionary.o OrderedDictionaryEntry.o  IKey.o  -o programa
 
 ICollectible.o: $(INTERFACES)ICollectible.h
 	g++ -c $(INTERFACES)ICollectible.cpp
@@ -79,6 +79,8 @@ DtFactura.o: datatypes/DtFactura.cpp
 DtFacturaDomicilio.o: datatypes/DtFacturaDomicilio.cpp
 	g++ -c datatypes/DtFacturaDomicilio.cpp
 
+DtFacturacionDia.o:
+	g++ -c "datatypes/DtFacturacionDia.cpp"
 
 DtRepartidor.o: datatypes/DtRepartidor.cpp 
 	g++ -c datatypes/DtRepartidor.cpp 

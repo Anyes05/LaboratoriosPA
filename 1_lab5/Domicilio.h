@@ -22,6 +22,7 @@ public:
 
   void agregarPedido(Pedido *pedido);
   DtFacturaDomicilio generarFacturaDomicilio();
+  DtFacturaDomicilio generarFacturaDomicilio(DtFecha fecha);
 private:
   Cliente *cliente;
   Repartidor *repartidor;
