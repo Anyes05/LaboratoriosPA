@@ -1,4 +1,5 @@
 #include "Comun-Menu.h"
+#include <iostream>
 
 using namespace std;
 
@@ -10,7 +11,10 @@ Comun_Menu::Comun_Menu(int cant, Comun *pc)
 }
 
 //destructor
-Comun_Menu::~Comun_Menu(){}
+Comun_Menu::~Comun_Menu()
+{
+    std::cout << "[Depuración] Destructor de Comun_Menu llamado. Puntero productoComun=" << productoComun << std::endl;
+}
 
 int Comun_Menu::getCantProducto(){
     return this->cantProducto;
