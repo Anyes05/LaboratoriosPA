@@ -39,9 +39,7 @@ Sistema::Sistema()
     productoBaja = nullptr;
 }
 
-Sistema::~Sistema()
-{
-}
+Sistema::~Sistema(){}
 
 Sistema *Sistema::getInstance()
 {
@@ -60,9 +58,7 @@ bool Sistema::existeProducto(char codigo)
 {
     // Verificar que la instancia del sistema existe
     if (instance == nullptr)
-    {
         return false;
-    }
     try
     {
         IIterator *it = productos->getIterator();
