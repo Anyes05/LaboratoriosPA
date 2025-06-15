@@ -80,21 +80,11 @@ void Venta::agregarPedido(Pedido* pedido) {
 }
 
 
-/*
-void Venta::eliminarProductoVenta() {
-    if (productos->isEmpty()) {
-        cout << "No hay productos para eliminar." << endl;
-        return;
-    }
-    IKey* key = new String(codigoProducto); 
+void Venta::eliminarProductoVenta(char codigo) {
+    char keyStr[2] = {codigo, '\0'};
+    IKey *key = new String(keyStr);
     if (productos->member(key)) {
         productos->remove(key);
-        cout << "Producto con código " << codigoProducto << " eliminado de la venta." << endl;
-    } 
-    else {
-        cout << "No se encontró el producto con código " << codigoProducto << "." << endl;
     }
-    
+    delete key;
 }
-*/
-

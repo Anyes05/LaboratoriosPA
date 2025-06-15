@@ -611,7 +611,7 @@ void menuAdministrador(ISistema *sistema)
             delete productos; // Liberar memoria de la colección
             break;
         }
-/*        case 8:
+       case 8:
         {
             system("clear");
             cout << "BAJA DE PRODUCTO" << endl;
@@ -668,7 +668,7 @@ void menuAdministrador(ISistema *sistema)
                 cout << "Error: " << e.what() << endl;
             }
             break;
-        }*/
+        }
         default:
             cout << "Opción inválida." << endl;
         }

@@ -45,7 +45,7 @@ public:
     //metodos
     void eliminarMenu(); // donde esta esto en el diagrama de comunicacion? creo que no está o no le corresponde a venta 
     ListNode productosVenta();  
-    void eliminarProductoVenta();
+    void eliminarProductoVenta(char codigo);
     virtual void agregarPedido(Pedido *pedido);
         
 };

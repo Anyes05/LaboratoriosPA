@@ -140,7 +140,8 @@ public:
     /*------ BAJA PRODUCTO ------*/
     ICollection *mostrarProductos(); // devuele una coleccion de DtProducto
     void seleccionarProductoBaja(char codigo);
-    // void darBajaProducto();
+    void darBajaProducto();
+    ICollection* retornarMenus();
     
 
 };
