@@ -98,7 +98,8 @@ public:
     /*------ BAJA PRODUCTO ------*/
     virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     virtual void seleccionarProductoBaja(char codigo) = 0;
-    // virtual void darBajaProducto() = 0;
+    virtual void darBajaProducto() = 0;
+    virtual ICollection* retornarMenus() = 0;
 
     /*------ RESUMEN FACTURACION DE UN DIA ------*/
     virtual DtFacturacionDia *mostrarInforme(DtFecha fecha) = 0;

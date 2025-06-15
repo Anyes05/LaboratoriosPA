@@ -1674,46 +1674,56 @@ void Sistema::seleccionarProductoBaja(char codigo)
     delete key;
 }
 
-/*
+ICollection* Sistema::retornarMenus() {
+    ICollection * menus = new List();
+    IIterator * it = productos->getIterator();
+    
+    while (it->hasCurrent()) {
+        Menu * menuObj = dynamic_cast<Menu *>(it->getCurrent());
+        if (menuObj != nullptr) {
+            DtMenu *dtMenu = dynamic_cast<DtMenu *>(menuObj->getDT());
+            menus->add(dtMenu);
+        }
+        it->next();
+    }
+    delete it;
+    return menus;
+}
 
  void Sistema::darBajaProducto()
- {
-    if (productoBaja == nullptr)
-        throw runtime_error("No hay un producto seleccionado para dar de baja.");
-
-    char codStr[2] = {productoBaja->getCodigo(), '\0'};
-    IKey *keyProducto = new String(codStr);
-
-    // CASO: Si no hay ventas, eliminar directamente el producto. Supongo que esto tiene que estar contemplado
-    if (ventas == nullptr || ventas->isEmpty()) {
-        // Si es un producto común, quitarlo de los menús y eliminar menús vacíos
-        Comun* comun = dynamic_cast<Comun*>(productoBaja);
-        if (comun != nullptr) {
-            bool reiniciarIterador;
-            do {
-                reiniciarIterador = false;
-                IIterator *itProd = productos->getIterator();
-                while (itProd->hasCurrent()) {
-                    Menu *menu = dynamic_cast<Menu *>(itProd->getCurrent());
-                    if (menu) {
-                        menu->eliminarProductoComun(comun->getCodigo());
-                        if (menu->getProductosComunes()->isEmpty()) {
-                            char codMenuStr[2] = {menu->getCodigo(), '\0'};
-                            IKey* keyMenu = new String(codMenuStr);
-                            menu->darBaja();
-                            productos->remove(keyMenu);
-                            // delete menu; // solo si el diccionario no es dueño
-                            delete keyMenu;
-                            delete itProd;
-                            reiniciarIterador = true;
-                            break;
-                        }
+{
+    if (ventas->isEmpty()) // Me fijo si no hay ventas (mejor caso), asi que solo elimno el producto de la coleccion de productos
+    {
+        bool esMenu = dynamic_cast<DtMenu *>(productoBaja->getDT());
+        char codStr[2] = {productoBaja->getCodigo(), '\0'};
+        IKey* key = new String(codStr);
+        if (!esMenu) { // Es producto común
+            // Buscar en todos los menús y eliminar la referencia si existe
+            IIterator* itProd = productos->getIterator();
+            while (itProd->hasCurrent()) {
+                Menu* menu = dynamic_cast<Menu*>(itProd->getCurrent());
+                if (menu) {
+                    // Eliminar el producto común del menú
+                    cout << "Antes de eliminar Producto Común: " << menu->getCodigo() << endl;
+                    menu->eliminarProductoComun(productoBaja->getCodigo());
+                    cout << "Después de eliminar Producto Común: " << menu->getCodigo() << endl;
+                    // Si el menú queda vacío, eliminarlo de productos
+                    if (menu->getProductosComunes()->isEmpty()) {
+                        char codMenuStr[2] = {menu->getCodigo(), '\0'};
+                        IKey* keyMenu = new String(codMenuStr);
+                        menu->darBaja(); // Limpia el menú internamente
+                        productos->remove(keyMenu);
+                        delete keyMenu;
+                        // No hagas delete menu si el diccionario es dueño
+                        // Reinicia el iterador para evitar problemas
+                        delete itProd;
+                        itProd = productos->getIterator();
+                        continue;
                     }
-                    itProd->next();
                 }
-                if (!reiniciarIterador)
-                    delete itProd;
-            } while (reiniciarIterador);
+                itProd->next();
+            }
+            delete itProd;
         }
         productos->remove(keyProducto);
         delete productoBaja; // Liberar memoria del producto
@@ -1796,6 +1806,37 @@ if (ventas == nullptr || ventas->isEmpty()) {
 
  }
  */
+        productos->remove(key);
+        delete productoBaja;
+        delete key;
+        productoBaja = nullptr;
+        return;
+    }
+    else
+    {
+        IIterator *it = ventas->getIterator();
+        bool encontrado = false;
+
+        while (it->hasCurrent()) // Todo este while es para verificar si hay minimo 1 venta activa con el producto, por ende no se puede eliminar y corta todo
+        {
+            Venta *venta = dynamic_cast<Venta *>(it->getCurrent()); 
+            if (venta != nullptr && venta->getActiva() == true)
+            {
+                IDictionary *productosVenta = venta->getProductos();
+                char codStr[2] = {productoBaja->getCodigo(), '\0'};
+                IKey* key = new String(codStr);
+                if (productosVenta->member(key))
+                {
+                    delete key;
+                    delete it;
+                    throw runtime_error("No se puede dar de baja el producto porque está en una venta activa.");
+                }
+            }
+            it->next();
+        }
+    }
+    bool esMenu = dynamic_cast<DtMenu *>(productoBaja->getDT());
+}
 
 /* ----------- INFORMACION DE UN PRODUCTO ------------- */
 

@@ -92,14 +92,30 @@ void Menu::eliminarProductoComun(char codigo)
 {
     char codStr[2] = {codigo, '\0'};
     IKey *key = new String(codStr);
-    if (this->productosComunes->member(key))
-    {
-        this->productosComunes->remove(key);
-        this->comun_menu->remove(key);
+
+    // 1. Acceder a la relación en comun_menu y obtener el puntero a Comun
+    Comun* comun = nullptr;
+
+    if (comun_menu && comun_menu->member(key)) {
+        Comun_Menu* relacion = dynamic_cast<Comun_Menu*>(comun_menu->find(key));
+        cout << relacion->getCantProducto() << endl; // Verificar cantidad antes de eliminar
+        if (relacion) {
+            comun = relacion->getComun(); // OBTENER REFERENCIA ANTES DE BORRAR
+            comun_menu->remove(key);
+            delete relacion; // Elimina solo la relación, NO el Comun*
+        }
     }
+
+    // 2. Ahora eliminar la referencia en productosComunes
+    cout << "Eliminando producto común con código: " << codigo << endl;
+    if (productosComunes && productosComunes->member(key)) {
+        productosComunes->remove(key); // Solo elimina la referencia, NO el objeto
+    }
+
+    // Si necesitas hacer algo con comun, puedes hacerlo aquí antes de borrarlo en el sistema principal
+
     delete key;
 }
-
 bool Menu::esVacio(Menu *menu)
 {
     return menu->getProductosComunes()->isEmpty();
@@ -107,6 +123,7 @@ bool Menu::esVacio(Menu *menu)
 
 void Menu::darBaja()
 {
+    // Eliminar todas las referencias a productos comunes
     IIterator *it = productosComunes->getIterator();
     while (it->hasCurrent())
     {
@@ -124,6 +141,7 @@ void Menu::darBaja()
     }
     delete it;
 
+    // Eliminar todas las relaciones Comun_Menu y liberar memoria
     IIterator* it2 = comun_menu->getIterator();
     while (it2->hasCurrent())
     {
@@ -134,6 +152,7 @@ void Menu::darBaja()
             IKey* key = new String(codigoStr);
             it2->next(); // Avanzar antes de eliminar
             comun_menu->remove(key);
+            delete relacion; // LIBERAR MEMORIA
             delete key;
         } else {
             it2->next();
