@@ -15,6 +15,7 @@ using namespace std;
 #include "./datatypes/DtFacturaDomicilio.h"
 #include "./datatypes/Transporte.h"
 #include "./datatypes/DtCliente.h"
+#include "./datatypes/DtFacturacionDia.h"
 
 class DtVenta;
 
@@ -40,7 +41,7 @@ public:
 
     /*----- ALTA EMPLEADO -----*/
     virtual void agregarEmpleado(string nombre, int idIngresado) = 0;
-    virtual void listarMedioTransporte() = 0; // devuelve una coleccion de DtMedioTransporte
+    virtual ICollection *listarMedioTransporte() = 0; 
     virtual void elegirMedio(int opcion) = 0;
     virtual void darAltaEmpleado() = 0;
     virtual void mostrarEmpleados() = 0;
@@ -61,11 +62,11 @@ public:
     virtual void agregarProductoPedido(char codigo, int cantidad) = 0;
     virtual ICollection *listarRepartidores() = 0; // Returns a collection of DtRepartidor
     virtual void asignarRepartidorDomicilio(int idRepartidor) = 0;
-    virtual DtFacturaDomicilio confirmarPedido() = 0;
+    virtual DtFacturaDomicilio confirmarPedido(DtFecha fechaFactura) = 0;
 
     /*------ VENTAS DE UN MOZO ------*/
-    virtual void listarMozos() = 0;
-    virtual void mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2) = 0;
+    virtual ICollection *listarMozos() = 0;
+    virtual ICollection *mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2) = 0;
 
     /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
     virtual ICollection *listarParaAgregar(int idMesa) = 0; // devuele una coleccion de DtProducto
@@ -82,6 +83,8 @@ public:
     virtual DtVenta finalizarVenta(int nroMesa) = 0;
     virtual void aplicarDescuento(int descuento) = 0;
     virtual DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura) = 0;
+    virtual void agregarMesaAFacturacion(int nroMesa) = 0;
+
 
     virtual ICollection *pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo
 
@@ -95,9 +98,11 @@ public:
     /*------ BAJA PRODUCTO ------*/
     virtual ICollection *mostrarProductos() = 0;                   // devuele una coleccion de DtProducto
     virtual void seleccionarProductoBaja(char codigo) = 0;
+    virtual void darBajaProducto() = 0;
+    virtual ICollection* retornarMenus() = 0;
 
-    //virtual void darBajaProducto() = 0;
-
+    /*------ RESUMEN FACTURACION DE UN DIA ------*/
+    virtual DtFacturacionDia *mostrarInforme(DtFecha fecha) = 0;
 };
 
 #endif

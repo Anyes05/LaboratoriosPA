@@ -37,8 +37,32 @@ DtFacturaDomicilio Domicilio::generarFacturaDomicilio()
     DtRepartidor *dtRepartidor = repartidor->getDtRepartidor();
     DtRepartidor dtRepartidorCopy(dtRepartidor->getIdRepartidor(), dtRepartidor->getNombre(), dtRepartidor->getTransporte());
 
+    // Crear DtCliente con los datos del cliente
+    DtCliente dtCliente(cliente->getTelefono(), cliente->getNombre(), cliente->getDireccion());
+
     // Crear y retornar DtFacturaDomicilio
-    DtFacturaDomicilio factura(dtVenta, dtRepartidorCopy);
+    DtFacturaDomicilio factura(dtVenta, dtRepartidorCopy, dtCliente);
+
+    // Limpiar memoria
+    delete dtRepartidor;
+
+    return factura;
+}
+
+DtFacturaDomicilio Domicilio::generarFacturaDomicilio(DtFecha fecha)
+{
+    // Crear DtVenta con los datos de la venta actual
+    DtVenta dtVenta(getNumero(), getDescuento(), !getActiva(), getTotal());
+
+    // Crear DtRepartidor con los datos del repartidor
+    DtRepartidor *dtRepartidor = repartidor->getDtRepartidor();
+    DtRepartidor dtRepartidorCopy(dtRepartidor->getIdRepartidor(), dtRepartidor->getNombre(), dtRepartidor->getTransporte());
+
+    // Crear DtCliente con los datos del cliente
+    DtCliente dtCliente(cliente->getTelefono(), cliente->getNombre(), cliente->getDireccion());
+
+    // Crear y retornar DtFacturaDomicilio con la fecha proporcionada
+    DtFacturaDomicilio factura(dtVenta, dtRepartidorCopy, dtCliente, fecha);
 
     // Limpiar memoria
     delete dtRepartidor;

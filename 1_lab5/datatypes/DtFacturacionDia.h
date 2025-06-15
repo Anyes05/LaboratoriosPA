@@ -18,7 +18,7 @@ private:
 public:
     DtFacturacionDia();
     DtFacturacionDia(DtFecha fecha, ICollection* facturasLocales, ICollection* facturasDomicilio, float montoTotal);
-    ~DtFacturacionDia();
+    virtual ~DtFacturacionDia();
     
     DtFecha getFecha();
     ICollection* getFacturasLocales();

@@ -18,7 +18,10 @@
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
 #include "datatypes/DtProducto.h"
-
+#include "datatypes/DtFacturacionDia.h"
+#include "datatypes/DtPedido.h"
+#include "datatypes/DtMozo.h"
+#include "datatypes/DtTransporte.h"
 
 class Sistema : public ISistema
 {
@@ -40,7 +43,7 @@ private:
     bool estaEnPedido;                   // Indica si el producto seleccionado está en un pedido
     bool esMenu;                         // Indica si el producto seleccionado es un menú
     char codigoProductoInformar;         // Código del producto seleccionado para informar
-    int cantidadVentas;
+    // int cantidadVentas; // Campo no utilizado
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
@@ -81,7 +84,7 @@ public:
 
     /*------ ALTA EMPLEADO ------*/
     void agregarEmpleado(string nombre, int idIngresado);
-    void listarMedioTransporte(); // devuelve una coleccion de DtMedioTransporte
+    ICollection *listarMedioTransporte(); // devuelve una coleccion de DtTransporte
     void elegirMedio(int opcion);
     void darAltaEmpleado();
     void mostrarEmpleados();
@@ -102,11 +105,11 @@ public:
     void agregarProductoPedido(char codigo, int cantidad);
     ICollection *listarRepartidores(); // Retruna una coleccion de Dtrepartidor
     void asignarRepartidorDomicilio(int idRepartidor);
-    DtFacturaDomicilio confirmarPedido();
+    DtFacturaDomicilio confirmarPedido(DtFecha fechaFactura);
 
     /*------ VENTAS DE UN MOZO ------*/
-    void listarMozos();
-    void mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
+    ICollection *listarMozos();
+    ICollection *mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fecha2);
     
     /*------ AGREGAR PRODUCTO A UNA VENTA ------*/
     ICollection *listarParaAgregar(int idMesa); // devuele una coleccion de DtProducto
@@ -140,9 +143,11 @@ public:
     /*------ BAJA PRODUCTO ------*/
     ICollection *mostrarProductos(); // devuele una coleccion de DtProducto
     void seleccionarProductoBaja(char codigo);
-    // void darBajaProducto();
+    void darBajaProducto();
+    ICollection* retornarMenus();
     
-
+    /*------ RESUMEN FACTURACION DE UN DIA ------*/
+    DtFacturacionDia *mostrarInforme(DtFecha fecha);
 };
 
 #endif
