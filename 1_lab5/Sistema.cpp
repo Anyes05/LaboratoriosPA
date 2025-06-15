@@ -1328,7 +1328,7 @@ void Sistema::quitarProductoVenta()
 
 ICollection* Sistema::listarMozos()
 {
-    ICollection* dtMozos = new List(); // asumiendo que tenés una clase List que implementa ICollection
+    ICollection* dtMozos = new List(); 
     IIterator* itMozo = mozos->getIterator();
     while (itMozo->hasCurrent())
     {
@@ -1364,7 +1364,7 @@ ICollection *Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fech
                         (f.getAnio() < fecha2.getAnio() || (f.getAnio() == fecha2.getAnio() &&
                         (f.getMes() < fecha2.getMes() || (f.getMes() == fecha2.getMes() && f.getDia() <= fecha2.getDia()))))) {
 
-                        // Armar ICollection* de DtPedido
+                        // ICollection* de DtPedido
                         ICollection* productos = new List();
                         IDictionary* prodPedidos = venta->getProductos();
                         IIterator* itPedidos = prodPedidos->getIterator();
@@ -1373,26 +1373,14 @@ ICollection *Sistema::mostrarVentasMozo(int idMozo, DtFecha fecha1, DtFecha fech
                             Pedido* pedido = dynamic_cast<Pedido*>(itPedidos->getCurrent());
                             if (pedido != nullptr) {
                                 Producto* p = pedido->getProducto();
-                                DtPedido* dtPedido = new DtPedido(
-                                    p->getCodigo(),
-                                    p->getDescripcion(),
-                                    p->getPrecio(),
-                                    pedido->getCantProductos()
-                                );
+                                DtPedido* dtPedido = new DtPedido(pedido->getCantProductos(),p->getCodigo(),p->getDescripcion(),p->getPrecio());
                                 productos->add(dtPedido);
                             }
                             itPedidos->next();
                         }
                         delete itPedidos;
 
-                        // Crear DtFactura
-                        DtFactura* dtf = new DtFactura(
-                            venta->getNumero(),
-                            factura->getFecha(),
-                            productos,
-                            venta->getDescuento(),
-                            venta->getSubTotal()
-                        );
+                        DtFactura* dtf = new DtFactura(venta->getNumero(),factura->getFecha(),productos,venta->getDescuento(),venta->getSubTotal());
 
                         facturasAMostrar->add(dtf);
                     }
