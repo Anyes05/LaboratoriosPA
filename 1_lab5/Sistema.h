@@ -18,6 +18,7 @@
 #include "datatypes/DtMenu.h"
 #include "datatypes/DtComun.h"
 #include "datatypes/DtProducto.h"
+#include "datatypes/DtFacturacionDia.h"
 
 
 class Sistema : public ISistema
@@ -40,7 +41,7 @@ private:
     bool estaEnPedido;                   // Indica si el producto seleccionado está en un pedido
     bool esMenu;                         // Indica si el producto seleccionado es un menú
     char codigoProductoInformar;         // Código del producto seleccionado para informar
-    int cantidadVentas;
+    // int cantidadVentas; // Campo no utilizado
     DtComun *productoComunTemp;
     DtMenu *menuTemp;
     IDictionary *productosComunSeleccionados;
@@ -102,7 +103,7 @@ public:
     void agregarProductoPedido(char codigo, int cantidad);
     ICollection *listarRepartidores(); // Retruna una coleccion de Dtrepartidor
     void asignarRepartidorDomicilio(int idRepartidor);
-    DtFacturaDomicilio confirmarPedido();
+    DtFacturaDomicilio confirmarPedido(DtFecha fechaFactura);
 
     /*------ VENTAS DE UN MOZO ------*/
     void listarMozos();
@@ -142,7 +143,8 @@ public:
     void seleccionarProductoBaja(char codigo);
     // void darBajaProducto();
     
-
+    /*------ RESUMEN FACTURACION DE UN DIA ------*/
+    DtFacturacionDia *mostrarInforme(DtFecha fecha);
 };
 
 #endif
