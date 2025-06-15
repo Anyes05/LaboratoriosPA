@@ -19,6 +19,7 @@
 #include "datatypes/DtComun.h"
 #include "datatypes/DtProducto.h"
 #include "datatypes/DtFacturacionDia.h"
+#include "datatypes/DtPedido.h"
 
 
 class Sistema : public ISistema

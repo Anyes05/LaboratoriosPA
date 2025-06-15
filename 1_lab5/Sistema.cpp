@@ -656,7 +656,6 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
         Mozo *mozo = dynamic_cast<Mozo *>(current);
         if (mozo == nullptr)
         {
-            cout << "Error: Un elemento en la colección de mozos no es Mozo." << endl;
             it->next();
             continue;
         }
@@ -673,7 +672,6 @@ ICollection *Sistema::calcularAsignacion(int cantMesas, int cantMozos)
             IKey *keyMesa = new Integer(mesaActual);
             if (mesas->member(keyMesa))
             {
-                cout << "Advertencia: Ya existe una mesa con número " << mesaActual << ". No se agregará de nuevo." << endl;
                 delete keyMesa;
                 delete nuevaMesa;
             }
@@ -1209,9 +1207,13 @@ ICollection *Sistema::productosVenta() // me devuelve un set de DtProducto
         if (pedido != nullptr)
         {
             Producto *producto = pedido->getProducto();
-            // Si es un pedido, obtenemos el DtProducto del producto asociado
-            DtProducto *dtProducto = new DtProducto(producto->getCodigo(), producto->getDescripcion(), producto->getPrecio(), producto->getCantidadVendida());
-            productos->add(dtProducto); // Agregar el DtProducto a la colección
+            DtPedido *dtPedido = new DtPedido(
+                pedido->getCantProductos(),
+                producto->getCodigo(),
+                producto->getDescripcion(),
+                producto->getPrecio()
+            );
+            productos->add(dtPedido);
         }
 
         it->next();
@@ -1238,8 +1240,15 @@ ICollection *Sistema::pedidosVentaActual()
     while (it->hasCurrent())
     {
         Pedido *pedido = dynamic_cast<Pedido *>(it->getCurrent());
-        if (pedido)
-            pedidos->add(pedido);
+        if (pedido) {
+            Producto *prod = pedido->getProducto();
+            pedidos->add(new DtPedido(
+                pedido->getCantProductos(),
+                prod->getCodigo(),
+                prod->getDescripcion(),
+                prod->getPrecio()
+            ));
+        }
         it->next();
     }
     delete it;

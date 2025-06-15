@@ -929,6 +929,7 @@ void menuMozo(ISistema *sistema)
         {
             (void)system ("clear");
             cout << "QUITAR PRODUCTO DE UNA VENTA" << endl;
+            cout << endl; 
             cout << "Ingrese el número de una de las mesas involucradas en la venta: ";
             int idMesa;
             cin >> idMesa;
@@ -943,12 +944,16 @@ void menuMozo(ISistema *sistema)
                 sistema->ingresarMesa(idMesa);
                 ICollection *productos = sistema->productosVenta();
                 IIterator *it = productos->getIterator();
+                cout << "Productos en la venta actual: " << endl;
                 while (it->hasCurrent())
                 {
-                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
-                    if (dtProducto)
+                    DtPedido *dtPedido = dynamic_cast<DtPedido *>(it->getCurrent());
+                    if (dtPedido)
                     {
-                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() <<  endl;
+                        cout << "Código: " << dtPedido->getCodigo()
+                            << " | Descripción: " << dtPedido->getdescripcion()
+                            << " | Cantidad: " << dtPedido->getCantProductos()
+                            << endl;
                     }
                     it->next();
                 }
@@ -977,22 +982,21 @@ void menuMozo(ISistema *sistema)
                         {
                             sistema->quitarProductoVenta();
                             cout << "Producto quitado de la venta correctamente." << endl;
+                            cout << endl;
                             // Me muestra los productos actuales en la venta, lo dejo, no? Esta mas visual asi <- <- <-
                             try {
-                                ICollection *productosActuales = sistema->pedidosVentaActual();
+                                ICollection *productosActuales = sistema->productosVenta();
                                 IIterator *it2 = productosActuales->getIterator();
                                 cout << "Productos actuales en la venta:" << endl;
                                 while (it2->hasCurrent())
                                 {
-                                    // Aquí accedemos al Pedido para mostrar la cantidad
-                                    Pedido *pedido = dynamic_cast<Pedido *>(it2->getCurrent());
-                                    if (pedido)
+                                    DtPedido *dtPedido = dynamic_cast<DtPedido *>(it2->getCurrent());
+                                    if (dtPedido)
                                     {
-                                        Producto *prod = pedido->getProducto();
-                                        cout << "Código: " << prod->getCodigo()
-                                            << " | Descripción: " << prod->getDescripcion()
-                                            << " | Cantidad: " << pedido->getCantProductos()
-                                            << endl;
+                                        cout << "Código: " << dtPedido->getCodigo()
+                                        << " | Descripción: " << dtPedido->getdescripcion()
+                                        << " | Cantidad: " << dtPedido->getCantProductos()
+                                        << endl;
                                     }
                                     it2->next();
                                 }
