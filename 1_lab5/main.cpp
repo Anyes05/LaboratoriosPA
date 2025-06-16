@@ -217,8 +217,19 @@ void menuAdministrador(ISistema *sistema)
             cout << endl;
 
             char opt;
-            cout << "\n¿Desea confirmar? (s/n): ";
-            cin >> opt;
+            bool entradaValida = false;
+
+            do {
+                cout << "\n¿Desea confirmar? (s/n): ";
+                cin >> opt;
+                cin.ignore(1000, '\n'); 
+
+                if (opt == 's' || opt == 'S' || opt == 'n' || opt == 'N') {
+                    entradaValida = true;
+                } else {
+                    cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                }
+            } while (!entradaValida);
 
             if (opt == 's' || opt == 'S')
             {
@@ -241,121 +252,182 @@ void menuAdministrador(ISistema *sistema)
         break;
 
         case 3:
+        cin.ignore(1000, '\n');
         {
-            cout << "--- Alta Empleado ---" << endl;
+            bool seguirAgregando = true;
 
-            string nombre;
-            int idIngresado;
-            cout << "Nombre del empleado: ";
-            cin.ignore();
-            getline(cin, nombre);
-
-            cout << "Identificador del empleado (entero): ";
-            cin >> idIngresado;
-
-            if (sistema->existeEmpleado(idIngresado))
+            while (seguirAgregando)
             {
-                cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
-                break;
-            }
+                cout << "--- Alta Empleado ---" << endl;
 
-            sistema->agregarEmpleado(nombre, idIngresado);
+                string nombre;
+                int idIngresado;
 
-            char esRepartidor;
-            bool entradaValida = false;
+                cout << "Nombre del empleado: ";
+               
+                getline(cin, nombre);
 
-            do
-            {
-                cout << "¿El empleado es repartidor? (s/n): ";
-                cin >> esRepartidor;
 
-                // Limpiar caracteres sobrantes del buffer (por si el usuario ingresa "sss" o "sn\n")
-                cin.ignore(1000, '\n');
+                cout << "Identificador del empleado (entero): ";
+                cin >> idIngresado;
 
-                if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N')
+                if (sistema->existeEmpleado(idIngresado))
                 {
-                    entradaValida = true;
+                    cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
                 }
                 else
                 {
-                    cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                    sistema->agregarEmpleado(nombre, idIngresado);
+
+                    char esRepartidor;
+                    bool entradaValida = false;
+
+                    do
+                    {
+                        cout << "¿El empleado es repartidor? (s/n): ";
+                        cin >> esRepartidor;
+                        cin.ignore(1000, '\n');
+
+                        if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N')
+                            entradaValida = true;
+                        else
+                            cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+
+                    } while (!entradaValida);
+
+                    if (esRepartidor == 's' || esRepartidor == 'S')
+                    {
+                        cout << "Seleccione un medio de transporte:" << endl;
+                        ICollection* dtMedios = sistema->listarMedioTransporte();
+                        IIterator* itMedios = dtMedios->getIterator();
+
+                        while (itMedios->hasCurrent()) {
+                            DtTransporte* dt = dynamic_cast<DtTransporte*>(itMedios->getCurrent());
+                            cout << dt->getId() << ". " << dt->getDescripcion() << endl;
+                            itMedios->next();
+                        }
+                        delete itMedios;
+
+                        int opcion;
+                        entradaValida = false;
+                        do
+                        {
+                            cout << "Opción: ";
+                            cin >> opcion;
+
+                            if (cin.fail())
+                            {
+                                cin.clear();
+                                cin.ignore(1000, '\n');
+                                cout << "Entrada inválida. Debe ser un número." << endl;
+                                continue;
+                            }
+
+                            try
+                            {
+                                sistema->elegirMedio(opcion);
+                                entradaValida = true;
+                            }
+                            catch (const invalid_argument& e)
+                            {
+                                cout << "Error: " << e.what() << endl;
+                            }
+
+                        } while (!entradaValida);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            sistema->elegirMedio(0);
+                        }
+                        catch (...) {}
+                    }
+
+                    // CONFIRMACIÓN
+                    char confirmar;
+                    do
+                    {
+                        cout << "¿Desea confirmar el alta del empleado? (s/n): ";
+                        cin >> confirmar;
+                        cin.ignore(1000, '\n');
+
+                        if (confirmar == 's' || confirmar == 'S')
+                        {
+                            try
+                            {
+                                sistema->darAltaEmpleado();
+                                cout << "Empleado dado de alta con éxito." << endl;
+                                sistema->mostrarEmpleados(); 
+                            }
+                            catch (exception& e)
+                            {
+                                cout << "Error al dar de alta al empleado: " << e.what() << endl;
+                            }
+                        }
+                        else if (confirmar == 'n' || confirmar == 'N')
+                        {
+                            cout << "Operación cancelada. El empleado no fue registrado." << endl;
+                        }
+                        else
+                        {
+                            cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                        }
+
+                    } while (confirmar != 's' && confirmar != 'S' && confirmar != 'n' && confirmar != 'N');
                 }
 
-            } while (!entradaValida);
-
-            if (esRepartidor == 's' || esRepartidor == 'S'){
-                cout << "Seleccione un medio de transporte:" << endl;
-                ICollection* dtMedios = sistema->listarMedioTransporte();
-                IIterator* itMedios = dtMedios->getIterator();
-
-                // 2) La imprimimos
-                while (itMedios->hasCurrent()) {
-                        DtTransporte* dt = dynamic_cast<DtTransporte*>(itMedios->getCurrent());
-                        cout << dt->getId() << ". " << dt->getDescripcion() << endl;
-                        itMedios->next();
-                }
-                delete itMedios;
-
-                int opcion;
-                entradaValida = false;
+                // PREGUNTAR SI DESEA SEGUIR
+                char seguir;
                 do
                 {
-                    cout << "Opción: ";
-                    cin >> opcion;
+                    cout << "¿Desea seguir agregando empleados? (s/n): ";
+                    cin >> seguir;
+                    cin.ignore(1000, '\n');
 
-                    if (cin.fail())
-                    {
-                        cin.clear();
-                        cin.ignore(1000, '\n');
-                        cout << "Entrada inválida. Debe ser un número." << endl;
-                        continue;
-                    }
+                    if (seguir == 'n' || seguir == 'N')
+                        seguirAgregando = false;
+                    else if (seguir != 's' && seguir != 'S')
+                        cout << "Entrada inválida. Ingrese 's' o 'n'." << endl;
 
-                    try
-                    {
-                        sistema->elegirMedio(opcion);
-                        entradaValida = true;
-                    }
-                    catch (const invalid_argument &e)
-                    {
-                        cout << "Error: " << e.what() << endl;
-                    }
-
-                } while (!entradaValida);
-            }
-            else
-            {
-                try
-                {
-                    sistema->elegirMedio(0); 
-                }
-                catch (...) {} 
-            }
-
-            try
-            {
-                sistema->darAltaEmpleado();
-                cout << "Empleado dado de alta con éxito." << endl;
-                sistema->mostrarEmpleados(); // Solo para testeo
-            }
-            catch (exception &e)
-            {
-                cout << "Error al dar de alta al empleado: " << e.what() << endl;
+                } while (seguir != 's' && seguir != 'S' && seguir != 'n' && seguir != 'N');
             }
 
             break;
         }
+
         case 4:
         {
             (void)system("clear");
             cout << "ASIGNAR MESAS A MOZOS" << endl;
-            cout << "Ingrese la cantidad de mesas a asignar: " << endl;
             int cantMesas;
-            cin >> cantMesas;
-            cin.ignore();
-            cout << "Ingrese la cantidad de mozos: " << endl;
+            bool entradaValida = false;
+            do {
+                cout << "Ingrese la cantidad de mesas a asignar: ";
+                cin >> cantMesas;
+                if (cin.fail() || cantMesas <= 0) {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Entrada inválida. Ingrese un número entero positivo." << endl;
+                } else {
+                    entradaValida = true;
+                }
+            } while (!entradaValida);
+
+
             int cantMozos;
-            cin >> cantMozos;
+            entradaValida = false;
+            do {
+                cout << "Ingrese la cantidad de mozos: ";
+                cin >> cantMozos;
+                if (cin.fail() || cantMozos <= 0) {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Entrada inválida. Ingrese un número entero positivo." << endl;
+                } else {
+                    entradaValida = true;
+                }
+            } while (!entradaValida);
             cin.ignore();
             cout << endl;
 
@@ -404,7 +476,7 @@ void menuAdministrador(ISistema *sistema)
                 if (!sistema->ventaDomicilio(telefonoCliente))
                 {
                     cout << "El cliente con teléfono " << telefonoCliente << " no está registrado." << endl;
-                    cout << "¿Desea dar de alta un nuevo cliente? (S/N): ";
+                    cout << "¿Desea dar de alta un nuevo cliente con el número de teléfono ingresado? (S/N): ";
                     char altaClienteOpt;
                     cin >> altaClienteOpt;
                     cin.ignore();
@@ -467,9 +539,19 @@ void menuAdministrador(ISistema *sistema)
                     int cantidadProducto;
                     cout << "Ingrese el código del producto a agregar: ";
                     cin >> codigoProducto;
-                    cout << "Ingrese la cantidad: ";
-                    cin >> cantidadProducto;
-                    cin.ignore();
+                    bool entradaValida = false;
+                    do {
+                        cout << "Ingrese la cantidad: ";
+                        cin >> cantidadProducto;
+
+                        if (cin.fail() || cantidadProducto <= 0) {
+                            cin.clear(); // limpia el estado de error
+                            cin.ignore(1000, '\n'); // descarta entrada inválida
+                            cout << "Entrada inválida. Ingrese un número entero positivo." << endl;
+                        } else {
+                            entradaValida = true;
+                        }
+                    } while (!entradaValida);
 
                     sistema->agregarProductoPedido(codigoProducto, cantidadProducto);
                     cout << "Producto agregado al pedido." << endl;
@@ -504,8 +586,21 @@ void menuAdministrador(ISistema *sistema)
                 delete repartidoresDisp; // Liberar memoria de la colección
 
                 int idRepartidor;
-                cout << "Ingrese el ID del repartidor a asignar: ";
-                cin >> idRepartidor;
+                bool entradaValida = false;
+
+                do {
+                    cout << "Ingrese el ID del repartidor a asignar: ";
+                    cin >> idRepartidor;
+
+                    if (cin.fail() || idRepartidor <= 0) {  // También chequear que sea positivo, si aplica
+                        cin.clear(); // limpia el error de cin
+                        cin.ignore(1000, '\n'); // descarta la entrada inválida
+                        cout << "Entrada inválida. Ingrese un número entero positivo." << endl;
+                    } else {
+                        entradaValida = true;
+                        cin.ignore(); // limpiar buffer
+                    }
+                } while (!entradaValida);
                 cin.ignore();
                 sistema->asignarRepartidorDomicilio(idRepartidor);
                 cout << "Repartidor asignado correctamente." << endl;
@@ -875,9 +970,20 @@ void menuMozo(ISistema *sistema)
         {
             (void)system("clear");
             cout << "AGREGAR PRODUCTO A UNA VENTA" << endl;
-            cout << "Ingrese el número de mesa: ";
             int idMesa;
-            cin >> idMesa;
+
+            bool entradaValida = false;
+            do {
+                cout << "Ingrese el número de mesa: ";
+                cin >> idMesa;
+                if (cin.fail() || idMesa <= 0) {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Entrada inválida. Ingrese un número entero positivo." << endl;
+                } else {
+                    entradaValida = true;
+                }
+            } while (!entradaValida);
             cin.ignore();
 
             try
@@ -903,8 +1009,19 @@ void menuMozo(ISistema *sistema)
                     cout << "Ingrese el código del producto a agregar: ";
                     cin >> codigoProducto;
                     cin.ignore();
-                    cout << "Ingrese la cantidad: ";
-                    cin >> cantidad;
+                    bool entradaValida = false;
+                    do {
+                        cout << "Ingrese la cantidad: ";
+                        cin >> cantidad;
+
+                        if (cin.fail() || cantidad <= 0) {
+                            cin.clear();
+                            cin.ignore(1000, '\n');
+                            cout << "Entrada inválida. Ingrese un número entero positivo." << endl;
+                        } else {
+                            entradaValida = true;
+                        }
+                    } while (!entradaValida);
                     cin.ignore();
 
                     sistema->seleccionarProductoAgregar(codigoProducto, cantidad);
@@ -1373,6 +1490,13 @@ int main()
             cout << "0. Salir" << endl;
             cout << "Seleccione una opción: ";
             cin >> opcion;
+
+            if (cin.fail()) {
+                cin.clear();                // Limpia el estado de error de cin
+                cin.ignore(1000, '\n');     // Descarta el resto de la línea
+                cout << "Entrada inválida. Debe ingresar un número." << endl;
+                continue;                   // Vuelve al principio del loop
+            }
 
             switch (opcion)
             {

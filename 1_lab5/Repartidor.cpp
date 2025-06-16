@@ -15,5 +15,5 @@ void Repartidor::setTransporte(string transporte) {
 }
 
 DtRepartidor* Repartidor::getDtRepartidor(){
-    return new DtRepartidor(this->getIdIngresado(),this->getNombre(),this->getTransporte());
+    return new DtRepartidor(this->getIdEmpleado(),this->getNombre(),this->getTransporte());
 }

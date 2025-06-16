@@ -856,7 +856,7 @@ void Sistema::asignarRepartidorDomicilio(int idRepartidor)
     while (it->hasCurrent())
     {
         Repartidor *rep = dynamic_cast<Repartidor *>(it->getCurrent());
-        if (rep != nullptr && rep->getIdIngresado() == idRepartidor)
+        if (rep != nullptr && rep->getIdEmpleado() == idRepartidor)
         {
             repartidorEncontrado = rep;
             break;
@@ -982,7 +982,7 @@ DtFacturaDomicilio Sistema::confirmarPedido(DtFecha fechaFactura)
     while (itRep->hasCurrent())
     {
         Repartidor *rep = dynamic_cast<Repartidor *>(itRep->getCurrent());
-        if (rep != nullptr && rep->getIdIngresado() == idRepartidorSeleccionado)
+        if (rep != nullptr && rep->getIdEmpleado() == idRepartidorSeleccionado)
         {
             repartidorAsignado = rep;
             break;
