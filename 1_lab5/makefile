@@ -84,9 +84,6 @@ DtFacturaDomicilio.o: datatypes/DtFacturaDomicilio.cpp
 DtFacturacionDia.o:
 	g++ -c "datatypes/DtFacturacionDia.cpp"
 
-DtPedido.o:
-	g++ -c "datatypes/DtPedido.cpp"
-
 DtMozo.o:
 	g++ -c "datatypes/DtMozo.cpp"
 

@@ -48,10 +48,7 @@ Sistema *Sistema::getInstance()
     return instance;
 }
 
-/*char normalizarCodigo(char codigo) {
-    return std::toupper(static_cast<unsigned char>(codigo));
-}
-*/
+
 /*----- ALTA PRODUCTO -----*/
 
 bool Sistema::existeProducto(char codigo)

@@ -68,7 +68,6 @@ private:
 public:
     ~Sistema();
     static Sistema *getInstance();
-    //char normalizarProducto(char codigo); // Normaliza el código del producto, si es un número lo convierte a char
 
     /*------ ALTA PRODCUTO -----*/
     bool existeProducto(char codigo);                              // retorna true si existe un producto con es codigo

@@ -23,7 +23,6 @@ class ISistema
 {
 public:
     virtual ~ISistema();
-    // virtual char normalizarCodigo(char codigo) = 0; // Normaliza el código del producto, si es un número lo convierte a char
 
     /*----- ALTA PRODUCTO -----*/
     virtual bool existeProducto(char codigo) = 0;
