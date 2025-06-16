@@ -1491,12 +1491,7 @@ int main()
             cout << "Seleccione una opción: ";
             cin >> opcion;
 
-            if (cin.fail()) {
-                cin.clear();                // Limpia el estado de error de cin
-                cin.ignore(1000, '\n');     // Descarta el resto de la línea
-                cout << "Entrada inválida. Debe ingresar un número." << endl;
-                continue;                   // Vuelve al principio del loop
-            }
+          
 
             switch (opcion)
             {
