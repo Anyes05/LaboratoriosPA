@@ -1160,6 +1160,18 @@ void menuMozo(ISistema *sistema)
                 cout << "Ingrese el número de la mesa principal: ";
                 cin >> nroMesa;
 
+                std::string nombreMozo = "(no disponible)";
+                try {
+                    IKey* keyMesa = new Integer(nroMesa);
+                    Mesa* mesa = dynamic_cast<Mesa*>(sistema->getMesas()->find(keyMesa));
+                    delete keyMesa;
+                    if (mesa && mesa->getLocal() && mesa->getLocal()->getMozo()) {
+                        nombreMozo = mesa->getLocal()->getMozo()->getNombre();
+                    }
+                } catch (...) {
+                    cout << "No se pudo obtener el nombre del mozo." << endl;
+                }
+
                 // Finalizar la venta
                 DtVenta ventaDTO = sistema->finalizarVenta(nroMesa);
 
@@ -1207,13 +1219,15 @@ void menuMozo(ISistema *sistema)
                 // Mostrar datos
                 cout << "\n------ FACTURA ------\n";
                 cout << "Código de venta: " << facturaDTO.getCodigoVenta() << endl;
-                //cout << "Fecha: " << facturaDTO.getFecha() << endl;
+                DtFecha fecha = facturaDTO.getFecha();
+                cout << "Fecha: " << fecha.getDia() << "/" << fecha.getMes() << "/"<< fecha.getAnio() << endl;
+                cout << "Mozo encargado: " << nombreMozo << endl; 
 
                 cout << "\nProductos:\n";
                 IIterator* it = facturaDTO.getProductos()->getIterator();
                 while (it->hasCurrent()) {
                     DtProducto* p = dynamic_cast<DtProducto*>(it->getCurrent());
-                    cout << "Descripción: " << p->getdescripcion() << "Precio: $" << p->getprecio() << endl;
+                    cout << "Descripción: " << p->getdescripcion() << " | "<< "Precio: $" << p->getprecio() << " | " <<  "Cantidad: "<< p->getCantidadVendida() <<  endl;
                     it->next();
                 }
                 delete it;

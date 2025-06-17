@@ -83,6 +83,7 @@ public:
     virtual void aplicarDescuento(int descuento) = 0;
     virtual DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura) = 0;
     virtual void agregarMesaAFacturacion(int nroMesa) = 0;
+    virtual IDictionary* getMesas() = 0; // Devuelve un diccionario de DtMesa AUXULIAR // nueevo
 
 
     virtual ICollection *pedidosVentaActual() = 0; // funcion auxiliar, me sirve para ver la cant de pedido en la venta actual y mostrarlo

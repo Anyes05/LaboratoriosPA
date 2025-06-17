@@ -130,6 +130,7 @@ public:
     void aplicarDescuento(int descuento);
     DtFactura generarFactura(DtVenta venta, DtFecha fechaFactura);
     void agregarMesaAFacturacion(int nroMesa);
+    IDictionary *getMesas(); // Devuelve un diccionario de DtMesa AUXILIAR // nuevo
 
     /*------ INFORMACION DE UN PRODUCTO ------*/
     ICollection* obtenerProductos();

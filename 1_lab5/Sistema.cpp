@@ -1580,6 +1580,15 @@ void Sistema::aplicarDescuento(int descuento)
     ventaTemporal->setTotal(totalConDescuento);
 }
 
+IDictionary* Sistema::getMesas() // nuevo 
+{
+    if (mesas == nullptr || mesas->isEmpty())
+    {
+        throw runtime_error("No hay mesas disponibles.");
+    }
+    return this->mesas;
+}
+
 DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura)
 {
     if (!ventaTemporal)
@@ -1603,7 +1612,7 @@ DtFactura Sistema::generarFactura(DtVenta ventaDTO, DtFecha fechaFactura)
         if (pedido)
         {
             Producto *p = pedido->getProducto();
-            DtProducto *dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio(), p->getCantidadVendida());
+            DtProducto *dtProd = new DtProducto(p->getCodigo(), p->getDescripcion(), p->getPrecio(), pedido->getCantProductos());
             colDtProductos->add(dtProd);
         }
         it->next();
