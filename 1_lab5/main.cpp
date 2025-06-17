@@ -1236,6 +1236,18 @@ void menuMozo(ISistema *sistema)
             cout << "Ingrese el número de la mesa principal: ";
             cin >> numeroMesaPrincipal;
 
+            std::string nombreMozo = "(no disponible)";
+                try {
+                    IKey* keyMesa = new Integer(numeroMesaPrincipal);
+                    Mesa* mesa = dynamic_cast<Mesa*>(sistema->getMesas()->find(keyMesa));
+                    delete keyMesa;
+                    if (mesa && mesa->getLocal() && mesa->getLocal()->getMozo()) {
+                        nombreMozo = mesa->getLocal()->getMozo()->getNombre();
+                    }
+                } catch (...) {
+                    cout << "No se pudo obtener el nombre del mozo." << endl;
+                }
+
             try
             {
                 DtVenta ventaDTO = sistema->finalizarVenta(numeroMesaPrincipal);
@@ -1279,12 +1291,8 @@ void menuMozo(ISistema *sistema)
                 cout << "Fecha: " << facturaGenerada.getFecha().getDia() << "/"
                      << facturaGenerada.getFecha().getMes() << "/"
                      << facturaGenerada.getFecha().getAnio() << endl;
-
-                // Obtener el mozo de la venta para mostrar su nombre
-                // Esto asume que tienes acceso al mozo a través del sistema o de la venta
-                // Para simplificar, si no hay un DtMozo en DtFactura, puedes dejarlo así
-                // o buscar el Mozo por ID en el sistema si es posible. (No se si esta logica es correcta)
-                cout << "Mozo encargado: Ana López" << endl; // Esto debe ser dinámico, ejemplo.
+                 cout << "Mozo encargado: " << nombreMozo << endl; 
+                
 
                 cout << "\nProductos:" << endl;
                 ICollection *productosFacturados = facturaGenerada.getProductos();
@@ -1399,10 +1407,10 @@ void menuMozo(ISistema *sistema)
                                 IIterator *itProdVenta = productosDeVenta->getIterator();
                                 while (itProdVenta->hasCurrent())
                                 {
-                                    DtProducto *p = dynamic_cast<DtProducto *>(itProdVenta->getCurrent());
+                                    DtPedido *p = dynamic_cast<DtPedido *>(itProdVenta->getCurrent());
                                     if (p != nullptr)
                                     {
-                                        cout << "      - " << p->getdescripcion() << " (x" << p->getCantidadVendida() << ") - $" << p->getprecio() << endl;
+                                        cout << "      - " << p->getdescripcion() << " (x" << p->getCantProductos() << ") - $" << p->getprecio() << endl;
                                     }
                                     itProdVenta->next();
                                 }
