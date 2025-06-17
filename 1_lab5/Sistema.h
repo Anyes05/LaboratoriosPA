@@ -81,14 +81,14 @@ public:
     void confirmarAlta();
     void cancelarAlta();
     bool existeCliente(string);
-    void listarClientes();
+    ICollection* listarClientes();
 
     /*------ ALTA EMPLEADO ------*/
     void agregarEmpleado(string nombre, int idIngresado);
     ICollection *listarMedioTransporte(); // devuelve una coleccion de DtTransporte
     void elegirMedio(int opcion);
     void darAltaEmpleado();
-    void mostrarEmpleados();
+    ICollection* mostrarEmpleados();
     bool existeEmpleado(int idEmpleado);
     string transporteToString(Transporte t);
 

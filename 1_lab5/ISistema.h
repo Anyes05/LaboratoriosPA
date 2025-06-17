@@ -36,14 +36,14 @@ public:
     virtual void confirmarAlta() = 0;
     virtual void cancelarAlta() = 0;
     virtual bool existeCliente(string) = 0;
-    virtual void listarClientes() = 0;
+    virtual ICollection* listarClientes() = 0;
 
     /*----- ALTA EMPLEADO -----*/
     virtual void agregarEmpleado(string nombre, int idIngresado) = 0;
     virtual ICollection *listarMedioTransporte() = 0; 
     virtual void elegirMedio(int opcion) = 0;
     virtual void darAltaEmpleado() = 0;
-    virtual void mostrarEmpleados() = 0;
+    virtual ICollection* mostrarEmpleados() = 0;
     virtual bool existeEmpleado(int idEmpleado) = 0;
     virtual string transporteToString(Transporte t) = 0;
 

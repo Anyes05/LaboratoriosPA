@@ -19,3 +19,7 @@ string DtCliente::getNombre() {
 DtDireccion DtCliente::getDireccion() {
     return direccion;
 }
+
+DtCliente::~DtCliente() {
+    // Destructor virtual
+}

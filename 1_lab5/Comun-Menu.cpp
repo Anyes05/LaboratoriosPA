@@ -13,7 +13,10 @@ Comun_Menu::Comun_Menu(int cant, Comun *pc)
 //destructor
 Comun_Menu::~Comun_Menu()
 {
-    std::cout << "[Depuración] Destructor de Comun_Menu llamado. Puntero productoComun=" << productoComun << std::endl;
+    // if (productoComun != nullptr) {
+    //     // delete productoComun; // No lo eliminamos aquí, lo hace el menú
+    // }
+    // std::cout << "[Depuración] Destructor de Comun_Menu llamado. Puntero productoComun=" << productoComun << std::endl;
 }
 
 int Comun_Menu::getCantProducto(){

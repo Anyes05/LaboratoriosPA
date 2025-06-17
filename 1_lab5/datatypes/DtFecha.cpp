@@ -8,7 +8,7 @@ bool DtFecha::esBisiesto(int anio) {
 
 DtFecha::DtFecha(int dia, int mes, int anio){
     // Validar año
-    if (anio < 1900 || anio > 2100) { // Puedes ajustar el rango de años según tus necesidades.
+    if (anio < 1999 || anio > 2025) { // Puedes ajustar el rango de años según tus necesidades.
         throw std::invalid_argument("Año inválido. Debe estar entre 1900 y 2100.");
     }
     this->anio = anio;

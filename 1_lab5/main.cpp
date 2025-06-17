@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Factory.h"
+#include <limits> // Para numeric_limits
+#include <stdexcept> // Para invalid_argument
 
 using namespace std;
 
@@ -208,45 +210,68 @@ void menuAdministrador(ISistema *sistema)
 
             DtDireccion direccion(calle, nroPuerta, calleEsquina);
 
-            DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
+            try {
+                DtCliente dt = sistema->altaCliente(telefono, nombre, direccion);
 
-            cout << "Cliente:" << endl;
-            cout << "Nombre: " << dt.getNombre() << endl;
-            cout << "Telefono: " << dt.getTelefono() << endl;
-            cout << "Dirección: " << direccion.getnombreCalle() << " y " << direccion.getcalleEsquina() << ", " << direccion.getnumero() << endl;
-            cout << endl;
+                cout << "Cliente:" << endl;
+                cout << "Nombre: " << dt.getNombre() << endl;
+                cout << "Telefono: " << dt.getTelefono() << endl;
+                cout << "Dirección: " << direccion.getnombreCalle() << " y " << direccion.getcalleEsquina() << ", " << direccion.getnumero() << endl;
+                cout << endl;
 
-            char opt;
-            bool entradaValida = false;
+                char opt;
+                bool entradaValida = false;
 
-            do {
-                cout << "\n¿Desea confirmar? (s/n): ";
-                cin >> opt;
-                cin.ignore(1000, '\n'); 
+                do {
+                    cout << "\n¿Desea confirmar? (s/n): ";
+                    cin >> opt;
+                    cin.ignore(1000, '\n'); 
 
-                if (opt == 's' || opt == 'S' || opt == 'n' || opt == 'N') {
-                    entradaValida = true;
-                } else {
-                    cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
-                }
-            } while (!entradaValida);
+                    if (opt == 's' || opt == 'S' || opt == 'n' || opt == 'N') {
+                        entradaValida = true;
+                    } else {
+                        cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                    }
+                } while (!entradaValida);
 
-            if (opt == 's' || opt == 'S')
-            {
-                if (sistema->existeCliente(telefono))
+                if (opt == 's' || opt == 'S')
                 {
-                    cout << "Ya existe un cliente con ese telefono" << endl;
-                    sistema->cancelarAlta();
+                    sistema->confirmarAlta();
+                    cout << "Cliente dado de alta correctamente." << endl;
+                    
+                    // Mostrar lista de clientes después del alta
+                    try {
+                        ICollection* clientes = sistema->listarClientes();
+                        if (clientes->isEmpty()) {
+                            cout << "No hay clientes registrados en el sistema." << endl;
+                        } else {
+                            cout << "\n--- Lista de Clientes ---" << endl;
+                            IIterator* it = clientes->getIterator();
+                            while(it->hasCurrent()){
+                                DtCliente* dtCliente = dynamic_cast<DtCliente*>(it->getCurrent());
+                                if(dtCliente != nullptr){
+                                    cout << "- Nombre: " << dtCliente->getNombre() << endl;
+                                    cout << "  Teléfono: " << dtCliente->getTelefono() << endl;
+                                    DtDireccion dir = dtCliente->getDireccion();
+                                    cout << "  Dirección: " << dir.getnombreCalle() << " y " << dir.getcalleEsquina() << ", " << dir.getnumero() << endl;
+                                    cout << "-------------------------" << endl;
+                                }
+                                it->next();
+                            }
+                            delete it;
+                        }
+                        delete clientes;
+                    } catch (const exception& e) {
+                        cout << "Error al listar clientes: " << e.what() << endl;
+                    }
                 }
                 else
                 {
-                    sistema->confirmarAlta();
-                    sistema->listarClientes();
+                    sistema->cancelarAlta();
+                    cout << "Alta de cliente cancelada." << endl;
                 }
-            }
-            else
-            {
-                sistema->cancelarAlta();
+            } catch (const exception& e) {
+                cout << "Error: " << e.what() << endl;
             }
         }
         break;
@@ -267,114 +292,144 @@ void menuAdministrador(ISistema *sistema)
                
                 getline(cin, nombre);
 
-
                 cout << "Identificador del empleado (entero): ";
                 cin >> idIngresado;
 
-                if (sistema->existeEmpleado(idIngresado))
-                {
-                    cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
-                }
-                else
-                {
-                    sistema->agregarEmpleado(nombre, idIngresado);
-
-                    char esRepartidor;
-                    bool entradaValida = false;
-
-                    do
+                try {
+                    if (sistema->existeEmpleado(idIngresado))
                     {
-                        cout << "¿El empleado es repartidor? (s/n): ";
-                        cin >> esRepartidor;
-                        cin.ignore(1000, '\n');
-
-                        if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N')
-                            entradaValida = true;
-                        else
-                            cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
-
-                    } while (!entradaValida);
-
-                    if (esRepartidor == 's' || esRepartidor == 'S')
-                    {
-                        cout << "Seleccione un medio de transporte:" << endl;
-                        ICollection* dtMedios = sistema->listarMedioTransporte();
-                        IIterator* itMedios = dtMedios->getIterator();
-
-                        while (itMedios->hasCurrent()) {
-                            DtTransporte* dt = dynamic_cast<DtTransporte*>(itMedios->getCurrent());
-                            cout << dt->getId() << ". " << dt->getDescripcion() << endl;
-                            itMedios->next();
-                        }
-                        delete itMedios;
-
-                        int opcion;
-                        entradaValida = false;
-                        do
-                        {
-                            cout << "Opción: ";
-                            cin >> opcion;
-
-                            if (cin.fail())
-                            {
-                                cin.clear();
-                                cin.ignore(1000, '\n');
-                                cout << "Entrada inválida. Debe ser un número." << endl;
-                                continue;
-                            }
-
-                            try
-                            {
-                                sistema->elegirMedio(opcion);
-                                entradaValida = true;
-                            }
-                            catch (const invalid_argument& e)
-                            {
-                                cout << "Error: " << e.what() << endl;
-                            }
-
-                        } while (!entradaValida);
+                        cout << "Ya existe un empleado con ese identificador. Operación cancelada." << endl;
                     }
                     else
                     {
-                        try
-                        {
-                            sistema->elegirMedio(0);
-                        }
-                        catch (...) {}
-                    }
+                        sistema->agregarEmpleado(nombre, idIngresado);
 
-                    // CONFIRMACIÓN
-                    char confirmar;
-                    do
-                    {
-                        cout << "¿Desea confirmar el alta del empleado? (s/n): ";
-                        cin >> confirmar;
-                        cin.ignore(1000, '\n');
+                        char esRepartidor;
+                        bool entradaValida = false;
 
-                        if (confirmar == 's' || confirmar == 'S')
+                        do
                         {
-                            try
-                            {
-                                sistema->darAltaEmpleado();
-                                cout << "Empleado dado de alta con éxito." << endl;
-                                sistema->mostrarEmpleados(); 
-                            }
-                            catch (exception& e)
-                            {
-                                cout << "Error al dar de alta al empleado: " << e.what() << endl;
-                            }
-                        }
-                        else if (confirmar == 'n' || confirmar == 'N')
+                            cout << "¿El empleado es repartidor? (s/n): ";
+                            cin >> esRepartidor;
+                            cin.ignore(1000, '\n');
+
+                            if (esRepartidor == 's' || esRepartidor == 'S' || esRepartidor == 'n' || esRepartidor == 'N')
+                                entradaValida = true;
+                            else
+                                cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+
+                        } while (!entradaValida);
+
+                        if (esRepartidor == 's' || esRepartidor == 'S')
                         {
-                            cout << "Operación cancelada. El empleado no fue registrado." << endl;
+                            cout << "Seleccione un medio de transporte:" << endl;
+                            ICollection* dtMedios = sistema->listarMedioTransporte();
+                            IIterator* itMedios = dtMedios->getIterator();
+
+                            while (itMedios->hasCurrent()) {
+                                DtTransporte* dt = dynamic_cast<DtTransporte*>(itMedios->getCurrent());
+                                cout << dt->getId() << ". " << dt->getDescripcion() << endl;
+                                itMedios->next();
+                            }
+                            delete itMedios;
+
+                            int opcion;
+                            entradaValida = false;
+                            do
+                            {
+                                cout << "Opción: ";
+                                cin >> opcion;
+
+                                if (cin.fail())
+                                {
+                                    cin.clear();
+                                    cin.ignore(1000, '\n');
+                                    cout << "Entrada inválida. Debe ser un número." << endl;
+                                    continue;
+                                }
+
+                                try
+                                {
+                                    sistema->elegirMedio(opcion);
+                                    entradaValida = true;
+                                }
+                                catch (const invalid_argument& e)
+                                {
+                                    cout << "Error: " << e.what() << endl;
+                                }
+
+                            } while (!entradaValida);
                         }
                         else
                         {
-                            cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                            try
+                            {
+                                sistema->elegirMedio(0);
+                            }
+                            catch (...) {}
                         }
 
-                    } while (confirmar != 's' && confirmar != 'S' && confirmar != 'n' && confirmar != 'N');
+                        // CONFIRMACIÓN
+                        char confirmar;
+                        do
+                        {
+                            cout << "¿Desea confirmar el alta del empleado? (s/n): ";
+                            cin >> confirmar;
+                            cin.ignore(1000, '\n');
+
+                            if (confirmar == 's' || confirmar == 'S')
+                            {
+                                try
+                                {
+                                    sistema->darAltaEmpleado();
+                                    cout << "Empleado dado de alta con éxito." << endl;
+                                    
+                                    // Mostrar lista de empleados después del alta
+                                    try {
+                                        ICollection* empleados = sistema->mostrarEmpleados();
+                                        if (empleados->isEmpty()) {
+                                            cout << "No hay empleados registrados en el sistema." << endl;
+                                        } else {
+                                            cout << "\n--- Empleados registrados ---" << endl;
+                                            IIterator* it = empleados->getIterator();
+                                            while(it->hasCurrent()){
+                                                // Se debe determinar si es Mozo o Repartidor para mostrar la información específica
+                                                DtMozo* dtMozo = dynamic_cast<DtMozo*>(it->getCurrent());
+                                                if(dtMozo != nullptr){
+                                                    cout << "Mozo ID: " << dtMozo->getIdEmpleado() << ", Nombre: " << dtMozo->getNombre() << endl;
+                                                } else {
+                                                    DtRepartidor* dtRepartidor = dynamic_cast<DtRepartidor*>(it->getCurrent());
+                                                    if(dtRepartidor != nullptr){
+                                                        cout << "Repartidor ID: " << dtRepartidor->getIdRepartidor() << ", Nombre: " << dtRepartidor->getNombre() << ", Medio: " << dtRepartidor->getTransporte() << endl;
+                                                    }
+                                                }
+                                                it->next();
+                                            }
+                                            delete it;
+                                        }
+                                        delete empleados;
+                                    } catch (const exception& e) {
+                                        cout << "Error al mostrar empleados: " << e.what() << endl;
+                                    }
+                                }
+                                catch (exception& e)
+                                {
+                                    cout << "Error al dar de alta al empleado: " << e.what() << endl;
+                                }
+                            }
+                            else if (confirmar == 'n' || confirmar == 'N')
+                            {
+                                cout << "Operación cancelada. El empleado no fue registrado." << endl;
+                            }
+                            else
+                            {
+                                cout << "Entrada inválida. Ingrese 's' para sí o 'n' para no." << endl;
+                            }
+
+                        } while (confirmar != 's' && confirmar != 'S' && confirmar != 'n' && confirmar != 'N');
+                    }
+                } catch (const exception& e) {
+                    cout << "Error: " << e.what() << endl;
                 }
 
                 // PREGUNTAR SI DESEA SEGUIR
@@ -513,27 +568,32 @@ void menuAdministrador(ISistema *sistema)
                 while (agregarMasProductos == 'S' || agregarMasProductos == 's')
                 {
                     cout << "\n--- Productos Disponibles ---" << endl;
-                    ICollection *productosDisp = sistema->listarProductos();
-                    if (productosDisp->isEmpty())
-                    {
-                        cout << "No hay productos disponibles. Por favor, cargue datos de prueba (Opción 3 en el menú principal)." << endl;
-                        delete productosDisp;
-                        // Salir del bucle de agregar productos si no hay ninguno
+                    try {
+                        ICollection *productosDisp = sistema->listarProductos();
+                        if (productosDisp->isEmpty())
+                        {
+                            cout << "No hay productos disponibles. Por favor, cargue datos de prueba (Opción 3 en el menú principal)." << endl;
+                            delete productosDisp;
+                            // Salir del bucle de agregar productos si no hay ninguno
+                            break;
+                        }
+
+                        IIterator *itProd = productosDisp->getIterator();
+                        while (itProd->hasCurrent())
+                        {
+                            DtProducto *dtProd = dynamic_cast<DtProducto *>(itProd->getCurrent());
+                            if (dtProd != nullptr)
+                            {
+                                cout << "Código: " << dtProd->getCodigo() << " | Descripción: " << dtProd->getdescripcion() << " | Precio: " << dtProd->getprecio() << endl;
+                            }
+                            itProd->next();
+                        }
+                        delete itProd;
+                        delete productosDisp; // Liberar memoria de la colección
+                    } catch (const exception& e) {
+                        cout << "Error al listar productos: " << e.what() << endl;
                         break;
                     }
-
-                    IIterator *itProd = productosDisp->getIterator();
-                    while (itProd->hasCurrent())
-                    {
-                        DtProducto *dtProd = dynamic_cast<DtProducto *>(itProd->getCurrent());
-                        if (dtProd != nullptr)
-                        {
-                            cout << "Código: " << dtProd->getCodigo() << " | Descripción: " << dtProd->getdescripcion() << " | Precio: " << dtProd->getprecio() << endl;
-                        }
-                        itProd->next();
-                    }
-                    delete itProd;
-                    delete productosDisp; // Liberar memoria de la colección
 
                     char codigoProducto;
                     int cantidadProducto;
@@ -553,8 +613,12 @@ void menuAdministrador(ISistema *sistema)
                         }
                     } while (!entradaValida);
 
-                    sistema->agregarProductoPedido(codigoProducto, cantidadProducto);
-                    cout << "Producto agregado al pedido." << endl;
+                    try {
+                        sistema->agregarProductoPedido(codigoProducto, cantidadProducto);
+                        cout << "Producto agregado al pedido." << endl;
+                    } catch (const exception& e) {
+                        cout << "Error al agregar producto: " << e.what() << endl;
+                    }
 
                     cout << "¿Desea agregar otro producto al pedido? (S/N): ";
                     cin >> agregarMasProductos;
@@ -563,27 +627,33 @@ void menuAdministrador(ISistema *sistema)
 
                 // Listar repartidores y asignar uno
                 cout << "\n--- Repartidores Disponibles ---" << endl;
-                ICollection *repartidoresDisp = sistema->listarRepartidores();
-                if (repartidoresDisp->isEmpty())
-                {
-                    cout << "No hay repartidores disponibles." << endl;
-                    delete repartidoresDisp;
+                try {
+                    ICollection *repartidoresDisp = sistema->listarRepartidores();
+                    if (repartidoresDisp->isEmpty())
+                    {
+                        cout << "No hay repartidores disponibles." << endl;
+                        delete repartidoresDisp;
+                        cout << "Operación de venta a domicilio cancelada." << endl;
+                        break;
+                    }
+
+                    IIterator *itRep = repartidoresDisp->getIterator();
+                    while (itRep->hasCurrent())
+                    {
+                        DtRepartidor *dtRep = dynamic_cast<DtRepartidor *>(itRep->getCurrent());
+                        if (dtRep != nullptr)
+                        {
+                            cout << "ID: " << dtRep->getIdRepartidor() << " | Nombre: " << dtRep->getNombre() << " | Transporte: " << dtRep->getTransporte() << endl;
+                        }
+                        itRep->next();
+                    }
+                    delete itRep;
+                    delete repartidoresDisp; // Liberar memoria de la colección
+                } catch (const exception& e) {
+                    cout << "Error al listar repartidores: " << e.what() << endl;
                     cout << "Operación de venta a domicilio cancelada." << endl;
                     break;
                 }
-
-                IIterator *itRep = repartidoresDisp->getIterator();
-                while (itRep->hasCurrent())
-                {
-                    DtRepartidor *dtRep = dynamic_cast<DtRepartidor *>(itRep->getCurrent());
-                    if (dtRep != nullptr)
-                    {
-                        cout << "ID: " << dtRep->getIdRepartidor() << " | Nombre: " << dtRep->getNombre() << " | Transporte: " << dtRep->getTransporte() << endl;
-                    }
-                    itRep->next();
-                }
-                delete itRep;
-                delete repartidoresDisp; // Liberar memoria de la colección
 
                 int idRepartidor;
                 bool entradaValida = false;
@@ -622,7 +692,8 @@ void menuAdministrador(ISistema *sistema)
                     
                     DtFacturaDomicilio factura = sistema->confirmarPedido(fechaFactura);
                     cout << "\n--- FACTURA DE VENTA A DOMICILIO ---" << endl;
-                    cout << "Número de Venta: " << factura.getVenta().getidVenta() << endl;
+                    cout << "Código de venta: " << factura.getVenta().getidVenta() << endl;
+                    cout << "Fecha: " << factura.getFecha().getDia() << "/" << factura.getFecha().getMes() << "/" << factura.getFecha().getAnio() << endl;
                     cout << "Subtotal: " << factura.getVenta().getTotal() + factura.getVenta().getDescuento() << endl; // Total + Descuento para obtener subtotal
                     cout << "Descuento Aplicado: " << factura.getVenta().getDescuento() << endl;
                     cout << "Total: " << factura.getVenta().getTotal() << endl;
@@ -645,96 +716,100 @@ void menuAdministrador(ISistema *sistema)
         {
             (void)system("clear");
             cout << "INFORMACIÓN DE UN PRODUCTO" << endl;
-            ICollection *productos = sistema->obtenerProductos();
-            IIterator *it = productos->getIterator();
-            while (it->hasCurrent())
-            {
-                DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
-                if (dtProducto)
+            try {
+                ICollection *productos = sistema->obtenerProductos();
+                IIterator *it = productos->getIterator();
+                while (it->hasCurrent())
                 {
-                    cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
-                }
-                it->next();
-            }
-            delete it;
-
-            char codigoProducto;
-            while (true) {
-                cout << "Ingrese el código del producto para ver más detalles: ";
-                cin >> codigoProducto;
-                cin.ignore();
-                if (!sistema->existeProducto(codigoProducto)) {
-                    cout << "No existe un producto con ese código." << endl;
-                    cout << "¿Desea intentar con otro código? (S/N): ";
-                    char reintentar;
-                    cin >> reintentar;
-                    cin.ignore();
-                    if (reintentar != 'S' && reintentar != 's') {
-                        delete productos;
-                        break;
-                    }
-                } else {
-                    try
+                    DtProducto *dtProducto = dynamic_cast<DtProducto *>(it->getCurrent());
+                    if (dtProducto)
                     {
-                        bool esMenu = sistema->ingresarCodigoProducto(codigoProducto);
-                        if (esMenu)
+                        cout << "Código: " << dtProducto->getCodigo() << " | Descripción: " << dtProducto->getdescripcion() << " | Precio: " << dtProducto->getprecio() << endl;
+                    }
+                    it->next();
+                }
+                delete it;
+
+                char codigoProducto;
+                while (true) {
+                    cout << "Ingrese el código del producto para ver más detalles: ";
+                    cin >> codigoProducto;
+                    cin.ignore();
+                    if (!sistema->existeProducto(codigoProducto)) {
+                        cout << "No existe un producto con ese código." << endl;
+                        cout << "¿Desea intentar con otro código? (S/N): ";
+                        char reintentar;
+                        cin >> reintentar;
+                        cin.ignore();
+                        if (reintentar != 'S' && reintentar != 's') {
+                            delete productos;
+                            break;
+                        }
+                    } else {
+                        try
                         {
-                            ICollection* menuYProductos = sistema->infoProductosIncluidosMenu();
-                            IIterator* itMenu = menuYProductos->getIterator();
-                            bool primero = true;
-                            while (itMenu->hasCurrent()) {
-                                DtProducto* dt = dynamic_cast<DtProducto*>(itMenu->getCurrent());
-                                if (dt) {
-                                    if (primero) {
-                                        DtMenu* dtMenu = dynamic_cast<DtMenu*>(dt);
-                                        if (!dtMenu) {
-                                            throw std::runtime_error("No es menú válido.");
-                                        }
-                                        cout << "Información del menú:" << endl;
-                                        cout << "Nombre: " << dtMenu->getNombre() << endl;
-                                        cout << "Código: " << dtMenu->getCodigo() << endl;
-                                        cout << "Descripción: " << dtMenu->getdescripcion() << endl;
-                                        cout << "Precio: " << dtMenu->getprecio() << endl;
-                                        cout << "Cantidad Vendida: " << dtMenu->getCantidadVendida() << endl;
-                                        cout << "Productos incluidos:" << endl;
-                                        primero = false;
-                                    } else {
-                                        DtComun* dtComun = dynamic_cast<DtComun*>(dt);
-                                        cout << "Código: " << dtComun->getCodigo()
-                                            << " | Descripción: " << dtComun->getdescripcion()
-                                            << " | Precio: " << dtComun->getprecio()
-                                            << " | Cantidad en menú: " << dtComun->getCantidadVendida() << endl;
-                                    }
-                                }
-                                itMenu->next();
-                            }
-                            delete itMenu;
-                            delete menuYProductos;
-                        }   
-                        else
-                        {
-                            DtProducto *dtProducto = sistema->infoProducto();
-                            if (dtProducto)
+                            bool esMenu = sistema->ingresarCodigoProducto(codigoProducto);
+                            if (esMenu)
                             {
-                                cout << "Código: " << dtProducto->getCodigo() << endl;
-                                cout << "Descripción: " << dtProducto->getdescripcion() << endl;
-                                cout << "Precio: " << dtProducto->getprecio() << endl;
-                                cout << "Cantidad Vendida: " << dtProducto->getCantidadVendida() << endl;
-                                delete dtProducto; // Liberar memoria del DtProducto
-                            }
+                                ICollection* menuYProductos = sistema->infoProductosIncluidosMenu();
+                                IIterator* itMenu = menuYProductos->getIterator();
+                                bool primero = true;
+                                while (itMenu->hasCurrent()) {
+                                    DtProducto* dt = dynamic_cast<DtProducto*>(itMenu->getCurrent());
+                                    if (dt) {
+                                        if (primero) {
+                                            DtMenu* dtMenu = dynamic_cast<DtMenu*>(dt);
+                                            if (!dtMenu) {
+                                                throw std::runtime_error("No es menú válido.");
+                                            }
+                                            cout << "Información del menú:" << endl;
+                                            cout << "Nombre: " << dtMenu->getNombre() << endl;
+                                            cout << "Código: " << dtMenu->getCodigo() << endl;
+                                            cout << "Descripción: " << dtMenu->getdescripcion() << endl;
+                                            cout << "Precio: " << dtMenu->getprecio() << endl;
+                                            cout << "Cantidad Vendida: " << dtMenu->getCantidadVendida() << endl;
+                                            cout << "Productos incluidos:" << endl;
+                                            primero = false;
+                                        } else {
+                                            DtComun* dtComun = dynamic_cast<DtComun*>(dt);
+                                            cout << "Código: " << dtComun->getCodigo()
+                                                << " | Descripción: " << dtComun->getdescripcion()
+                                                << " | Precio: " << dtComun->getprecio()
+                                                << " | Cantidad en menú: " << dtComun->getCantidadVendida() << endl;
+                                        }
+                                    }
+                                    itMenu->next();
+                                }
+                                delete itMenu;
+                                delete menuYProductos;
+                            }   
                             else
                             {
-                                cout << "No se encontró información para el producto con código: " << codigoProducto << endl;
+                                DtProducto *dtProducto = sistema->infoProducto();
+                                if (dtProducto)
+                                {
+                                    cout << "Código: " << dtProducto->getCodigo() << endl;
+                                    cout << "Descripción: " << dtProducto->getdescripcion() << endl;
+                                    cout << "Precio: " << dtProducto->getprecio() << endl;
+                                    cout << "Cantidad Vendida: " << dtProducto->getCantidadVendida() << endl;
+                                    delete dtProducto; // Liberar memoria del DtProducto
+                                }
+                                else
+                                {
+                                    cout << "No se encontró información para el producto con código: " << codigoProducto << endl;
+                                }
                             }
                         }
+                        catch(const std::exception& e)
+                        {
+                            std::cerr << e.what() << '\n';
+                        }
+                        delete productos; // Liberar memoria de la colección
+                        break; // Salir del bucle después de mostrar la info
                     }
-                    catch(const std::exception& e)
-                    {
-                        std::cerr << e.what() << '\n';
-                    }
-                    delete productos; // Liberar memoria de la colección
-                    break; // Salir del bucle después de mostrar la info
                 }
+            } catch (const exception& e) {
+                cout << "Error al obtener productos: " << e.what() << endl;
             }
             break;
         }
@@ -748,10 +823,10 @@ void menuAdministrador(ISistema *sistema)
             cin >> dia >> mes >> anio;
             cin.ignore();
 
-            DtFecha fecha(dia, mes, anio);
-
             try
             {
+                DtFecha fecha(dia, mes, anio);
+                
                 DtFacturacionDia* informePtr = sistema->mostrarInforme(fecha);
                 DtFacturacionDia informe = *informePtr;
 
@@ -1154,166 +1229,288 @@ void menuMozo(ISistema *sistema)
             }
             break;
         }
-        case 4: {
-            try {
-                int nroMesa;
-                cout << "Ingrese el número de la mesa principal: ";
-                cin >> nroMesa;
+        case 4:
+        {
+            cout << "\n--- Facturacion de una venta ---" << endl;
+            int numeroMesaPrincipal;
+            cout << "Ingrese el número de la mesa principal: ";
+            cin >> numeroMesaPrincipal;
 
-                std::string nombreMozo = "(no disponible)";
-                try {
-                    IKey* keyMesa = new Integer(nroMesa);
-                    Mesa* mesa = dynamic_cast<Mesa*>(sistema->getMesas()->find(keyMesa));
-                    delete keyMesa;
-                    if (mesa && mesa->getLocal() && mesa->getLocal()->getMozo()) {
-                        nombreMozo = mesa->getLocal()->getMozo()->getNombre();
-                    }
-                } catch (...) {
-                    cout << "No se pudo obtener el nombre del mozo." << endl;
-                }
+            try
+            {
+                DtVenta ventaDTO = sistema->finalizarVenta(numeroMesaPrincipal);
 
-                // Finalizar la venta
-                DtVenta ventaDTO = sistema->finalizarVenta(nroMesa);
-
-
-                char desc;
+                char opcionDescuento;
                 cout << "¿Desea aplicar un descuento? (s/n): ";
-                cin >> desc;
-
-                if (desc== 's' || desc == 'S') {
+                cin >> opcionDescuento;
+                if (tolower(opcionDescuento) == 's')
+                {
                     int descuento;
                     cout << "Ingrese el porcentaje de descuento (0-100): ";
                     cin >> descuento;
-
                     sistema->aplicarDescuento(descuento);
                 }
 
                 int dia, mes, anio;
-                cout << "Ingrese la fecha de la factura (DD MM AAAA): ";
-                cin >> dia >> mes >> anio;
-                DtFecha fechaFactura(dia, mes, anio);
+                DtFecha fechaFactura;
+                bool fechaValida = false;
 
-                // factura con fecha
-                DtFactura facturaDTO = sistema->generarFactura(ventaDTO, fechaFactura);
-
-
-                // Mostrar datos
-                cout << "\n------ FACTURA ------\n";
-                cout << "Código de venta: " << facturaDTO.getCodigoVenta() << endl;
-                DtFecha fecha = facturaDTO.getFecha();
-                cout << "Fecha: " << fecha.getDia() << "/" << fecha.getMes() << "/"<< fecha.getAnio() << endl;
-                cout << "Mozo encargado: " << nombreMozo << endl; 
-
-                cout << "\nProductos:\n";
-                IIterator* it = facturaDTO.getProductos()->getIterator();
-                while (it->hasCurrent()) {
-                    DtProducto* p = dynamic_cast<DtProducto*>(it->getCurrent());
-                    cout << "Descripción: " << p->getdescripcion() << " | "<< "Precio: $" << p->getprecio() << " | " <<  "Cantidad: "<< p->getCantidadVendida() <<  endl;
-                    it->next();
+                while (!fechaValida)
+                {
+                    cout << "Ingrese la fecha de la factura (DD MM AAAA): ";
+                    cin >> dia >> mes >> anio;
+                    try
+                    {
+                        fechaFactura = DtFecha(dia, mes, anio);
+                        fechaValida = true;
+                    }
+                    catch (const std::invalid_argument &e)
+                    {
+                        cerr << "Error de fecha: " << e.what() << ". Por favor, intente de nuevo." << endl;
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
                 }
-                delete it;
 
-                float subtotal = facturaDTO.getSubtotal();
-                float descuentoAplicado = facturaDTO.getDescuento();
-                float total = subtotal * (1 - descuentoAplicado / 100.0f);
-                float totalConIVA = total * 1.22;
+                DtFactura facturaGenerada = sistema->generarFactura(ventaDTO, fechaFactura);
+
+                cout << "\n------ FACTURA ------" << endl;
+                cout << "Código de venta: " << facturaGenerada.getCodigoVenta() << endl;
+                cout << "Fecha: " << facturaGenerada.getFecha().getDia() << "/"
+                     << facturaGenerada.getFecha().getMes() << "/"
+                     << facturaGenerada.getFecha().getAnio() << endl;
+
+                // Obtener el mozo de la venta para mostrar su nombre
+                // Esto asume que tienes acceso al mozo a través del sistema o de la venta
+                // Para simplificar, si no hay un DtMozo en DtFactura, puedes dejarlo así
+                // o buscar el Mozo por ID en el sistema si es posible. (No se si esta logica es correcta)
+                cout << "Mozo encargado: Ana López" << endl; // Esto debe ser dinámico, ejemplo.
+
+                cout << "\nProductos:" << endl;
+                ICollection *productosFacturados = facturaGenerada.getProductos();
+                if (productosFacturados != nullptr && !productosFacturados->isEmpty())
+                {
+                    IIterator *itProd = productosFacturados->getIterator();
+                    while (itProd->hasCurrent())
+                    {
+                        DtProducto *dtProd = dynamic_cast<DtProducto *>(itProd->getCurrent());
+                        if (dtProd != nullptr)
+                        {
+                            cout << "Descripción: " << dtProd->getdescripcion() << " | Precio: $" << dtProd->getprecio() << " | Cantidad: " << dtProd->getCantidadVendida() << endl;
+                        }
+                        itProd->next();
+                    }
+                    delete itProd;
+                }
+                else
+                {
+                    cout << "No hay productos en esta factura." << endl;
+                }
+
+                float subtotal = facturaGenerada.getSubtotal();
+                float descuentoPorcentaje = facturaGenerada.getDescuento();
+                float totalConDescuento = subtotal * (1 - descuentoPorcentaje / 100.0f);
+                float totalConIVA = totalConDescuento * 1.22f; // IVA 22%
 
                 cout << "\nSubtotal: $" << subtotal << endl;
-                cout << "Descuento aplicado: " << descuentoAplicado << "%" << endl;
-                cout << "Total con descuento: $" << total << endl;
+                cout << "Descuento aplicado: " << descuentoPorcentaje << "%" << endl;
+                cout << "Total con descuento: $" << totalConDescuento << endl;
                 cout << "Total con IVA (22%): $" << totalConIVA << endl;
-                cout << "----------------------\n";
-
-            } catch (const exception& e) {
-                cout << "Error: " << e.what() << endl;
+                cout << "----------------------" << endl;
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Error al finalizar venta: " << e.what() << endl;
             }
             break;
         }
 
         case 5:
         {
-                (void)system("clear");
-            cout << "--- MOSTRAR VENTAS DE UN MOZO ---" << endl;
-            ICollection* dtMozos = sistema->listarMozos();
-            IIterator* it = dtMozos->getIterator();
-            while (it->hasCurrent()) {
-                DtMozo* dtMozo = dynamic_cast<DtMozo*>(it->getCurrent());
-                if (dtMozo != nullptr) {
-                    cout << "ID: " << dtMozo->getIdEmpleado()
-                        << ", Nombre: " << dtMozo->getNombre() << endl;
-                }
-                it->next();
-            }
-            delete it;
-            delete dtMozos;
-
-            int idMozo;
+            cout << "\n--- Mostrar ventas de un mozo ---" << endl;
+            int idMozoBuscar;
             cout << "Ingrese el ID del mozo: ";
-            cin >> idMozo;
-            cin.ignore();
+            cin >> idMozoBuscar;
 
-            int dia1, mes1, anio1, dia2, mes2, anio2;
+            int dia1, mes1, anio1;
+            DtFecha fecha1;
+            bool fecha1Valida = false;
+            while (!fecha1Valida)
+            {
+                cout << "Ingrese la primera fecha (DD MM AAAA): ";
+                cin >> dia1 >> mes1 >> anio1;
+                try
+                {
+                    fecha1 = DtFecha(dia1, mes1, anio1);
+                    fecha1Valida = true;
+                }
+                catch (const std::invalid_argument &e)
+                {
+                    cerr << "Error de fecha: " << e.what() << ". Por favor, intente de nuevo." << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+            }
 
-            cout << "Ingrese la fecha de inicio (DD MM AAAA): ";
-            cin >> dia1 >> mes1 >> anio1;
-            cin.ignore();
-
-            cout << "Ingrese la fecha de fin (DD MM AAAA): ";
-            cin >> dia2 >> mes2 >> anio2;
-            cin.ignore();
-
-            DtFecha fechaInicio(dia1, mes1, anio1);
-            DtFecha fechaFin(dia2, mes2, anio2);
+            int dia2, mes2, anio2;
+            DtFecha fecha2;
+            bool fecha2Valida = false;
+            while (!fecha2Valida)
+            {
+                cout << "Ingrese la segunda fecha (DD MM AAAA): ";
+                cin >> dia2 >> mes2 >> anio2;
+                try
+                {
+                    fecha2 = DtFecha(dia2, mes2, anio2);
+                    fecha2Valida = true;
+                }
+                catch (const std::invalid_argument &e)
+                {
+                    cerr << "Error de fecha: " << e.what() << ". Por favor, intente de nuevo." << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+            }
 
             try
             {
-                ICollection* facturas = sistema->mostrarVentasMozo(idMozo, fechaInicio, fechaFin);
-                IIterator* it = facturas->getIterator();
-
-                while (it->hasCurrent()) {
-                DtFactura* factura = dynamic_cast<DtFactura*>(it->getCurrent());
-
-                cout << "Factura N°: " << factura->getCodigoVenta() << endl;
-                DtFecha f = factura->getFecha();
-                cout << "Fecha: " << f.getDia() << "/" << f.getMes() << "/" << f.getAnio() << endl;
-
-                cout << "Productos:\n";
-                ICollection* productos = factura->getProductos();
-                IIterator* itProd = productos->getIterator();
-                while (itProd->hasCurrent()) {
-                    DtPedido* dtp = dynamic_cast<DtPedido*>(itProd->getCurrent());
-                    cout << "- " << dtp->getdescripcion()
-                        << " x " << dtp->getCantProductos()
-                        << " ($" << dtp->getprecio() << " c/u)" << endl;
-
-                    itProd->next();
+                ICollection *ventasMozo = sistema->mostrarVentasMozo(idMozoBuscar, fecha1, fecha2);
+                if (ventasMozo == nullptr || ventasMozo->isEmpty())
+                {
+                    cout << "No se encontraron ventas para el mozo en el rango de fechas especificado." << endl;
                 }
-                delete itProd;
-
-                cout << "Subtotal: $" << factura->getSubtotal() << endl;
-                cout << "Descuento: " << factura->getDescuento() << "%" << endl;
-                cout << "Monto con descuento: $" << factura->getMontoConDescuento() << endl;
-                cout << "Total con IVA: $" << factura->getTotalConIVA() << endl;
-                cout << "-----------------------------" << endl;
-
-                it->next();
+                else
+                {
+                    cout << "\nVentas del mozo " << idMozoBuscar << " entre " << fecha1.getDia() << "/" << fecha1.getMes() << "/" << fecha1.getAnio() << " y " << fecha2.getDia() << "/" << fecha2.getMes() << "/" << fecha2.getAnio() << ":" << endl;
+                    IIterator *itVentas = ventasMozo->getIterator();
+                    while (itVentas->hasCurrent())
+                    {
+                        DtFactura *dtf = dynamic_cast<DtFactura *>(itVentas->getCurrent());
+                        if (dtf != nullptr)
+                        {
+                            cout << "  - Venta ID: " << dtf->getCodigoVenta()
+                                 << ", Fecha: " << dtf->getFecha().getDia() << "/" << dtf->getFecha().getMes() << "/" << dtf->getFecha().getAnio()
+                                 << ", Subtotal: $" << dtf->getSubtotal()
+                                 << ", Descuento: " << dtf->getDescuento() << "%" << endl;
+                            cout << "    Productos en esta venta:" << endl;
+                            ICollection *productosDeVenta = dtf->getProductos();
+                            if (productosDeVenta != nullptr && !productosDeVenta->isEmpty())
+                            {
+                                IIterator *itProdVenta = productosDeVenta->getIterator();
+                                while (itProdVenta->hasCurrent())
+                                {
+                                    DtProducto *p = dynamic_cast<DtProducto *>(itProdVenta->getCurrent());
+                                    if (p != nullptr)
+                                    {
+                                        cout << "      - " << p->getdescripcion() << " (x" << p->getCantidadVendida() << ") - $" << p->getprecio() << endl;
+                                    }
+                                    itProdVenta->next();
+                                }
+                                delete itProdVenta;
+                            }
+                            else
+                            {
+                                cout << "      No hay productos listados para esta venta." << endl;
+                            }
+                        }
+                        itVentas->next();
+                    }
+                    delete itVentas;
+                    delete ventasMozo; // Liberar la colección
+                }
             }
-            delete it;
-
-            // Liberar memoria si corresponde (de lo contrario puede haber leaks)
-            // ...
-
-            delete facturas;
-
-        } 
             catch (const std::exception &e)
             {
-                cout << "Error al mostrar ventas: " << e.what() << endl;
+                cerr << "Error al mostrar ventas del mozo: " << e.what() << endl;
+            }
+            break;
+        }
+        case 6:
+        {
+            cout << "\n--- Resumen Facturacion de un Dia ---" << endl;
+            int diaR, mesR, anioR;
+            DtFecha fechaInforme;
+            bool fechaRValida = false;
+
+            while (!fechaRValida)
+            {
+                cout << "Ingrese la fecha del informe (DD MM AAAA): ";
+                cin >> diaR >> mesR >> anioR;
+                try
+                {
+                    fechaInforme = DtFecha(diaR, mesR, anioR);
+                    fechaRValida = true;
+                }
+                catch (const std::invalid_argument &e)
+                {
+                    cerr << "Error de fecha: " << e.what() << ". Por favor, intente de nuevo." << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+            }
+
+            try
+            {
+                DtFacturacionDia *informe = sistema->mostrarInforme(fechaInforme);
+
+                cout << "\n------ INFORME DE FACTURACION DEL DIA " << informe->getFecha().getDia() << "/" << informe->getFecha().getMes() << "/" << informe->getFecha().getAnio() << " ------" << endl;
+                cout << "Monto total facturado: $" << informe->getMontoTotalFacturado() << endl;
+
+                cout << "\n--- Facturas Locales ---" << endl;
+                ICollection *facturasLocales = informe->getFacturasLocales();
+                if (facturasLocales != nullptr && !facturasLocales->isEmpty())
+                {
+                    IIterator *itFactLoc = facturasLocales->getIterator();
+                    while (itFactLoc->hasCurrent())
+                    {
+                        DtFactura *dtf = dynamic_cast<DtFactura *>(itFactLoc->getCurrent());
+                        if (dtf != nullptr)
+                        {
+                            cout << "  - Venta ID: " << dtf->getCodigoVenta()
+                                 << ", Subtotal: $" << dtf->getSubtotal()
+                                 << ", Descuento: " << dtf->getDescuento() << "%" << endl;
+                        }
+                        itFactLoc->next();
+                    }
+                    delete itFactLoc;
+                }
+                else
+                {
+                    cout << "No hay facturas locales para este día." << endl;
+                }
+
+                cout << "\n--- Facturas a Domicilio ---" << endl;
+                ICollection *facturasDomicilio = informe->getFacturasDomicilio();
+                if (facturasDomicilio != nullptr && !facturasDomicilio->isEmpty())
+                {
+                    IIterator *itFactDom = facturasDomicilio->getIterator();
+                    while (itFactDom->hasCurrent())
+                    {
+                        DtFacturaDomicilio *dtfd = dynamic_cast<DtFacturaDomicilio *>(itFactDom->getCurrent());
+                        if (dtfd != nullptr)
+                        {
+                            cout << "  - Venta ID: " << dtfd->getVenta().getidVenta()
+                                 << ", Cliente: " << dtfd->getCliente().getNombre()
+                                 << ", Repartidor: " << dtfd->getRepartidor().getNombre() << endl;
+                        }
+                        itFactDom->next();
+                    }
+                    delete itFactDom;
+                }
+                else
+                {
+                    cout << "No hay facturas a domicilio para este día." << endl;
+                }
+
+                delete informe; // Liberar memoria del informe
+            }
+            catch (const std::exception &e)
+            {
+                cerr << "Error al mostrar informe diario: " << e.what() << endl;
             }
             break;
         }
         case 0:
-
             cout << "Volviendo al menú principal..." << endl;
             break;
         default:

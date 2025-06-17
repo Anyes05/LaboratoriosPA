@@ -9,10 +9,10 @@ DtMenu::DtMenu(char codigo, string descripcion, float precio, int cantidadVendid
 }
 
 DtMenu::DtMenu() : DtProducto() {
-    cout << "Debug DtMenu::Constructor: Iniciando construcción por defecto" << endl;
+    // cout << "Debug DtMenu::Constructor: Iniciando construcción por defecto" << endl;
+    // cout << "Debug DtMenu::Constructor: Construcción por defecto completada" << endl;
     this->nombre = "";
     this->descuentoMenu = 0.0;
-    cout << "Debug DtMenu::Constructor: Construcción por defecto completada" << endl;
 }
 
 DtMenu::~DtMenu(){}

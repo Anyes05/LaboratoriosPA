@@ -86,8 +86,7 @@ bool Sistema::existeProducto(char codigo)
     }
     catch (const exception &e)
     {
-        cout << "Error en existeProducto: " << e.what() << endl;
-        return false;
+        throw std::runtime_error("Error interno al verificar existencia del producto: " + string(e.what()));
     }
 }
 
@@ -219,6 +218,12 @@ void Sistema::agregarProductoComun(char codigoComun, string descripcion, float p
     if (existeProducto(codigoComun))
     {
         throw invalid_argument("Ya existe un producto con ese código.");
+    }
+
+    // Validar precio
+    if (precio < 0)
+    {
+        throw invalid_argument("El precio no puede ser negativo.");
     }
 
     try
@@ -402,6 +407,10 @@ void Sistema::darAltaProducto()
 
 DtCliente Sistema::altaCliente(string telefono, string nombre, DtDireccion direccion)
 {
+    if (existeCliente(telefono))
+    {
+        throw invalid_argument("Ya existe un cliente con ese numero de telefono.");
+    }
     if (clienteTemp != nullptr)
     {
         delete clienteTemp;
@@ -448,16 +457,15 @@ bool Sistema::existeCliente(string telefono)
     return false;
 }
 
-void Sistema::listarClientes()
+ICollection* Sistema::listarClientes()
 {
     if (clientes == nullptr || clientes->isEmpty())
     {
-        cout << "No hay clientes registrados" << endl;
-        return;
+        throw std::runtime_error("No hay clientes registrados");
     }
 
+    ICollection* listaDtClientes = new List();
     IIterator *it = clientes->getIterator();
-    cout << "\n Lista de Clientes:\n";
 
     while (it->hasCurrent())
     {
@@ -465,17 +473,15 @@ void Sistema::listarClientes()
 
         if (c != nullptr)
         {
-            cout << "- Nombre: " << c->getNombre() << endl;
-            cout << "  Teléfono: " << c->getTelefono() << endl;
-
             DtDireccion dir = c->getDireccion();
-            cout << "  Dirección: " << dir.getnombreCalle() << " y " << dir.getcalleEsquina() << ", " << dir.getnumero() << endl;
-            cout << "-------------------------" << endl;
+            DtCliente* dt = new DtCliente(c->getTelefono(), c->getNombre(), dir);
+            listaDtClientes->add(dt);
         }
         it->next();
     }
 
     delete it;
+    return listaDtClientes;
 }
 
 /*------ ALTA EMPLEADO ------*/
@@ -535,9 +541,12 @@ ICollection* Sistema::listarMedioTransporte() {
 
 void Sistema::elegirMedio(int opcion)
 {
-    if (opcion < 1 || opcion > cantidadMedios)
+    if (opcion == 0)
     {
-        medioSeleccionado = Transporte::Ninguno;
+        medioSeleccionado = Transporte::Ninguno; // 0 significa sin medio de transporte (mozo)
+    }
+    else if (opcion < 1 || opcion > cantidadMedios)
+    {
         throw std::invalid_argument("Opción inválida. Seleccione un número válido.");
     }
     else
@@ -574,9 +583,9 @@ void Sistema::darAltaEmpleado()
     medioSeleccionado = Transporte::Ninguno;
 }
 
-void Sistema::mostrarEmpleados()
+ICollection* Sistema::mostrarEmpleados()
 {
-    cout << "\n--- Empleados registrados ---" << endl;
+    ICollection* dtEmpleados = new List();
 
     IIterator *itEmp = empleados->getIterator();
     while (itEmp->hasCurrent())
@@ -584,39 +593,20 @@ void Sistema::mostrarEmpleados()
         Empleado *emp = dynamic_cast<Empleado *>(itEmp->getCurrent());
         if (emp != nullptr)
         {
-            cout << "ID: " << emp->getIdEmpleado() << ", IDIng: " << emp->getIdIngresado() << ", Nombre: " << emp->getNombre() << endl;
+            Mozo* mozo = dynamic_cast<Mozo*>(emp);
+            if (mozo != nullptr) {
+                dtEmpleados->add(new DtMozo(mozo->getIdEmpleado(), mozo->getNombre()));
+            } else {
+                Repartidor* rep = dynamic_cast<Repartidor*>(emp);
+                if (rep != nullptr) {
+                    dtEmpleados->add(new DtRepartidor(rep->getIdEmpleado(), rep->getNombre(), rep->getTransporte()));
+                }
+            }
         }
         itEmp->next();
     }
     delete itEmp;
-
-    cout << "\n--- Mozos registrados ---" << endl;
-
-    IIterator *itMozo = mozos->getIterator();
-    while (itMozo->hasCurrent())
-    {
-        Mozo *mozo = dynamic_cast<Mozo *>(itMozo->getCurrent());
-        if (mozo != nullptr)
-        {
-            cout << "ID: " << mozo->getIdEmpleado() << ", IDIng: " << mozo->getIdIngresado() << ", Nombre: " << mozo->getNombre() << endl;
-        }
-        itMozo->next();
-    }
-    delete itMozo;
-
-    cout << "\n--- Repartidores registrados ---" << endl;
-
-    IIterator *itrep = repartidores->getIterator();
-    while (itrep->hasCurrent())
-    {
-        Repartidor *rep = dynamic_cast<Repartidor *>(itrep->getCurrent());
-        if (rep != nullptr)
-        {
-            cout << "ID: " << rep->getIdEmpleado() << ", IDIng: " << rep->getIdIngresado() << ", Nombre: " << rep->getNombre() << ", Medio: " << rep->getTransporte() << endl;
-        }
-        itrep->next();
-    }
-    delete itrep;
+    return dtEmpleados;
 }
 
 /*----- ASIGNAR MESAS A MOZOS -----*/
@@ -797,6 +787,10 @@ bool Sistema::ventaDomicilio(string telefono)
 
 ICollection *Sistema::listarProductos()
 {
+    if (productos == nullptr || productos->isEmpty()) {
+        throw std::runtime_error("No hay productos disponibles en el sistema.");
+    }
+
     List *listaDtProductos = new List();
     IIterator *it = productos->getIterator();
 
@@ -854,6 +848,10 @@ void Sistema::agregarProductoPedido(char codigo, int cantidad)
 
 ICollection *Sistema::listarRepartidores()
 {
+    if (repartidores == nullptr || repartidores->isEmpty()) {
+        throw std::runtime_error("No hay repartidores registrados en el sistema.");
+    }
+
     List *listaDtRepartidores = new List();
     IIterator *it = repartidores->getIterator();
     while (it->hasCurrent())
@@ -1788,6 +1786,10 @@ void Sistema::seleccionarProductoBaja(char codigo)
 
 ICollection *Sistema::retornarMenus()
 {
+    if (productos == nullptr || productos->isEmpty()) {
+        throw std::runtime_error("No hay productos en el sistema para buscar menús.");
+    }
+
     ICollection *menus = new List();
     IIterator *it = productos->getIterator();
 
@@ -1802,6 +1804,12 @@ ICollection *Sistema::retornarMenus()
         it->next();
     }
     delete it;
+
+    if (menus->isEmpty()) {
+        delete menus;
+        throw std::runtime_error("No se encontraron menús en el sistema.");
+    }
+
     return menus;
 }
 
@@ -1976,12 +1984,6 @@ ICollection *Sistema::obtenerProductos()
     }
     delete it;
 
-    if (listaProductos->isEmpty())
-    {
-        delete listaProductos;
-        throw runtime_error("No hay productos disponibles.");
-    }
-
     return listaProductos; // Retorna una colección de DtProducto
 }
 
@@ -1993,21 +1995,21 @@ bool Sistema::ingresarCodigoProducto(char codigo)
     if (!productos->member(key)) // Verifico si el diccionario de productos tiene ese codigo en alguno de ellos
     {
         delete key;
-        return false; // Producto no encontrado
+        throw std::runtime_error("No existe un producto con el código especificado."); // Reemplaza return false
     }
     if (dynamic_cast<Menu *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
         esMenu = true;
+        delete key; // Mover el delete aquí
         return true; // Producto encontrado y es un menú
-        delete key;
     }
     else if (dynamic_cast<Comun *>(productos->find(key)) != nullptr)
     {
         codigoProductoInformar = codigo; // Guardar el código del producto para informar
         esMenu = false;
+        delete key; // Mover el delete aquí
         return false; // Producto encontrado y es un producto común
-        delete key;
     }
     else
     {
