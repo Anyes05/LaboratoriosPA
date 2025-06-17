@@ -718,11 +718,34 @@ void Sistema::elegirMesas(int numero)
     {
         throw std::runtime_error("No hay mesas disponibles.");
     }
-    Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(new Integer(numero)));
+    IKey* mesaKey = new Integer(numero); // Crear clave para buscar la mesa
+    Mesa *mesaSeleccionada = dynamic_cast<Mesa *>(mesas->find(mesaKey));
+    delete mesaKey; // Liberar la clave
+
     if (mesaSeleccionada == nullptr)
     {
         throw std::runtime_error("No existe una mesa con el número especificado.");
     }
+
+
+    IKey* mozoKey = new Integer(idMozoSeleccionado);
+    Mozo *mozo = dynamic_cast<Mozo *>(mozos->find(mozoKey));
+    delete mozoKey; // Liberar la clave del mozo
+
+    if (mozo == nullptr) {
+        throw std::runtime_error("Error interno: El mozo seleccionado no es válido o no existe.");
+    }
+
+    // Verificar si la mesa seleccionada está en el diccionario de mesas del mozo
+    IKey* selectedMesaKey = new Integer(numero);
+    bool mesaAsignadaAMozo = mozo->getMisMesas()->member(selectedMesaKey);
+    delete selectedMesaKey; // Liberar la clave de la mesa
+
+    if (!mesaAsignadaAMozo) {
+        throw std::runtime_error("La mesa seleccionada no está asignada al mozo actual.");
+    }
+
+
     if (mesaSeleccionada->getLocal() != nullptr)
     {
         throw std::runtime_error("La mesa ya está ocupada por una venta activa.");
@@ -1462,14 +1485,77 @@ void Sistema::agregarMesaAFacturacion(int nroMesa)
     if (!ventaAgregar->getActiva())
         throw invalid_argument("La venta de la mesa a agregar ya fue finalizada.");
 
-    if (ventaAgregar == ventaTemporal)
+    // Modificación: Solo permitir agregar mesas que pertenecen a la misma venta.
+    // Esto significa que mesaAgregar->getLocal() debe ser la misma instancia que ventaTemporal.
+    if (ventaAgregar != ventaTemporal) // Antes era 'ventaAgregar == ventaTemporal' lanzando "La mesa ya está incluida..."
+        throw invalid_argument("La mesa seleccionada no pertenece a la venta principal que se está facturando.");
+
+    // La siguiente línea se vuelve redundante o incorrecta si solo se permiten mesas de la misma venta.
+    // if (ventaAgregar->getMozo()->getIdEmpleado() != ventaTemporal->getMozo()->getIdEmpleado())
+    //     throw invalid_argument("Solo se pueden combinar mesas del mismo mozo.");
+
+    // Si la mesa ya está en la colección de mesas de ventaTemporal, no es necesario agregarla de nuevo.
+    // La comprobación `if (ventaAgregar == ventaTemporal)` en la parte superior ya previene esto si las instancias son las mismas.
+    // Pero si llegamos aquí, significa que ventaAgregar y ventaTemporal son el mismo objeto Local.
+    // Ahora necesitamos asegurarnos de que la mesa no esté ya en la lista de mesas de la ventaTemporal.
+    ICollection* mesasVenta = ventaTemporal->getMesas();
+    IIterator* itMesasActuales = mesasVenta->getIterator();
+    bool yaIncluida = false;
+    while(itMesasActuales->hasCurrent()){
+        Mesa* m = dynamic_cast<Mesa*>(itMesasActuales->getCurrent());
+        if(m != nullptr && m->getNumeroMesa() == nroMesa){
+            yaIncluida = true;
+            break;
+        }
+        itMesasActuales->next();
+    }
+    delete itMesasActuales;
+
+    if(yaIncluida){
         throw invalid_argument("La mesa ya está incluida en la facturación actual.");
+    }
 
-    // verificar que el mozo sea el mismo
-    if (ventaAgregar->getMozo()->getIdEmpleado() != ventaTemporal->getMozo()->getIdEmpleado())
-        throw invalid_argument("Solo se pueden combinar mesas del mismo mozo.");
 
-    // combinar los productos de ambas ventas
+    // Aquí se combinarían los productos, pero si solo se permiten mesas de la misma venta,
+    // los productos de esta mesa ya deberían estar en ventaTemporal.
+    // Por lo tanto, la lógica de combinar productos es, en este contexto, un poco redundante
+    // si el objetivo es solo 'confirmar' las mesas que ya forman parte de la venta.
+
+    // Si tu intención es que al "agregar mesa" se sumen los productos de esa mesa
+    // a la ventaTemporal (aunque ya sea la misma venta), entonces el código de combinación
+    // de productos que sigue es válido, pero el mensaje "La mesa ya está incluida en la facturación actual."
+    // no se lanzaría si la mesa ya está en la colección de mesas de la ventaTemporal.
+    // Sin embargo, si la mesa ya está asociada a 'ventaTemporal', sus productos ya deberían estar reflejados.
+
+    // Para adherir estrictamente a "no son parte de esa venta, y eso esta mal",
+    // el caso más estricto sería que solo se puede finalizar la venta tal cual está,
+    // y la función `agregarMesaAFacturacion` no debería existir para este propósito
+    // si no se permite fusionar ventas.
+
+    // Sin embargo, si la intención es que "agregar mesa" significa que la mesa se asigna
+    // formalmente a la factura (a pesar de que sus productos ya estaban en el subtotal
+    // de ventaTemporal si ya era parte de esa venta), entonces el código
+    // `mesasVenta->add(mesaAgregar);` sería la única acción lógica aquí,
+    // y los recálculos de subtotal serían correctos para actualizar.
+
+    // Para cumplir tu solicitud "me permite agregar mesas que no son parte de esa enta, y eso esta mal"
+    // y que solo se agreguen mesas que ya están lógicamente bajo la misma factura:
+    // El código modificado arriba asegura que `ventaAgregar` es `ventaTemporal`.
+    // La única utilidad de esta función entonces sería añadir la `mesaAgregar` a la colección `mesas` de `ventaTemporal`
+    // si no estuviera ya (aunque en un flujo normal ya debería estar).
+
+    // Si lo que realmente quieres es evitar *fusionar* ventas separadas, este cambio lo logra.
+    // El resto de la lógica de `agregarMesaAFacturacion` (combinación de productos y recalculado)
+    // ahora operará sobre la misma venta, si la mesa es parte de ella.
+
+    // combinar los productos de ambas ventas (Ahora, esto solo tiene sentido si la mesa fue "desvinculada" temporalmente)
+    // O si se quiere re-agregar una mesa que ya era parte de la venta pero por alguna razón no estaba en la lista 'mesas' de la ventaTemporal.
+    // Si la mesa ya es parte de ventaTemporal, sus productos ya están en ventaTemporal->getProductos().
+    // La eliminación de la línea `ventaAgregar->setActiva(false);` también es importante si no estamos fusionando diferentes ventas.
+
+    // La lógica de combinar productos y recalcular subtotal se mantiene si la mesa pertenece a la misma venta.
+    // Esto implica que si una mesa (que ya era parte de la venta principal) se 'agrega' de nuevo,
+    // se recalcularía el subtotal.
     IDictionary *pedidosAgregar = ventaAgregar->getProductos();
     IDictionary *pedidosActuales = ventaTemporal->getProductos();
 
@@ -1507,14 +1593,17 @@ void Sistema::agregarMesaAFacturacion(int nroMesa)
     delete it;
 
     // agregar la mesa a la colección de mesas de la venta principal
-    ICollection *mesasVenta = ventaTemporal->getMesas();
-    mesasVenta->add(mesaAgregar);
+    // Solo si la mesa no está ya en la colección de mesas de ventaTemporal.
+    // Si la comprobación de arriba `yaIncluida` es false, la agregamos.
+    if (!yaIncluida) {
+        mesasVenta->add(mesaAgregar);
+    }
+    
+    // asignar la venta principal a la mesa agregada (esto es redundante si ya era la misma venta)
+    // mesaAgregar->setLocal(ventaTemporal); // Se quita porque ya está asociada a la misma venta.
 
-    // asignar la venta principal a la mesa agregada
-    mesaAgregar->setLocal(ventaTemporal);
-
-    // desactivar la venta de la mesa agregada
-    ventaAgregar->setActiva(false);
+    // desactivar la venta de la mesa agregada (esto es incorrecto si no estamos fusionando ventas distintas)
+    // ventaAgregar->setActiva(false); // Se quita ya que ventaTemporal es la misma, y no debe desactivarse hasta la factura final.
 
     // recalcular subtotal
     float nuevoSubtotal = 0.0f;

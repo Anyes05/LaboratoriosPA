@@ -54,3 +54,7 @@ int* Mozo::getMesasId() {
     return ids; // Retorna un arreglo de IDs de las mesas
 }
 
+IDictionary* Mozo::getMisMesas() {
+    return this->misMesas;
+}
+

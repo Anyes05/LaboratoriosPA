@@ -22,6 +22,7 @@ public:
     int getCantMesas();
     void setCantMesas(int);
     int* getMesasId();
+    IDictionary* getMisMesas();
     // metodos adicionales
     // set<Mesas> buscarMesa(); ??
     void agregarMesa(Mesa*); // agrega una mesa a la coleccion de mesas del mozo

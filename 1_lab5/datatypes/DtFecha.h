@@ -10,6 +10,7 @@ class DtFecha{
         int dia;
         int mes;
         int anio;
+        static bool esBisiesto(int anio);
     public:
         DtFecha(int dia, int mes, int anio);
         DtFecha();
